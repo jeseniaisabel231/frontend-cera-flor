@@ -1,1 +1,114 @@
 /* You can add global styles to this file, and also import other style files */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300..700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-playfair: "Playfair Display", serif;
+  --font-pontano: "Pontano Sans", sans-serif;
+  --color-morado-50: #f4f2fc;
+  --color-morado-100: #edeafa;
+  --color-morado-200: #dad5f6;
+  --color-morado-300: #c4bcf0;
+  --color-morado-400: #b2a7ec;
+  --color-morado-500: #9f93e7;
+  --color-morado-600: #6854d9;
+  --color-morado-700: #3e29b8;
+  --color-morado-800: #2a1c7d;
+  --color-morado-900: #150e3f;
+  --color-morado-950: #0a061d;
+
+  --color-celeste-50: #f4fafa;
+  --color-celeste-100: #edf7f6;
+  --color-celeste-200: #d8eeeb;
+  --color-celeste-300: #c6e7e2;
+  --color-celeste-400: #b0ddd7;
+  --color-celeste-500: #9fd6cf;
+  --color-celeste-600: #69bfb3;
+  --color-celeste-700: #439d91;
+  --color-celeste-800: #2c6860;
+  --color-celeste-900: #173631;
+  --color-celeste-950: #0b1917;
+
+  --color-amarrillo-50: #ffffff;
+  --color-amarrillo-100: #fffffa;
+  --color-amarrillo-200: #fffffa;
+  --color-amarrillo-300: #fffff5;
+  --color-amarrillo-400: #fffff0;
+  --color-amarrillo-500: #ffffec;
+  --color-amarrillo-600: #ffff8a;
+  --color-amarrillo-700: #ffff29;
+  --color-amarrillo-800: #c7c700;
+  --color-amarrillo-900: #616100;
+  --color-amarrillo-950: #333300;
+
+  --color-gris-50: #ebebea;
+  --color-gris-100: #d9d9d8;
+  --color-gris-200: #b1b1af;
+  --color-gris-300: #8b8b89;
+  --color-gris-400: #646463;
+  --color-gris-500: #3c3c3b;
+  --color-gris-600: #313130;
+  --color-gris-700: #242423;
+  --color-gris-800: #171717;
+  --color-gris-900: #0d0d0d;
+  --color-gris-950: #050505;
+}
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  /* - translateY(-10px): se mueve 10px hacia arriba.
+     - translateX(5px): se mueve 5px hacia la derecha.*/
+  50% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  
+}
+
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  /*hacia abajo / hacia la izquierda*/
+  50% {
+    transform: translateY(15px) translateX(5px);
+  }
+}
+@keyframes float3 {
+  0% {
+    transform: translateX(10px) translateY(0);  /* Inicia a la derecha */
+  }
+  50% {
+    transform: translateX(-10px) translateY(-10px);  /* Mueve a la izquierda y arriba */
+  }
+  100% {
+    transform: translateX(10px) translateY(0);  /* Regresa a la derecha */
+  }
+}
+
+.animate-float1 {
+  animation: float1 3s ease-in-out infinite;
+}
+
+.animate-float2 {
+  animation: float2 3s ease-in-out infinite;
+}
+.animate-float3 {
+  animation: float3 4s ease-in-out infinite;
+}
+
+@layer utilities {
+  .text-outline-sky {
+    -webkit-text-stroke: 0.5px black;
+    color: #9FD6CF;
+  }
+  .text-outline-pink {
+    -webkit-text-stroke: 0.5px black;
+    color: #FF6EA5;
+  }
+
+  
+}
+

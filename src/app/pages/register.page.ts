@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { Navegacion } from '../components/header.component';
+import { Headers } from '../components/header.component';
 import { Footeer } from '../components/footer.component';
 
 @Component({
+  imports: [Footeer, Headers],
+
   template: `
-    <navegacion></navegacion>
+    <headers></headers>
     <main class="flex md:h-[81dvh] flex-col text-[#3C3C3B] ">
       <section class="flex flex-col md:flex-row h-full ">
         <form
@@ -215,13 +217,16 @@ import { Footeer } from '../components/footer.component';
           </button>
           <p class="mt-4 text-[14px]">
             Si ya tienes una cuenta,
-            <a class="text-blue-600 font-semibold underline hover:text-blue-800" href="/iniciar-sesion">inicia sesión</a>.
+            <a
+              class="text-blue-600 font-semibold underline hover:text-blue-800"
+              href="/iniciar-sesion"
+              >inicia sesión</a
+            >.
           </p>
         </form>
       </section>
     </main>
     <footeer></footeer>
   `,
-  imports: [Navegacion, Footeer],
 })
 export class RegisterPage {}

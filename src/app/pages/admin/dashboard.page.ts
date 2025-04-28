@@ -1,162 +1,98 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { Navegacion } from '../../components/navegacion.component';
+import { Presentation } from "../../components/admin/presentation.component";
 
 @Component({
-  template: ` 
-  <div class="bg-[#F6F5FD] w-full flex">
-    <aside class="flex px-16 flex-col">
-      <div class="flex items-center gap-6 py-6">
-        <img src="logo.png" alt="Logo de Flor y Cera" class="w-[75px]" />
-        <h1 class="font-playfair font-bold text-[20px] hidden lg:block ">
-          Flor & Cera
-        </h1>
-      </div>
-      <nav class="">
-        <ul class="flex flex-col">
-          <li class="flex gap-6 bg-[#806BFF] pl-6 py-4 rounded-3xl">
+  imports: [Navegacion, Presentation],
+  template: `
+    <div class="bg-[#efecff] w-full flex min-h-dvh">
+      <navegacion></navegacion>
+      <!-- Contenido principal -->
+
+      <div class="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full border-l border-[#d0c9fe]">
+        <presentation titulo="Dashboard" class="col-span-5"></presentation>
+
+        <div
+          class="col-span-3 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10"
+        >
+          <h3 class="text-[17px] font-semibold mb-2 ">
+            Total de ventas obtenidas al mes
+          </h3>
+        </div>
+        <div class="col-span-2 row-start-2 rounded-[18px] py-4 px-10  bg-white">
+          <h3 class="text-[17px] font-semibold mb-2 ">Usuarios registrados</h3>
+          <div class="flex  gap-3 justify-center mt-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="21"
-              viewBox="0 0 19 21"
+              width="48"
+              height="41"
+              viewBox="0 0 48 41"
               fill="none"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M2.111 7.35c-.56 0-1.097-.221-1.493-.615A2.1 2.1 0 0 1 0 5.25V2.1C0 1.543.222 1.009.618.615A2.12 2.12 0 0 1 2.111 0h4.222c.56 0 1.097.221 1.493.615s.618.928.618 1.485v3.15c0 .557-.222 1.091-.618 1.485a2.12 2.12 0 0 1-1.493.615zm0 13.65c-.56 0-1.097-.221-1.493-.615A2.1 2.1 0 0 1 0 18.9v-8.4c0-.557.222-1.091.618-1.485A2.12 2.12 0 0 1 2.111 8.4h4.222c.56 0 1.097.221 1.493.615s.618.928.618 1.485v8.4c0 .557-.222 1.091-.618 1.485A2.12 2.12 0 0 1 6.333 21zm10.556 0c-.56 0-1.097-.221-1.493-.615a2.1 2.1 0 0 1-.618-1.485v-2.1c0-.557.222-1.091.618-1.485a2.12 2.12 0 0 1 1.493-.615h4.222c.56 0 1.097.221 1.493.615S19 16.243 19 16.8v2.1c0 .557-.222 1.091-.618 1.485a2.12 2.12 0 0 1-1.493.615zm0-8.4c-.56 0-1.097-.221-1.493-.615a2.1 2.1 0 0 1-.618-1.485V2.1c0-.557.222-1.091.618-1.485A2.12 2.12 0 0 1 12.667 0h4.222c.56 0 1.097.221 1.493.615S19 1.543 19 2.1v8.4c0 .557-.222 1.091-.618 1.485a2.12 2.12 0 0 1-1.493.615z"
-                fill="#3C3C3B"
-              /></svg
-            ><a href="#" class="active">Dashboard</a>
-          </li>
-          <li class="flex gap-6 pl-6 py-4 rounded-3xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 22 22"
-              fill="none"
-            >
-              <path
-                d="M14.714 15.933v-1.08c1.338-.811 2.429-2.834 2.429-4.859 0-3.25 0-5.884-3.643-5.884S9.857 6.745 9.857 9.994c0 2.025 1.09 4.048 2.429 4.86v1.079C8.166 16.295 5 18.475 5 21.11h17c0-2.635-3.167-4.815-7.286-5.177"
+                d="M32.143 30.646v-2.158c2.912-1.624 5.286-5.67 5.286-9.719C37.429 12.27 37.429 7 29.5 7s-7.929 5.27-7.929 11.77c0 4.048 2.374 8.094 5.286 9.718v2.158C17.893 31.37 11 35.73 11 41h37c0-5.27-6.893-9.63-15.857-10.354"
                 fill="#3C3C3B"
               />
               <path
-                d="M6.234 16.36c1.053-.74 2.364-1.3 3.806-1.643a7.88 7.88 0 0 1-1.657-4.8c0-1.757 0-3.418.583-4.776C9.532 3.822 10.55 3.005 12 2.699 11.678 1.136 10.82.11 8.536.11c-3.658 0-3.658 2.636-3.658 5.885 0 2.025 1.095 4.048 2.438 4.86v1.079C3.18 12.295 0 14.475 0 17.11h5.315q.415-.396.919-.75"
+                d="M13.506 32.499c2.283-1.478 5.123-2.6 8.248-3.285a15 15 0 0 1-1.672-2.411 14.8 14.8 0 0 1-1.918-7.188c0-3.515 0-6.836 1.263-9.554 1.226-2.636 3.432-4.27 6.573-4.883C25.302 2.053 23.442 0 18.494 0c-7.926 0-7.926 5.27-7.926 11.77 0 4.048 2.373 8.094 5.284 9.718v2.158C6.89 24.37 0 28.73 0 34h11.517a17 17 0 0 1 1.989-1.499z"
                 fill="#3C3C3B"
-              /></svg
-            ><a href="#">Usuarios</a>
-          </li>
-          <li class="flex gap-6 pl-6 py-4 rounded-3xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="21"
-              fill="none"
-            >
-              <path
-                d="M5.5 0H1.1C.808 0 .528.11.322.308A1.03 1.03 0 0 0 0 1.05v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 5.5 0M3.3 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.746.428.988.773s.371.752.371 1.167c0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45H1.1V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M13.2 0H8.8c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 13.2 0M11 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485A2.25 2.25 0 0 1 11 19.95m2.2-9.45H8.8V1.05h4.4zm-1.1 7.35c0 .208-.064.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M20.9 0h-4.4c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.207.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 20.9 0m-2.2 19.95c-.435 0-.86-.123-1.222-.354a2.13 2.13 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45h-4.4V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743"
-                fill="#3C3C3B"
-              /></svg
-            ><a href="#">Productos</a>
-          </li>
-          <li class="flex gap-6 pl-6 py-4 rounded-3xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="23"
-              viewBox="0 0 22 23"
-              fill="none"
-            >
-              <mask
-                id="a"
-                style="mask-type:luminance"
-                maskUnits="userSpaceOnUse"
-                x="0"
-                y="0"
-                width="22"
-                height="23"
-              >
-                <path
-                  d="M20 6.75 11 2 2 6.75v9.5L11 21l9-4.75z"
-                  fill="#fff"
-                  stroke="#fff"
-                  stroke-width="2.167"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M11 10.55v3.8m4.235-5.7v5.7m-8.47-1.9v1.9"
-                  stroke="#000"
-                  stroke-width="2.167"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </mask>
-              <g mask="url(#a)">
-                <path d="M-1.706.1h25.412v22.8H-1.706z" fill="#3C3C3B" />
-              </g></svg
-            ><a href="#">Ventas</a>
-          </li>
-          <li class="flex gap-6 pl-6 py-4 rounded-3xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="21"
-              height="21"
-              viewBox="0 0 21 21"
-              fill="none"
-            >
-              <path
-                d="m7.627 21-.418-3.36a4 4 0 0 1-.64-.315 9 9 0 0 1-.588-.394l-3.108 1.313L0 13.256l2.69-2.047a2.5 2.5 0 0 1-.026-.354v-.709q0-.17.026-.355L0 7.744l2.873-4.988L5.981 4.07q.288-.21.601-.394a5 5 0 0 1 .627-.315L7.627 0h5.746l.418 3.36q.34.131.64.315.302.184.588.394l3.108-1.313L21 7.744 18.31 9.79q.026.184.026.355v.708q0 .17-.052.355l2.69 2.047-2.873 4.988-3.082-1.313a7 7 0 0 1-.601.394 5 5 0 0 1-.627.315L13.373 21zm2.925-6.825q1.515 0 2.586-1.076A3.55 3.55 0 0 0 14.21 10.5a3.55 3.55 0 0 0-1.07-2.599 3.52 3.52 0 0 0-2.587-1.076q-1.54 0-2.6 1.076Q6.895 8.978 6.897 10.5q0 1.522 1.058 2.599 1.057 1.076 2.598 1.076"
-                fill="#3C3C3B"
-              /></svg
-            ><a href="#">Configuración</a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-    <!-- Contenido principal -->
-    <main class="flex-1 flex flex-col ">
-      <div class="bg-white rounded-[18px]">
-        <h2>Dashboard</h2>
-        <p><time datetime="2025-02-04">Lunes, 04 febrero</time></p>
-        <p>Buenas tardes, Estefanía</p>
-      </div>
-      <header class="flex pt-6">
-        <div class="bg-amarrillo-700">
-          <img src="estefania.jpg" alt="Foto de Estefanía Sánchez" />
-          <div>
-            <p>Estefanía Sánchez</p>
-            <span>Administradora</span>
+              />
+            </svg>
+            <p class="text-4xl font-bold">
+              64
+              <span class="text-base font-normal ml-1">usuarios</span>
+            </p>
           </div>
-          <button>Salir</button>
         </div>
-      </header>
 
-      <section aria-labelledby="ventas-del-mes">
-        <h3 id="ventas-del-mes">Ventas del mes</h3>
-        <!-- Aquí iría un gráfico o lista de ventas -->
-      </section>
-
-      <aside class="resumen-estadisticas">
-        <section aria-labelledby="usuarios-registrados">
-          <h4 id="usuarios-registrados">Usuarios registrados</h4>
-          <p><strong>64</strong> usuarios</p>
-        </section>
-
-        <section aria-labelledby="productos-vendidos">
-          <h4 id="productos-vendidos">Productos vendidos</h4>
-          <p><strong>29</strong> productos</p>
-        </section>
-
-        <section aria-labelledby="ingresos-mensuales">
-          <h4 id="ingresos-mensuales">Ingresos obtenidos al mes</h4>
-          <p><!-- cantidad o gráfico aquí --></p>
-        </section>
-      </aside>
-
-      <footer>
-        <p>Productos activos</p>
-      </footer>
-    </main>
-  </div>`,
+        <div class="col-span-2 row-start-3  rounded-[18px] py-4 px-10 bg-white">
+          <h3 class="text-[17px] font-semibold mb-2 ">Productos vendidos</h3>
+          <div class="flex  gap-3 justify-center mt-8">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="38"
+              height="41"
+              viewBox="0 0 38 41"
+              fill="none"
+            >
+              <path
+                d="M37.146 12.575a2.9 2.9 0 0 0-2.07-.86h-5.845V10.25a10.26 10.26 0 0 0-2.997-7.248 10.22 10.22 0 0 0-14.468 0 10.26 10.26 0 0 0-2.997 7.248v1.464H2.923a2.92 2.92 0 0 0-2.067.858A2.93 2.93 0 0 0 0 14.642v19.769C0 37.98 3.014 41 6.577 41h24.846a6.6 6.6 0 0 0 4.611-1.88A6.36 6.36 0 0 0 38 34.524V14.643a2.9 2.9 0 0 0-.854-2.068m-11.159 9.572-8.185 10.25a1.46 1.46 0 0 1-1.117.55h-.023a1.46 1.46 0 0 1-1.111-.513l-3.508-4.107a1.464 1.464 0 0 1 2.222-1.904l2.36 2.763 7.08-8.869a1.462 1.462 0 0 1 2.595.753c.043.386-.069.774-.311 1.077zm.32-10.433H11.693V10.25a7.33 7.33 0 0 1 2.14-5.177 7.3 7.3 0 0 1 10.335 0 7.33 7.33 0 0 1 2.14 5.177z"
+                fill="#3C3C3B"
+              />
+            </svg>
+            <p class="text-4xl font-bold">
+              16
+              <span class="text-base font-normal ml-1">productos</span>
+            </p>
+          </div>
+        </div>
+        <div class="col-span-2 row-start-4 rounded-[18px] py-6 px-10  bg-white">
+          <h3 class="text-[17px] font-semibold mb-2 ">Productos activos</h3>
+          <div class="flex  gap-3 justify-center mt-8">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="41"
+              height="41"
+              viewBox="0 0 41 41"
+              fill="none"
+            >
+              <path
+                d="M20.5 0C9.196 0 0 9.196 0 20.5S9.196 41 20.5 41 41 31.804 41 20.5 31.804 0 20.5 0m4.75 11.967 2.375 2.076-7.255 8.288-2.375-2.273zM14.185 29.038l-6.954-6.961 2.23-2.23 6.956 6.96zm6.407.078-7.035-7.04 2.231-2.229 4.648 4.653 10.953-12.533 2.375 2.076z"
+                fill="#3C3C3B"
+              />
+            </svg>
+            <p class="text-4xl font-bold">
+              70
+              <span class="text-base font-normal ml-1">productos activos</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
 })
-export class DashboardPage {}
+export class DashboardPage {
+  //1.false: menu de navegacion oculto
+  //Variable que hara que la barra de navegacion se muestre o no se muestre
+  public mostrar = signal<boolean>(true);
+}

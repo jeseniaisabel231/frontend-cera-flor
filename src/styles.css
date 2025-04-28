@@ -108,7 +108,34 @@
     -webkit-text-stroke: 0.5px black;
     color: #FF6EA5;
   }
+  .text-outline-purple {
+    -webkit-text-stroke: 0.5px black;
+    color: #9F93E7
+  }
 
   
 }
-
+@keyframes slideInright {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes slideOutleft {
+  from {
+    transform: translateX(0);
+    position: fixed;
+  }
+  to {
+    transform: translateX(-100%);
+    position: fixed;
+    display: none;
+  }
+}
+@theme {
+  --animate-activa: slideInright 0.65s forwards;
+  --animate-inactiva: slideOutleft 0.65s forwards;
+  --font-inter: "Inter", sans-serif;
+}

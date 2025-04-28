@@ -28,4 +28,6 @@ import { Component } from '@angular/core';
     </article>
   `,
 })
-export class Card {}
+export class Card {
+  
+}

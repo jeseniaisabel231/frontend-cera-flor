@@ -1,17 +1,31 @@
 import { Component } from '@angular/core';
-import { Navegacion } from '../components/header.component';
+import { Headers } from '../components/header.component';
 import { Footeer } from '../components/footer.component';
 import { RouterLink } from '@angular/router';
 import { Card } from '../components/card.component';
 
 @Component({
-  imports: [Navegacion, Footeer, Card],
+  imports: [Headers, Footeer, Card],
 
   template: `
-    <navegacion></navegacion>
-    <main class="flex flex-col">
+    <headers></headers>
+    <main class="flex flex-col ">
       <!--Seccion banner -->
-      <section class="w-full">
+      <section class="w-full relative">
+        <!-- elementos dentro del banner -->
+        <div class="text-center md:text-left md:w-1/2 absolute top-[25%] left-[10%]">
+          <h1 class="text-5xl font-bold font-playfair text-pink-600 text-outline-pink">
+            Artesanía <span class="block pl-10">para tu, piel</span>
+          </h1>
+          <p class="text-3xl font-bold font-playfair text-outline-purple mt-">magia para tu hogar</p>
+          <a
+            href="#catalogo"
+            class="inline-block mt-4 px-12 py-2 bg-morado-600 text-white font-semibold rounded-full hover:bg-morado-700 transition"
+          >
+            Ver catálogo
+          </a>
+        </div>
+        <img src="banner1-foto.png" alt="" class="absolute left-[40%]">
         <a href="#" target="_blank" rel="noopener noreferrer">
           <img
             src="banner1.png"
@@ -331,10 +345,12 @@ import { Card } from '../components/card.component';
               </div>
               <div class="border-l-4 border-[#FF6EA5] pl-4">
                 <p class="font-semibold text-morado-700">
-                📩 Soporte al cliente
+                  📩 Soporte al cliente
                 </p>
                 <p class="text-gray-600 text-sm">
-                El equipo de atención al cliente está disponible de lunes a sábado a través de múltiples canales WhatsApp y  Instagram para resolver cualquier consulta.
+                  El equipo de atención al cliente está disponible de lunes a
+                  sábado a través de múltiples canales WhatsApp y Instagram para
+                  resolver cualquier consulta.
                 </p>
               </div>
             </div>

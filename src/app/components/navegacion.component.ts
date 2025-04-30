@@ -204,20 +204,25 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
               Promociones
             </a>
           </li>
-          <li class="flex gap-6 pl-6 py-4 rounded-3xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="23"
-              height="21"
-              viewBox="0 0 23 21"
-              fill="none"
+          <li class="flex cursor-pointer" (click)="salir()">
+            <a
+              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
             >
-              <path
-                d="M15.607 17.66v-6.206H8.163a.77.77 0 0 1-.58-.279 1.04 1.04 0 0 1-.241-.675c0-.253.086-.496.24-.675a.77.77 0 0 1 .581-.28h7.444V3.341c0-.886-.304-1.735-.843-2.361S13.494 0 12.732 0H2.875C2.113 0 1.382.353.843.98.304 1.606.001 2.455 0 3.34v14.32c0 .885.304 1.734.843 2.36.539.627 1.27.98 2.032.98h9.857c.763 0 1.493-.353 2.032-.98.54-.626.843-1.475.843-2.36m4.589-6.206-2.705 3.144c-.148.18-.229.42-.226.67.003.249.09.486.24.662a.77.77 0 0 0 .571.28.76.76 0 0 0 .576-.263l4.108-4.772c.153-.18.24-.422.24-.675s-.087-.496-.24-.675l-4.108-4.772a.76.76 0 0 0-.576-.263.77.77 0 0 0-.57.28 1.04 1.04 0 0 0-.24.662c-.003.25.078.49.225.67l2.705 3.143h-4.589v1.91z"
-                fill="currentColor"
-              />
-            </svg>
-            <a href="#">Salir</a>
+              <svg
+                class="transition-colors duration-[50]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="23"
+                height="21"
+                viewBox="0 0 23 21"
+                fill="none"
+              >
+                <path
+                  d="M15.607 17.66v-6.206H8.163a.77.77 0 0 1-.58-.279 1.04 1.04 0 0 1-.241-.675c0-.253.086-.496.24-.675a.77.77 0 0 1 .581-.28h7.444V3.341c0-.886-.304-1.735-.843-2.361S13.494 0 12.732 0H2.875C2.113 0 1.382.353.843.98.304 1.606.001 2.455 0 3.34v14.32c0 .885.304 1.734.843 2.36.539.627 1.27.98 2.032.98h9.857c.763 0 1.493-.353 2.032-.98.54-.626.843-1.475.843-2.36m4.589-6.206-2.705 3.144c-.148.18-.229.42-.226.67.003.249.09.486.24.662a.77.77 0 0 0 .571.28.76.76 0 0 0 .576-.263l4.108-4.772c.153-.18.24-.422.24-.675s-.087-.496-.24-.675l-4.108-4.772a.76.76 0 0 0-.576-.263.77.77 0 0 0-.57.28 1.04 1.04 0 0 0-.24.662c-.003.25.078.49.225.67l2.705 3.143h-4.589v1.91z"
+                  fill="currentColor"
+                />
+              </svg>
+              Salir
+            </a>
           </li>
         </ul>
       </nav>
@@ -225,7 +230,6 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
   `,
 })
 export class Navegacion {
- 
   public mostrar = signal<boolean>(true);
 
   //para mantener el color de cada opcion del menu

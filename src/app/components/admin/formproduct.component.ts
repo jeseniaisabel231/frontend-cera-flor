@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
+
+
 
 @Component({
   selector: 'formulario',
@@ -37,7 +38,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
       <form class="grid grid-cols-1 md:grid-cols-2 gap-x-4 py-2 px-7">
         <!-- Subir foto -->
         <div
-          class="flex flex-col items-center border border-[#878787] rounded-xl p-4 h-53 justify-center"
+          class="flex flex-col items-center border border-gray-300  rounded-xl p-4 h-53 justify-center"
         >
           <label for="foto" class="text-gray-500 mb-2">Subir foto</label>
           <input type="file" id="foto" class="text-sm" />
@@ -52,7 +53,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
             <input
               type="text"
               placeholder="Ej: Jabón de avena y miel"
-              class="w-full border border-[#878787] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-morado-400"
+              class="w-full border border-gray-300  rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-morado-400"
             />
           </div>
           <div>
@@ -60,7 +61,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
             <textarea
               placeholder="Describe aroma, textura, beneficios o forma artesanal..."
               rows="4"
-              class="w-full border border-[#878787] rounded-lg p-2 focus:outline-none focus:ring-2  focus:ring-morado-400"
+              class="w-full border border-gray-300  rounded-lg p-2 focus:outline-none focus:ring-2  focus:ring-morado-400"
             ></textarea>
           </div>
         </div>
@@ -71,7 +72,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
             Selecciona una categoría
           </label>
           <select
-            class="text-gray-600 w-full border border-[#878787] rounded-lg p-2 focus:outline-none  focus:ring-2  focus:ring-morado-400"
+            class="text-gray-600 w-full border border-gray-300  rounded-lg p-2 focus:outline-none  focus:ring-2  focus:ring-morado-400"
           >
             <option>Jabón artesanal</option>
             <option>Vela artesanal</option>
@@ -83,7 +84,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
             <input
               type="text"
               placeholder="Ej: 5.50"
-              class="w-full border border-[#878787] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              class="w-full border border-gray-300  rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
             <span class="text-gray-600">$</span>
           </div>
@@ -132,7 +133,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                   Selecciona una aroma
                 </label>
                 <select
-                  class="w-full border rounded-lg p-2 border-[#878787]  focus:outline-none focus:ring-2  focus:ring-morado-400"
+                  class="w-full border rounded-lg p-2 border-gray-300   focus:outline-none focus:ring-2  focus:ring-morado-400"
                 >
                   <option>Vainilla</option>
                   <option>Lavanda</option>
@@ -145,7 +146,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                   Selecciona un tipo de piel
                 </label>
                 <select
-                  class="w-full border rounded-lg p-2 border-[#878787]  focus:outline-none focus:ring-2  focus:ring-morado-400"
+                  class="w-full border rounded-lg p-2 border-gray-300   focus:outline-none focus:ring-2  focus:ring-morado-400"
                 >
                   <option>Piel seca</option>
                   <option>Piel grasa</option>

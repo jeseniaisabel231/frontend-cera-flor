@@ -1,15 +1,24 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, linkedSignal, signal } from '@angular/core';
 import { Navegacion } from '../../components/navegacion.component';
-import { Formulario } from '../../components/admin/formproduct.component';
-import { Formularioprom } from "../../components/formprom.component";
-import { Presentation } from "../../components/admin/presentation.component";
+import { FormProducto } from '../../components/admin/formproduct.component';
+import { Presentation } from '../../components/admin/presentation.component';
+import { Loading } from '../../components/loading.component';
+import { TablaComponent } from '../../components/admin/tabla.component';
+import { promocion } from '../../interfaces/promocion.interface';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { PromocionesService } from '../../../services/admin/promociones.service';
+import { FormProm } from "../../components/admin/formprom.component";
 @Component({
-  imports: [Navegacion, Formularioprom, Presentation],
+  imports: [Navegacion, Presentation, Loading, TablaComponent, FormProm],
   template: `
     <div class="bg-[#efecff] w-full flex min-h-dvh">
       <navegacion></navegacion>
-      <div class="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full border-l border-[#d0c9fe]">
-      <presentation titulo="Promociones" class="col-span-5"></presentation>
+      <div
+        class="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full border-l border-[#d0c9fe]"
+      >
+        <presentation titulo="Promociones" class="col-span-5"></presentation>
 
         <div
           class="overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md"
@@ -58,47 +67,17 @@ import { Presentation } from "../../components/admin/presentation.component";
               Añadir promoción
             </button>
           </div>
-          <formularioprom [(mostrarModal)]="mostrarModal"></formularioprom>
-          <table
-            class="text-[14px] mt-6 table-auto border-collapse border-y-[2px] border-[#d5d6d6] w-full"
-          >
-            <thead>
-              <tr class="border-y-[2px] border-[#f3f5f7] bg-[#f3f5f7]">
-                <th class="py-2 p-1 text-center">Imagen</th>
-                <th class="py-2 p-1 text-center">Título</th>
-                <th class="py-2 p-1 text-center">Descripción	</th>
-                <th class="py-2 p-1 text-center">Estado</th>
-                <th class="py-2 p-1 text-center">Fecha de inicio</th>
-                <th class="py-2 text-center p-1">Fecha de fin</th>
-                <th class="py-2 text-center p-1">Fecha acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="font-normal">
-                <td
-                  class="max-w-[150px] truncate whitespace-nowrap overflow-hidden p-1 text-center"
-                ></td>
+          <formprom [(mostrarModal)]="mostrarModal"></formprom>
+          @if (carga()){
+          <loading></loading>
+          } @else {
 
-                <td class="whitespace-nowrap flex justify-center p-1">
-                  <button
-                    class="flex items-center justify-center w-[36px] h-[21px] bg-[#4ab763] rounded-[8px] mr-[3px]"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="13"
-                      height="13"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.5 0A6.507 6.507 0 0 0 0 6.5C0 10.084 2.916 13 6.5 13S13 10.084 13 6.5 10.084 0 6.5 0Zm0 2.665a.845.845 0 1 1 0 1.69.845.845 0 0 1 0-1.69Zm1.56 7.345H5.2a.52.52 0 0 1 0-1.04h.91V6.11h-.52a.52.52 0 0 1 0-1.04h1.04a.52.52 0 0 1 .52.52v3.38h.91a.52.52 0 0 1 0 1.04Z"
-                        fill="#3B3D3E"
-                      />
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <tabla
+            [datosTabla]="promociones()"
+            titulo="promocion"
+            acciones="Visualizar"
+          ></tabla>
+          }
         </div>
       </div>
     </div>
@@ -106,4 +85,52 @@ import { Presentation } from "../../components/admin/presentation.component";
 })
 export class PromotionsPage {
   public mostrarModal = signal<boolean>(false);
+  //estado de carga
+  public carga = signal<boolean>(true);
+
+  public servicePromociones = inject(PromocionesService);
+
+  public busqueda = signal<string>('');
+
+  //variable que almacena datos filtrados de barra de busqueda
+  public datosBuscados = linkedSignal<promocion[]>(() => {
+    const datosPromociones = this.promociones();
+    if (this.busqueda() !== '') {
+      return datosPromociones.filter((registro) =>
+        Object.values(registro).some((valor) =>
+          valor.toString().toLowerCase().includes(this.busqueda().toLowerCase())
+        )
+      );
+    }
+    return datosPromociones;
+  });
+
+  //variable que almacena lo que traera del backend
+  public promociones = signal<promocion[]>([]);
+
+  public datosPromociones = new FormGroup({
+    //id : number,
+    nombre: new FormControl('', [Validators.required]),
+    apellido: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+  });
+
+  //consumo de endpoint de usuarios
+  constructor(
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
+  ) {
+    this.servicePromociones
+      .obtener()
+      .subscribe({
+        next: (respuesta: any) => {
+          this.promociones.set(respuesta.promociones);
+          this.datosBuscados.set(respuesta.promociones);
+          console.log(respuesta.promociones);
+        },
+      })
+      .add(() => {
+        this.carga.set(false);
+      }); //cambia estado de carga;
+  }
 }

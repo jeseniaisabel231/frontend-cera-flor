@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { usuario } from '../../app/interfaces/usuario.interface';
+import { venta } from '../../app/interfaces/venta.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UsuariosService {
+export class VentasService {
   private urlBackend = 'https://tesis-ecommerce.onrender.com';
   private http = inject(HttpClient);
 
   obtener() {
-    return this.http.get<usuario[]>(`${this.urlBackend}/api/admin/clientes`, {
+    return this.http.get<venta[]>(`${this.urlBackend}/api/ventas`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
   }

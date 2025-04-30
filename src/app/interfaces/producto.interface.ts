@@ -1,5 +1,5 @@
 export interface producto{
-    id_categoria : number,
+    id_categoria : {descripcion: string, imagen: string, nombre: string},
     nombre: string,
     descripcion: string,
     beneficios: string,

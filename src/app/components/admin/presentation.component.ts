@@ -1,7 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
-export type TituloForms =
+export type TituloDashboard =
   | 'Dashboard'
   | 'Usuarios'
   | 'Productos y catálogo'
@@ -22,7 +22,7 @@ export type TituloForms =
   `,
 })
 export class Presentation {
-  public titulo = input.required<TituloForms>();
+  public titulo = input.required<TituloDashboard>();
 
   public tiempoActual: string = '';
   public saludo: string = '';

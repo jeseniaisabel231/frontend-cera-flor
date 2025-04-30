@@ -1,18 +1,24 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, input, model, output, signal } from '@angular/core';
+import {
+  Component,
+  input,
+  model,
+  output,
+  signal,
+  computed,
+  linkedSignal,
+} from '@angular/core';
 import { usuario } from '../../interfaces/usuario.interface';
-import {  venta } from '../../interfaces/venta.interface';
+import { venta } from '../../interfaces/venta.interface';
 import { promocion } from '../../interfaces/promocion.interface';
-import { producto } from '../../interfaces/producto.interface';
 import { FormGroup } from '@angular/forms';
-import { Actions } from './formproduct.component';
+import { Actions, ModalComponent, TituloForms } from './modal.component';
 
-
-export type DatosTabla = usuario | venta  | promocion | producto; //representacion de la clave
+export type DatosTabla = usuario | venta | promocion; //representacion de la clave
 
 @Component({
   selector: 'tabla',
-  imports: [TitleCasePipe],
+  imports: [TitleCasePipe, ModalComponent],
   template: `
     <table
       class="text-[14px] mt-6 table-auto border-collapse border-y-[2px] border-[#d5d6d6] w-full"
@@ -34,7 +40,15 @@ export type DatosTabla = usuario | venta  | promocion | producto; //representaci
           <td
             class="max-w-[150px] truncate whitespace-nowrap overflow-hidden p-1 text-center"
           >
+            @if(columna.toString() === 'cliente_id'){
+
+            {{ nombreCliente(fila[columna]) }}
+            }@else if(columna.toString() === 'productos'){
+
+            {{ producto(fila[columna]) }}
+            }@else {
             {{ fila[columna] }}
+            }
           </td>
           }
 
@@ -60,37 +74,46 @@ export type DatosTabla = usuario | venta  | promocion | producto; //representaci
         }
       </tbody>
     </table>
+
+    <modal
+      [(mostrarModal)]="mostrarModal"
+      [titulo]="titulo()"
+      [verDatos]="datosMostrar()"
+      [acciones]="acciones()"
+    ></modal>
   `,
 })
 export class TablaComponent {
   public mostrarModal = signal<boolean>(false);
-  public desabilitado = signal<boolean>(false);
-  public idAcciones = signal<number>(1);
-
-  //variable para ver los cambios de la tabla
-  public cambioEliminar = output<number>();
+  public titulo = input.required<TituloForms>();
 
   //datos que van a llegar a la tabla
   public datosTabla = model<DatosTabla[]>(); //input es tipo DatosTabla
 
-  public datosAlmacenados = input<FormGroup>();
+  public datosMostrar = linkedSignal<DatosTabla>(
+    () => this.datosTabla()?.[0] ?? ({} as DatosTabla)
+  ); //input es tipo DatosTabla
 
   public servicioEliminar = input<any>();
 
-  public acciones = signal<Actions>('Actualizar');
+  public acciones = signal<Actions>('Visualizar');
   public columnas = computed(
     () => Object.keys(this.datosTabla()?.[0] ?? []) as (keyof DatosTabla)[]
   );
 
   //visualizado
   public verFormulario(datos: DatosTabla) {
+    this.datosMostrar.set(datos);
     this.mostrarModal.set(true);
-    this.desabilitado.set(true);
     this.acciones.set('Visualizar'); //se utiliza .set cuando se modifica el valor
-    this.datosAlmacenados()?.patchValue(datos);
+  }
+  public nombreCliente(usuario: any): string {
+    return `${usuario.nombre} ${usuario.apellido}`;
+  }
+  public producto(producto: any): number {
+    return producto.length;
+  }
+  public productos(productos: any): any[] {
+    return productos.map((item: any) => item.producto_id);
   }
 }
-function computed(arg0: () => (keyof DatosTabla)[]) {
-  throw new Error('Function not implemented.');
-}
-

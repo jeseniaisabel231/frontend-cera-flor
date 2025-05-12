@@ -5,7 +5,6 @@ export interface registro{
     email: string,
     genero: string,
     password: string,
-    confirmarPassword: string
 }
 export interface recuperarContrasena{
     email: string,

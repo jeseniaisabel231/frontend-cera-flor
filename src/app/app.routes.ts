@@ -7,11 +7,14 @@ import { UsersPage } from './pages/admin/users.page';
 import { ProductsPage } from './pages/admin/products.page';
 import { ShoppingPage } from './pages/admin/shopping.page';
 import { PromotionsPage } from './pages/admin/promotions.page';
+import { RecoverPasswordPage } from './pages/recoverpassword.page';
 
 export const routes: Routes = [
   { path: 'iniciar-sesion', component: LoginPage },
   { path: 'registro', component: RegisterPage },
   { path: 'inicio', component: HomePage },
+  { path: 'recuperar-contrasena', component: RecoverPasswordPage }, // Ruta única
+
   {
     path: 'admin',
     children: [
@@ -20,6 +23,8 @@ export const routes: Routes = [
       { path: 'productos', component: ProductsPage },
       { path: 'ventas', component: ShoppingPage },
       { path: 'promociones', component: PromotionsPage },
+      
     ],
-  },
+  },{path: '**', redirectTo: 'registro', pathMatch: 'full'},
+
 ];

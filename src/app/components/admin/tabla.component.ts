@@ -40,13 +40,19 @@ export type DatosTabla = usuario | venta | promocion; //representacion de la cla
           <td
             class="max-w-[150px] truncate whitespace-nowrap overflow-hidden p-1 text-center"
           >
-            @if(columna.toString() === 'cliente_id'){
+            @if(columna === 'cliente_id'){
 
             {{ nombreCliente(fila[columna]) }}
-            }@else if(columna.toString() === 'productos'){
+            }@else if(columna === 'productos'){
 
             {{ producto(fila[columna]) }}
-            }@else {
+            }@else if (columna==='imagen'){
+            <img
+              class="w-[50px] h-[50px] rounded-full"
+              src="{{ fila[columna] }}"
+              alt=""
+            />
+            } @else {
             {{ fila[columna] }}
             }
           </td>
@@ -97,9 +103,22 @@ export class TablaComponent {
   public servicioEliminar = input<any>();
 
   public acciones = signal<Actions>('Visualizar');
-  public columnas = computed(
-    () => Object.keys(this.datosTabla()?.[0] ?? []) as (keyof DatosTabla)[]
-  );
+
+  public columnasMostrar = input<(keyof DatosTabla)[]>();
+
+  // En TablaComponent
+  public columnas = computed(() => {
+    const todasLasColumnas = Object.keys(
+      this.datosTabla()?.[0] ?? []
+    ) as (keyof DatosTabla)[];
+    // Excluir las columnas que no quieres mostrar
+    return todasLasColumnas.filter(
+      (columna) =>
+        !['telefono', 'cedula', 'direccion', 'fecha_nacimiento', 'imagen_id', '__v', '_id', 'confirmEmail'].includes(
+          columna
+        )
+    );
+  });
 
   //visualizado
   public verFormulario(datos: DatosTabla) {

@@ -121,7 +121,9 @@ import { AuthService } from '../../services/auth.service';
               </div>
             </div>
             <div class="text-end mt-2">
-              <a class="hover:underline" href="">¿Olvidaste tu contraseña?</a>
+              <a class="hover:underline" routerLink="/recuperar-contrasena">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
           </div>
 
@@ -213,27 +215,35 @@ export class LoginPage {
       Validators.required,
     ]),
   });
+
+  
   //crear un metodo para utilizar cada vez que se presiona un boton
   onSubmit() {
-    console.log(this.formulario.value);
     if (this.formulario.valid) {
       this.carga.set(true);
-      //metodo creado en el authservice(login)
+      
       this.serviceAuth
         .login(this.formulario.value.email!, this.formulario.value.password!)
         .subscribe({
           next: (response: any) => {
-            this.serviceRouter.navigate(['/admin/dashboard']); //me redireccion a la pantalla de materias, si la peticion fue exitosa
-            console.log(response);
+            const userEmail = this.formulario.value.email!;
+            
+            // Lista de correos de administradores (podrías obtenerla del backend también)
+            const adminEmails = ['estefi2000ms2@gmail.com'];
+            
+            if (adminEmails.includes(userEmail.toLowerCase())) {
+              this.serviceRouter.navigate(['/admin/dashboard']);
+            } else {
+              this.serviceRouter.navigate(['/inicio']);
+            }
+            
             this.carga.set(false);
           },
           error: ({ error }: { error: any }) => {
-            console.log(error);
-            this.validacion.set(error.msg); //error.response y este contiene el mensaje
+            this.validacion.set(error.msg);
             this.carga.set(false);
           },
         });
-      //obtiene los datos de login y da a entender! que no sera vacio
     } else {
       this.validacion.set('Complete correctamente los campos');
       this.carga.set(false);

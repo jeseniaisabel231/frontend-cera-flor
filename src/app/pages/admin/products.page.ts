@@ -8,8 +8,11 @@ import { producto } from '../../interfaces/producto.interface';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Action } from 'rxjs/internal/scheduler/Action';
+import { Actions } from '../../components/admin/modal.component';
+import { ToastComponent } from "../../components/toast.component";
 @Component({
-  imports: [Navegacion, FormProducto, Presentation, Loading],
+  imports: [Navegacion, FormProducto, Presentation, Loading, ToastComponent],
   template: `
     <div class="bg-[#efecff] w-full flex min-h-dvh">
       <navegacion></navegacion>
@@ -52,7 +55,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
             </div>
             <button
               class="flex items-center gap-3 px-4 h-[40px] bg-[#41D9B5] rounded-[10px] "
-              (click)="mostrarModal.set(true)"
+              (click)="verFormulario()"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +72,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
               Añadir producto
             </button>
           </div>
-          <formulario [(mostrarModal)]="mostrarModal"></formulario>
+          <formulario
+            [(mostrarModal)]="mostrarModal"
+            [acciones]="accionAsignada()"
+            [servicioProductos]="serviceProductos"
+            [mostrarDatos]="enviarDatos()"
+            [idRegistro]="idRegistro()"
+          ></formulario>
 
           <!--Lista de productos en cartas -->
 
@@ -83,28 +92,58 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
             <div class="bg-white   flex flex-col w-[240px]">
               <img
-                [src]="item.imagen"
+                [src]="item?.imagen"
                 alt=""
                 class="w-full h-48 object-cover rounded-t-xl"
               />
               <div
                 class="p-4 flex flex-col flex-grow border border-gray-300 rounded-b-xl"
               >
-                <p class="text-sm text-gray-400" >{{item.id_categoria.nombre}}</p>
-                <h3 class="text-lg font-semibold ">{{item.nombre}}</h3>
-                <p class="text-md font-bold mt-2">$ {{item.precio}}</p>
+                <p class="text-sm text-gray-400">
+                  {{ item?.id_categoria?.nombre }}
+                </p>
+                <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
+                <p class="text-md font-bold mt-2">$ {{ item?.precio }}</p>
                 <p class="text-sm text-green-600 flex items-center mt-1">
                   <span class="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
-                  {{item.stock}} ejemplares disponibles
+                  {{ item?.stock }} ejemplares disponibles
                 </p>
                 <div class="flex justify-between items-center pt-4">
                   <button
-                    class="bg-indigo-400 text-white px-12 h-10 rounded-full hover:bg-indigo-500 w-auto"
+                    class="bg-green-400 text-white px-6 h-10 rounded-full hover:bg-green-500 w-auto"
+                    (click)="abrirFormulario(item)"
                   >
-                    Editar
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="26"
+                      height="26"
+                      viewBox="0 0 512 512"
+                    >
+                      <path
+                        fill="#3C3C3B"
+                        fill-rule="evenodd"
+                        d="M256 42.667c117.822 0 213.334 95.512 213.334 213.333c0 117.82-95.512 213.334-213.334 213.334c-117.82 0-213.333-95.513-213.333-213.334S138.18 42.667 256 42.667m21.38 192h-42.666v128h42.666zM256.217 144c-15.554 0-26.837 11.22-26.837 26.371c0 15.764 10.986 26.963 26.837 26.963c15.235 0 26.497-11.2 26.497-26.667c0-15.446-11.262-26.667-26.497-26.667"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="bg-indigo-400 text-white px-6 h-10 rounded-full hover:bg-indigo-500 w-auto" (click)="editarProducto(item)"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="26"
+                      height="26"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="#3C3C3B"
+                        d="M10 15q-.425 0-.712-.288T9 14v-2.425q0-.4.15-.763t.425-.637l8.6-8.6q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4t-.137.738-.438.662l-8.6 8.6q-.275.275-.637.438t-.763.162zm9.6-9.2 1.425-1.4-1.4-1.4L18.2 4.4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6.5q.35 0 .575.175t.35.45.087.55-.287.525l-4.65 4.65q-.275.275-.425.638T7 10.75V15q0 .825.588 1.412T9 17h4.225q.4 0 .763-.15t.637-.425L19.3 11.75q.25-.25.525-.288t.55.088.45.35.175.575V19q0 .825-.587 1.413T19 21z"
+                      />
+                    </svg>
                   </button>
                   <button
                     class="bg-red-400 text-white px-6  rounded-full hover:bg-red-500 h-10 "
+                    (click)="eliminarProducto(item._id)"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -124,40 +163,88 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
             </div>
             }
           </div>
+
           }
         </div>
+        
       </div>
     </div>
   `,
 })
 export class ProductsPage {
+
+  //variable que almacena el id de productos
+  public idRegistro = signal<string>('');
+
   public mostrarModal = signal<boolean>(false);
   //estado de carga
   public carga = signal<boolean>(true);
   public serviceProductos = inject(ProductosService);
   public busqueda = signal<string>('');
 
+  //variable para setear los datos en el formulario
+  public enviarDatos = signal<producto | null>(null);
+
+  //creacion de variable que almacenara la accion del formulario
+  public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
+
   //variable que almacena datos filtrados de barra de busqueda
   public datosBuscados = linkedSignal<producto[]>(() => {
     const datosProductos = this.productos();
     if (this.busqueda() !== '') {
-      return datosProductos.filter((registro) =>
+      const imprimir = datosProductos.filter((registro) =>
         Object.values(registro).some((valor) =>
           valor.toString().toLowerCase().includes(this.busqueda().toLowerCase())
         )
       );
+      console.log(imprimir);
+      return imprimir;
     }
+
     return datosProductos;
   });
   //variable que almacena lo que traera del backend
   public productos = signal<producto[]>([]);
-  public datosPromociones = new FormGroup({
+  public datosProductos = new FormGroup({
     //id : number,
+
     nombre: new FormControl('', [Validators.required]),
     apellido: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
+  //funcion para abrir el formulario con los datos visualizar o editar
+  public abrirFormulario(datos: producto) {
+    this.enviarDatos.set(datos);
+    this.mostrarModal.set(true);
+    this.accionAsignada.set('Visualizar'); //cambia el valor de la accion asignada al formulario
+  }
+
+  // Agrega estos métodos en tu ProductsPage
+  public editarProducto(datos: producto) {
+    this.enviarDatos.set(datos);
+    this.idRegistro.set(datos._id); // Establece el ID del producto a editar
+    this.mostrarModal.set(true);
+    this.accionAsignada.set('Actualizar'); // Cambia a modo edición
+  }
+  //metodo para ver el formulario de registro
+  public verFormulario() {
+    this.enviarDatos.set(null)
+    this.mostrarModal.set(true);
+    this.accionAsignada.set('Registrar'); //cambia el valor de la accion asignada al formulario
+  }
+
+  //metodo para eliminar un producto cuando doy click al boton
+  public eliminarProducto(id: string) {
+    this.serviceProductos.eliminar(id).subscribe({
+      next: (respuesta) => {
+        console.log(respuesta);
+        this.productos.set(
+          this.productos().filter((producto) => producto._id !== id)
+        );
+      },
+    });
+  }
   //consumo de endpoint de usuarios
   constructor(
     private router: Router,
@@ -176,4 +263,6 @@ export class ProductsPage {
         this.carga.set(false);
       }); //cambia estado de carga;
   }
+
+
 }

@@ -1,8 +1,10 @@
 export interface producto{
+    _id: string,
     id_categoria : {descripcion: string, imagen: string, nombre: string},
     nombre: string,
     descripcion: string,
     beneficios: string,
+    caracteristicas: string,
     precio: string,
     stock: string,
     imagen: string,

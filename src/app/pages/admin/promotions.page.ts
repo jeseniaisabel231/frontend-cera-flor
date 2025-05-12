@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { PromocionesService } from '../../../services/admin/promociones.service';
 import { FormProm } from "../../components/admin/formprom.component";
+import { Actions } from '../../components/admin/modal.component';
+import { producto } from '../../interfaces/producto.interface';
 @Component({
   imports: [Navegacion, Presentation, Loading, TablaComponent, FormProm],
   template: `
@@ -67,7 +69,7 @@ import { FormProm } from "../../components/admin/formprom.component";
               Añadir promoción
             </button>
           </div>
-          <formprom [(mostrarModal)]="mostrarModal"></formprom>
+          <formprom [(mostrarModal)]="mostrarModal" [acciones]="accionAsignada()" [servicioPromocion]="servicePromociones" [mostrarDatos]="enviarDatos()" [idRegistro]="idRegistro()"></formprom>
           @if (carga()){
           <loading></loading>
           } @else {
@@ -84,11 +86,18 @@ import { FormProm } from "../../components/admin/formprom.component";
   `,
 })
 export class PromotionsPage {
+   //variable que almacena el id de productos
+   public idRegistro = signal<string>('');
   public mostrarModal = signal<boolean>(false);
   //estado de carga
   public carga = signal<boolean>(true);
 
   public servicePromociones = inject(PromocionesService);
+
+   //variable para setear los datos en el formulario
+    public enviarDatos = signal<producto | null>(null);
+
+  public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
 
   public busqueda = signal<string>('');
 

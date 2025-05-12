@@ -1,3 +1,4 @@
+//2 opcion
 import { Component, inject, signal } from '@angular/core';
 import { Headers } from '../components/header.component';
 import { Footeer } from '../components/footer.component';
@@ -56,12 +57,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                 id="nombre"
                 formControlName="nombre"
               />
-              @if (formRegistro.get('nombre')?.invalid &&
-              formRegistro.get('nombre')?.value) {
-              <small class="text-red-500">
-                El nombre no es válido (Ej: John)
-              </small>
-              }
+              <small class="text-red-500">{{ errores()['nombre'] }}</small>
             </div>
             <div class="relative mt-2 flex flex-col gap-2 w-full">
               <span class="font-medium pl-2">Apellido</span>
@@ -88,12 +84,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                 id="apellido"
                 formControlName="apellido"
               />
-              @if (formRegistro.get('apellido')?.invalid &&
-              formRegistro.get('apellido')?.value) {
-              <small class="text-red-500">
-                El apellido no es válido (Ej: Mata)
-              </small>
-              }
+              <small class="text-red-500">{{ errores()['apellido'] }}</small>
             </div>
           </div>
 
@@ -127,12 +118,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                 id="email"
                 formControlName="email"
               />
-              @if (formRegistro.get('email')?.invalid &&
-              formRegistro.get('email')?.value) {
-              <small class="text-red-500">
-                El formato del correo no es válido (Ej: correoexample.com)
-              </small>
-              }
+              <small class="text-red-500">{{ errores()['email'] }}</small>
             </div>
             <div class="mt-2 flex flex-col mb-2 w-full ">
               <label class="pl-3">Género</label>
@@ -165,7 +151,9 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               </div>
               @if (formRegistro.get('genero')?.invalid &&
               formRegistro.get('genero')?.touched) {
-              <small class="text-red-500 ">Seleccione un género</small>
+              <small class="text-red-500 ">
+                {{ errores()['genero'] || 'Seleccione un género' }}
+              </small>
               }
             </div>
           </div>
@@ -199,13 +187,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                 id="password"
                 formControlName="password"
               />
-              @if (formRegistro.get('password')?.invalid &&
-              formRegistro.get('password')?.value) {
-              <small class="text-red-500">
-                La contraseña debe tener al menos 8 caracteres, una letra
-                mayúscula, una letra minúscula, un número y un símbolo especial
-              </small>
-              }
+              <small class="text-red-400">{{ errores()['password'] }}</small>
 
               <svg
                 class="absolute right-4 inset-y-0 my-10 cursor-pointer"
@@ -336,7 +318,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
     <footeer></footeer>
   `,
 })
-export class RegisterPage {
+export class Register2Page {
   private serviceAuth = inject(AuthService);
   private serviceRouter = inject(Router); //para las rutas
 
@@ -380,25 +362,14 @@ export class RegisterPage {
 
   public formRegistro = new FormGroup(
     {
-      nombre: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.pattern('^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$'),
-      ]), //validacion de nombre y que no sea vacio: required
-      apellido: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.pattern('^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$'),
-      ]), //validacion de apellido y que no sea vacio: required
+      nombre: new FormControl('', [Validators.required]), //validacion de nombre y que no sea vacio: required
+      apellido: new FormControl('', [Validators.required]), //validacion de apellido y que no sea vacio: required
       genero: new FormControl<string | null>(null, [Validators.required]),
 
       email: new FormControl('', [Validators.email, Validators.required]), //valodacion de correo y que no sea vacio: required
       password: new FormControl('', [
         Validators.minLength(8),
         Validators.required,
-        Validators.pattern(
-          '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$'
-        ),
       ]),
       confirmarPassword: new FormControl('', [Validators.required]),
     },
@@ -414,7 +385,13 @@ export class RegisterPage {
 
     // Verificar validación antes de enviar
     if (this.formRegistro.invalid) {
-      this.validacion.set('Complete correctamente todos los campos');
+      if (this.formRegistro.hasError('mismatch')) {
+        this.validacion.set('Las contraseñas no coinciden');
+      } else if (!this.formRegistro.get('genero')?.invalid) {
+        this.validacion.set('Seleccione un género');
+      } else {
+        this.validacion.set('Complete correctamente todos los campos');
+      }
       this.carga.set(false);
       setTimeout(() => {
         this.validacion.set('');
@@ -461,14 +438,6 @@ export class RegisterPage {
       this.carga.set(false);
     }
     setTimeout(() => {
-      this.errores.set({
-        nombre: '',
-        apellido: '',
-        email: '',
-        genero: '',
-        password: '',
-        confirmarPassword: '',
-      });
       this.validacion.set('');
     }, 3000);
   }

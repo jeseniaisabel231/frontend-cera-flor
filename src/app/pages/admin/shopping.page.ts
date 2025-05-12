@@ -3,11 +3,16 @@ import { Navegacion } from '../../components/navegacion.component';
 import { Presentation } from '../../components/admin/presentation.component';
 import { venta } from '../../interfaces/venta.interface';
 import { VentasService } from '../../../services/admin/ventas.service';
-import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Loading } from "../../components/loading.component";
-import { TablaComponent } from "../../components/admin/tabla.component";
+import { Loading } from '../../components/loading.component';
+import { TablaComponent } from '../../components/admin/tabla.component';
 @Component({
   imports: [Navegacion, Presentation, Loading, TablaComponent, FormsModule],
   template: `
@@ -62,7 +67,7 @@ import { TablaComponent } from "../../components/admin/tabla.component";
 })
 export class ShoppingPage {
   //estado de carga
-  public carga = signal<boolean>(true);
+  public carga = signal<boolean>(false);
 
   public serviceVentas = inject(VentasService);
 
@@ -92,10 +97,7 @@ export class ShoppingPage {
   });
 
   //consumo de endpoint de usuarios
-  constructor(
-    private router: Router,
-    private breakpointObserver: BreakpointObserver
-  ) {
+  constructor() {
     this.serviceVentas
       .obtener()
       .subscribe({

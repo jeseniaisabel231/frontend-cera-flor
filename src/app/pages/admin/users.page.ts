@@ -26,11 +26,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
       >
         <presentation titulo="Usuarios" class="col-span-5"></presentation>
 
-        <!-- <div
-        class="col-span-7 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md"
-      >
         
-      </div> -->
         <div
           class="overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md "
         >
@@ -69,6 +65,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
             [datosTabla]="usuarios()" 
             titulo="usuario" 
             acciones="Visualizar"
+            [columnasMostrar]="[]"
             ></tabla>
             }
           </div>
@@ -110,8 +107,7 @@ export class UsersPage {
 
   //consumo de endpoint de usuarios
   constructor(
-    private router: Router,
-    private breakpointObserver: BreakpointObserver
+    
   ) {
     this.serviceUsuarios
       .obtener()

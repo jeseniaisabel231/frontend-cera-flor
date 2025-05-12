@@ -1,7 +1,19 @@
-import { Component, effect, ElementRef, model, viewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  input,
+  model,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Actions } from './modal.component';
 
 @Component({
   selector: 'formprom',
+  imports: [ReactiveFormsModule],
   template: `
     <dialog
       #modal
@@ -27,18 +39,54 @@ import { Component, effect, ElementRef, model, viewChild } from '@angular/core';
       </div>
 
       <!-- Imagen + info -->
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-x-4 py-2 px-7">
-        <!-- Imagen -->
-        <div
-          class="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-xl h-66 w-full"
-        >
-          <label
-            class="block text-center text-sm font-medium text-gray-500 cursor-pointer"
-          >
-            <div class="mb-2 text-base">Subir imagen</div>
-            <input type="file" class="hidden" />
-            <div class="text-sm text-gray-400">Seleccionar archivo</div>
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-x-4 py-2 px-7" (ngSubmit)="onSubmit()"
+      [formGroup]="formulario">
+        
+        <div class="h-full">
+          <label for="foto" class="mb-2">
+            Imagen del producto
+
+            <div
+              class="flex flex-col items-center border border-gray-300  rounded-xl h-47 justify-center"
+            >
+              @if(imagePreview !== null) {
+
+              <img
+                [src]="imagePreview"
+                alt=""
+                class="w-full h-full rounded-xl"
+              />
+              }@else {
+
+              <div class="flex flex-col items-center gap-2 cursor-pointer">
+                <svg
+                  class=""
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#3C3C3B"
+                    d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
+                  />
+                </svg>
+                <span>Subir una imagen</span>
+              </div>
+              }
+
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                id="foto"
+                class="text-sm"
+                (change)="onFileChange($event)"
+              />
+            </div>
+            
           </label>
+          <small class="text-red-700 font-medium">{{ errores().imagen }}</small>
         </div>
 
         <!-- Título y descripción -->
@@ -54,42 +102,16 @@ import { Component, effect, ElementRef, model, viewChild } from '@angular/core';
               class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-morado-400"
               placeholder="Ej: 20% de descuento en jabones"
             />
+            <small class="text-red-700 font-medium">
+              {{ errores().nombre }}
+            </small>
           </div>
 
-          <!-- Descripción -->
-          <div>
-            <label class="block text-sm font-medium mb-1" for="descripcion">
-              Descripción
-            </label>
-            <textarea
-              id="descripcion"
-              class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2  focus:ring-morado-400"
-              rows="6"
-              placeholder="Describe la promoción, condiciones o productos incluidos..."
-            ></textarea>
-          </div>
+          
+          
         </div>
+
         
-
-        <!-- Fechas -->
-        <div class="grid grid-cols-2 gap-6 mt-8">
-          <div>
-            <label class="block mb-1" for="fechaInicio">Fecha de inicio</label>
-            <input
-              type="date"
-              id="fechaInicio"
-              class="w-full border border-gray-300 rounded-lg text-base p-2 focus:outline-none focus:ring-2  focus:ring-morado-400 "
-            />
-          </div>
-          <div>
-            <label class="block mb-1" for="fechaFin">Fecha de fin</label>
-            <input
-              type="date"
-              id="fechaFin"
-              class="w-full border border-gray-300 rounded-lg text-base p-2 focus:outline-none focus:ring-2  focus:ring-morado-400 "
-            />
-          </div>
-        </div>
 
         <!-- Botón -->
         <div class="md:col-span-2 flex justify-end gap-4 mt-6 pb-4">
@@ -111,18 +133,158 @@ import { Component, effect, ElementRef, model, viewChild } from '@angular/core';
 })
 export class FormProm {
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
+  public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarModal = model<boolean>(false);
+
+  public formulario = new FormGroup({
+    imagen: new FormControl<File | null>(null),
+    nombre: new FormControl(''),
+    descuento: new FormControl(''),
+    producto: new FormControl(''),
+    fechaInicio: new FormControl(''),
+    fechaFin: new FormControl(''),
+  });
+
+  public toFormData(): FormData {
+    const formData = new FormData();
+    Object.entries(this.formulario.value).forEach(([key, value]) => {
+      if (value instanceof Array) {
+        value.forEach((item) => {
+          console.log('Este es el item', item);
+          formData.append(key + '[]', item);
+        });
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
+    });
+    return formData;
+  }
+
+  public servicioPromocion = input<any>();
+
+  public acciones = input.required<Actions>();
+
+  //objeto que almacena los eerores del formulario
+  public errores = signal({
+    nombre: '',
+    imagen: '',
+    
+  });
+
+  public cambioEmitir = output<any>();
+
+  public idRegistro = input<string>();
+
+  //variable para almacenar los valores que mostrar en formulario en product.page
+  public mostrarDatos = input<any>();
 
   public close() {
     this.mostrarModal.set(false);
+    this.alerta()?.nativeElement.close();
   }
   constructor() {
+    this.alerta()?.nativeElement.showModal(); //muestra el modal de alerta
+    // Agrega este effect al constructor del FormProducto
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();
       } else {
         this.modal()?.nativeElement.close();
       }
+
+      // Aquí manejamos la carga de datos cuando es para visualizar/editar
+      if (this.mostrarDatos() && this.acciones() !== 'Registrar') {
+        const datos = this.mostrarDatos();
+        this.formulario.patchValue({
+          nombre: datos.nombre,
+          imagen: datos.imagen,
+         
+        });
+
+        // Cargar la imagen preview si existe
+        if (datos.imagen) {
+          this.imagePreview = datos.imagen;
+        }
+
+        // Deshabilitar campos si es solo visualización
+        if (this.acciones() === 'Visualizar') {
+          this.formulario.disable();
+        } else {
+          this.formulario.enable();
+        }
+      } else if (this.acciones() === 'Registrar') {
+        this.formulario.reset();
+        this.formulario.enable();
+        this.imagePreview = null;
+      }
     });
+  }
+
+  onSubmit() {
+    console.log(this.formulario?.value);
+    if (this.formulario?.invalid) {
+      alert('Formulario inválido');
+      return;
+    }
+    const formData = this.toFormData(); //convierte el formulario a FormData
+    //vaciat lo errores
+    this.errores.set({
+      nombre: '',
+      imagen: '',
+      
+    });
+    
+    //fun cion para crear un registro
+    if (this.acciones() === 'Registrar') {
+      this.servicioPromocion()
+        .registrar(formData) //envia el formulario al backend
+        .subscribe({
+          next: (registroCreado: any) => {
+            this.cambioEmitir.emit(registroCreado);
+            this.alerta()?.nativeElement.showModal(); //muestra el modal de alerta
+            this.formulario?.reset(); //borra los datos almacenad en registrar formulario
+          },
+          //funcion para manejar errores
+          //si el backend devuelve un error, se setea en el objeto errores
+          error: ({ error }: { error: any }) => {
+            const { details = [] } = error;
+            details.forEach((detail: any) => {
+              const { path, msg } = detail;
+              this.errores.update((prev) => ({ ...prev, [path]: msg })); //setea los errores
+            });
+            console.log(error);
+          },
+        });
+    }else if(this.acciones() ==='Actualizar') {
+      //funcion para actualizar registro
+      this.servicioPromocion()
+        .editar(this.idRegistro(), this.formulario?.value)
+        .subscribe({
+          next: (registroActualizado: any) => {
+            this.cambioEmitir.emit(registroActualizado);
+            alert('El registro se ha actualizado correctamente');
+            this.formulario?.reset(); //borra los datos almacenad en registrar formulario
+            this.close();
+          },
+          error: ({ error }: { error: any }) => {
+            alert(error.response);
+          },
+        });
+    }
+  }
+
+
+  //Funcion que permite visualizar una imagen previa de la promocion
+  public imagePreview: string | ArrayBuffer | null = null;
+  public onFileChange(event: any) {
+    if (event.target.files && event.target.files.length) {
+      const [file] = event.target.files;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => (this.imagePreview = reader.result);
+      this.formulario.patchValue({
+        imagen: file,
+      });
+    }
   }
 }

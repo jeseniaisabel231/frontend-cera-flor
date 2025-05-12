@@ -39,7 +39,7 @@ import { Presentation } from "../../components/admin/presentation.component";
               />
             </svg>
             <p class="text-4xl font-bold">
-              64
+              2
               <span class="text-base font-normal ml-1">usuarios</span>
             </p>
           </div>
@@ -61,7 +61,7 @@ import { Presentation } from "../../components/admin/presentation.component";
               />
             </svg>
             <p class="text-4xl font-bold">
-              16
+              2
               <span class="text-base font-normal ml-1">productos</span>
             </p>
           </div>

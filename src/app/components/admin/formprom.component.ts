@@ -8,7 +8,12 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Actions } from './modal.component';
 
 @Component({
@@ -19,7 +24,7 @@ import { Actions } from './modal.component';
       #modal
       class="m-auto bg-white backdrop:bg-gris-600/25 backdrop:backdrop-blur-[2px] rounded-[10px] text-[#3C3C3B]"
     >
-      <div class="flex items-center py-5 justify-between px-7">
+      <div class="flex items-center pt-5 justify-between px-7">
         <h1 class="text-lg text-[#3C3C3B] font-medium mb-6">
           Agregar promoción
         </h1>
@@ -39,11 +44,13 @@ import { Actions } from './modal.component';
       </div>
 
       <!-- Imagen + info -->
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-x-4 py-2 px-7" (ngSubmit)="onSubmit()"
-      [formGroup]="formulario">
-        
-        <div class="h-full">
-          <label for="foto" class="mb-2">
+      <form
+        class="grid grid-cols-1 px-7"
+        (ngSubmit)="onSubmit()"
+        [formGroup]="formulario"
+      >
+        <div class="col-span-1 h-full mb-4">
+          <label for="foto" class="">
             Imagen del producto
 
             <div
@@ -54,7 +61,7 @@ import { Actions } from './modal.component';
               <img
                 [src]="imagePreview"
                 alt=""
-                class="w-full h-full rounded-xl"
+                class="w-full h-full rounded-xl object-cover"
               />
               }@else {
 
@@ -84,13 +91,12 @@ import { Actions } from './modal.component';
                 (change)="onFileChange($event)"
               />
             </div>
-            
           </label>
           <small class="text-red-700 font-medium">{{ errores().imagen }}</small>
         </div>
 
         <!-- Título y descripción -->
-        <div class="flex flex-col gap-6 w-full">
+        <div class="col-span-2 gap-6 w-full">
           <!-- Título -->
           <div>
             <label class="block text-sm font-medium mb-1" for="titulo">
@@ -101,17 +107,13 @@ import { Actions } from './modal.component';
               id="titulo"
               class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-morado-400"
               placeholder="Ej: 20% de descuento en jabones"
+              formControlName="nombre"
             />
             <small class="text-red-700 font-medium">
               {{ errores().nombre }}
             </small>
           </div>
-
-          
-          
         </div>
-
-        
 
         <!-- Botón -->
         <div class="md:col-span-2 flex justify-end gap-4 mt-6 pb-4">
@@ -123,6 +125,7 @@ import { Actions } from './modal.component';
           <button
             type="button"
             class="bg-gray-300 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-400 transition"
+            (click)="close()"
           >
             Cancelar
           </button>
@@ -139,23 +142,12 @@ export class FormProm {
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null),
     nombre: new FormControl(''),
-    descuento: new FormControl(''),
-    producto: new FormControl(''),
-    fechaInicio: new FormControl(''),
-    fechaFin: new FormControl(''),
   });
 
   public toFormData(): FormData {
     const formData = new FormData();
     Object.entries(this.formulario.value).forEach(([key, value]) => {
-      if (value instanceof Array) {
-        value.forEach((item) => {
-          console.log('Este es el item', item);
-          formData.append(key + '[]', item);
-        });
-      } else if (value !== null && value !== undefined) {
-        formData.append(key, value);
-      }
+      formData.append(key, value as any);
     });
     return formData;
   }
@@ -168,7 +160,6 @@ export class FormProm {
   public errores = signal({
     nombre: '',
     imagen: '',
-    
   });
 
   public cambioEmitir = output<any>();
@@ -183,8 +174,6 @@ export class FormProm {
     this.alerta()?.nativeElement.close();
   }
   constructor() {
-    this.alerta()?.nativeElement.showModal(); //muestra el modal de alerta
-    // Agrega este effect al constructor del FormProducto
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();
@@ -198,7 +187,6 @@ export class FormProm {
         this.formulario.patchValue({
           nombre: datos.nombre,
           imagen: datos.imagen,
-         
         });
 
         // Cargar la imagen preview si existe
@@ -213,9 +201,16 @@ export class FormProm {
           this.formulario.enable();
         }
       } else if (this.acciones() === 'Registrar') {
+        if (this.mostrarDatos()) {
+          console.log(this.mostrarDatos());
+          this.formulario.setValue({
+            nombre: '',
+            imagen: null,
+          });
+        }
         this.formulario.reset();
         this.formulario.enable();
-        this.imagePreview = null;
+        this.imagePreview = null; // Reiniciar la vista previa de la imagen
       }
     });
   }
@@ -231,16 +226,14 @@ export class FormProm {
     this.errores.set({
       nombre: '',
       imagen: '',
-      
     });
-    
+
     //fun cion para crear un registro
     if (this.acciones() === 'Registrar') {
       this.servicioPromocion()
         .registrar(formData) //envia el formulario al backend
         .subscribe({
-          next: (registroCreado: any) => {
-            this.cambioEmitir.emit(registroCreado);
+          next: () => {
             this.alerta()?.nativeElement.showModal(); //muestra el modal de alerta
             this.formulario?.reset(); //borra los datos almacenad en registrar formulario
           },
@@ -255,14 +248,13 @@ export class FormProm {
             console.log(error);
           },
         });
-    }else if(this.acciones() ==='Actualizar') {
+    } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
       this.servicioPromocion()
         .editar(this.idRegistro(), this.formulario?.value)
         .subscribe({
           next: (registroActualizado: any) => {
-            this.cambioEmitir.emit(registroActualizado);
-            alert('El registro se ha actualizado correctamente');
+            this.cambioEmitir.emit(registroActualizado); //emite el evento de cambio
             this.formulario?.reset(); //borra los datos almacenad en registrar formulario
             this.close();
           },
@@ -272,7 +264,6 @@ export class FormProm {
         });
     }
   }
-
 
   //Funcion que permite visualizar una imagen previa de la promocion
   public imagePreview: string | ArrayBuffer | null = null;

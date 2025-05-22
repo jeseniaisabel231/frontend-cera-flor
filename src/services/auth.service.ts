@@ -54,7 +54,7 @@ export class AuthService {
         })
       );
   }
-  recuperarPassword(email: string): Observable<any> {
+  recuperarContrasenia(email: string): Observable<any> {
     return this.http.post<any>(`${this.urlBackend}/api/recuperar-contrasenia`, {
       email,
     });

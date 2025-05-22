@@ -9,9 +9,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 
 @Component({
-  imports: [Headers, Footeer, RouterLink, ReactiveFormsModule],
+  imports: [
+    Headers,
+    Footeer,
+    RouterLink,
+    ReactiveFormsModule,
+    ModalAvisosComponent,
+  ],
 
   template: `
     <headers></headers>
@@ -27,8 +34,14 @@ import { AuthService } from '../../services/auth.service';
           </h1>
 
           <div class="w-2/3 mt-6">
-            <span class="font-medium">Correo electronico</span>
+            <span class="font-medium">
+              Correo electrónico
+              <span class="text-red-500">*</span>
+            </span>
             <div class="relative mt-2">
+              @let emailInvalido = formulario.get('email')?.invalid &&
+              formulario.get('email')?.value || error().email;
+
               <svg
                 class="absolute left-3 inset-y-0 my-auto"
                 xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +51,9 @@ import { AuthService } from '../../services/auth.service';
               >
                 <path
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="
+                    emailInvalido ? 'stroke-red-600' : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
@@ -46,18 +61,36 @@ import { AuthService } from '../../services/auth.service';
                 />
               </svg>
               <input
-                class="border-[#878787] bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
+                class="bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] "
+                [class]="
+                  emailInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B] '
+                "
                 type="email"
                 placeholder="ejemplo@gmail.com"
                 id="email"
                 name="email"
                 formControlName="email"
+                (input)="borrarError()"
               />
             </div>
+            @if (error().email) {
+            <small class="text-red-600">Este campo es obligatorio.</small>
+            } @else if(emailInvalido) {
+            <small class="text-red-600">
+              El formato del correo electrónico no es válido.
+            </small>
+
+            }
           </div>
 
           <div class="w-2/3 ">
-            <span class="font-medium">Contraseña</span>
+            @let passwordInvalido = error().password;
+            <span class="font-medium">
+              Contraseña
+              <span class="text-red-500">*</span>
+            </span>
             <div class="relative mt-2">
               <svg
                 class="absolute left-3 inset-y-0 my-auto"
@@ -68,6 +101,9 @@ import { AuthService } from '../../services/auth.service';
               >
                 <g
                   fill="none"
+                  [class]="
+                    passwordInvalido ? 'stroke-red-600' : 'stroke-[#3C3C3B]'
+                  "
                   stroke="#3C3C3B"
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -78,13 +114,20 @@ import { AuthService } from '../../services/auth.service';
                 </g>
               </svg>
               <input
-                class="border-[#878787] bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] outline-[#3C3C3B] "
+                class=" bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px]"
                 [type]="passwordVisible() ? 'text' : 'password'"
+                [class]="
+                  passwordInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B] '
+                "
                 placeholder="Contraseña"
                 id="password"
                 name="password"
                 formControlName="password"
+                (input)="borrarError()"
               />
+
               <div
                 class="flex items-center justify-center absolute right-3 inset-y-0"
               >
@@ -120,6 +163,9 @@ import { AuthService } from '../../services/auth.service';
                 }
               </div>
             </div>
+            @if (passwordInvalido) {
+            <small class="text-red-600">Este campo es obligatorio.</small>
+            }
             <div class="text-end mt-2">
               <a class="hover:underline" routerLink="/recuperar-contrasena">
                 ¿Olvidaste tu contraseña?
@@ -127,12 +173,12 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </div>
 
-          <p class="mx-auto text-[14px] text-red-700 mt-4">
+          <small class="mx-auto text-red-600 mt-4">
             {{ validacion() }}
-          </p>
+          </small>
 
           <button
-            class="mt-8 relative inline-flex h-[46px] overflow-hidden rounded-[15px] p-[1px] w-2/3 "
+            class="relative inline-flex h-[46px] overflow-hidden rounded-[15px] p-[1px] w-2/3 "
           >
             <span
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
@@ -191,6 +237,13 @@ import { AuthService } from '../../services/auth.service';
           </a>
         </aside>
       </section>
+      <app-modal
+        [(mostrarModal)]="mostrarModal"
+        [titulo]="titulo()"
+        [mensaje]="mensaje()"
+        [tipo]="tipoRespuesta()"
+        (closed)="redirigirSegunRol()"
+      ></app-modal>
     </main>
     <footeer></footeer>
   `,
@@ -198,6 +251,13 @@ import { AuthService } from '../../services/auth.service';
 export class LoginPage {
   private serviceAuth = inject(AuthService);
   private serviceRouter = inject(Router); //para las rutas
+
+  //modal
+  public mostrarModal = signal<boolean>(false);
+  public titulo = signal('');
+  public mensaje = signal('');
+  //variable para el formulario de recuperar contrasena cuando este sea exitoso
+  public tipoRespuesta = signal<'exito' | 'error'>('exito');
 
   //variable del ojito
   public passwordVisible = signal<boolean>(false);
@@ -207,6 +267,13 @@ export class LoginPage {
 
   //para la contrasena o email
   public validacion = signal<string>('');
+  public rolUsuario = signal<'admin' | 'user' | null>(null);
+
+  //objeto que almacena los errores
+  public error = signal<any>({
+    email: '',
+    password: '',
+  });
 
   public formulario = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]), //valodacion de correo y que no sea vacio: required
@@ -215,41 +282,69 @@ export class LoginPage {
       Validators.required,
     ]),
   });
+  //metodo para borrar errores del cuando se escribe un nuevo valor
+  borrarError() {
+    this.error.set({
+      email: '',
+      password: '',
+    });
+  }
 
-  
   //crear un metodo para utilizar cada vez que se presiona un boton
   onSubmit() {
     if (this.formulario.valid) {
       this.carga.set(true);
-      
+
       this.serviceAuth
         .login(this.formulario.value.email!, this.formulario.value.password!)
         .subscribe({
           next: (response: any) => {
-            const userEmail = this.formulario.value.email!;
-            
-            // Lista de correos de administradores (podrías obtenerla del backend también)
-            const adminEmails = ['estefi2000ms2@gmail.com'];
-            
-            if (adminEmails.includes(userEmail.toLowerCase())) {
-              this.serviceRouter.navigate(['/admin/dashboard']);
-            } else {
-              this.serviceRouter.navigate(['/inicio']);
-            }
-            
+            const userEmail = this.formulario.value.email!.toLowerCase();
+
+            // Determinar el rol del usuario
+            const adminEmails = ['estefi2000ms2@gmail.com']; // Puedes obtener esto del backend
+            const esAdmin = adminEmails.includes(userEmail);
+
+            this.rolUsuario.set(esAdmin ? 'admin' : 'user');
+
+            // Configurar el modal según el rol
+            this.titulo.set(
+              '¡Bienvenid' + (esAdmin ? 'a administrador/a!' : 'o/a!')
+            );
+            this.mensaje.set(
+              esAdmin
+                ? 'Has iniciado sesión como administrador. Serás redirigido al panel de control.'
+                : 'Has iniciado sesión correctamente. Serás redirigido a la página principal.'
+            );
+
+            this.tipoRespuesta.set('exito');
+            this.mostrarModal.set(true);
             this.carga.set(false);
           },
           error: ({ error }: { error: any }) => {
-            this.validacion.set(error.msg);
+            this.titulo.set('Error');
+            this.mensaje.set(error.msg);
+            this.tipoRespuesta.set('error');
+            this.mostrarModal.set(true);
             this.carga.set(false);
           },
         });
     } else {
-      this.validacion.set('Complete correctamente los campos');
+      this.error.set({
+        email: this.formulario.get('email')?.hasError('required'),
+        password: this.formulario.get('password')?.hasError('required'),
+      });
       this.carga.set(false);
     }
-    setTimeout(() => {
-      this.validacion.set('');
-    }, 3000);
+  }
+  // Redirige después de cerrar el modal
+  redirigirSegunRol() {
+    if (this.tipoRespuesta() === 'exito') {
+      if (this.rolUsuario() === 'admin') {
+        this.serviceRouter.navigate(['/admin/dashboard']);
+      } else {
+        this.serviceRouter.navigate(['/inicio']);
+      }
+    }
   }
 }

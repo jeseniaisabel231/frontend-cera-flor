@@ -1,33 +1,45 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ModalAvisosComponent } from "../components/admin/modalavisos.component";
 
 @Component({
-  selector: 'app-recover-password',
-  standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, ModalAvisosComponent],
   template: `
-    <div class="min-h-screen bg-[#bebebe] flex items-center justify-center px-4">
+    <div
+      class="min-h-screen bg-[#bebebe] flex items-center justify-center px-4"
+    >
       <div class="w-full max-w-md">
-        <form 
+        <form
           class="bg-[#3C3C3B] rounded-2xl shadow-md p-8"
-          [formGroup]="recoverForm"
+          [formGroup]="formulario"
           (ngSubmit)="onSubmit()"
         >
-          <h2 class="text-white text-lg font-medium mb-4">
-            Correo electrónico
+          <h2 class="text-white text-2xl mb-4 text-center font-medium text-[25px] ">
+            Recuperar contraseña
           </h2>
+          <span class="font-medium text-white">Correo electrónico <span class="text-red-400"> *</span></span>
           
-          <div class="mb-6 relative">
+          <div class="mb-6 mt-1 relative">
+            @let emailInvalido = formulario.get('email')?.invalid && formulario.get('email')?.value;
+
             <input
               type="email"
               placeholder="Ingresa tu correo"
-              class="px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#6854d9] border-[#878787] bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
+              class="px-4 py-3 placeholder-gray-400  bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] "
               formControlName="email"
+              (input)="borrarError()"
+              [class]="emailInvalido ? 'border-red-400 outline-red-400 text-red-400' : 'border-[#878787] outline-[#3C3C3B] text-[#3C3C3B]'"
             />
+            
             <div class="absolute left-3 top-3 text-gray-400 cursor-pointer">
-              <svg 
+              <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -35,7 +47,7 @@ import { AuthService } from '../../services/auth.service';
               >
                 <g
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="emailInvalido ? 'stroke-red-400' : 'stroke-[#3C3C3B]'"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
@@ -45,84 +57,119 @@ import { AuthService } from '../../services/auth.service';
                 </g>
               </svg>
             </div>
+            @if(error()) {
+            <small class="text-red-400"> {{error()}}</small>
+            }@else if(emailInvalido){
+            <small class="text-red-400">Por favor, ingresa un correo electrónico válido.</small>
+            }
           </div>
 
-          @if (message()) {
-            <div class="mb-4 p-3 rounded text-center" 
-                 [class.bg-green-100]="isSuccess()"
-                 [class.bg-red-100]="!isSuccess()"
-                 [class.text-green-800]="isSuccess()"
-                 [class.text-red-800]="!isSuccess()">
-              {{ message() }}
-            </div>
-          }
 
           <button
             type="submit"
             class="relative inline-flex h-[46px] overflow-hidden rounded-[15px] p-[1px] w-full cursor-pointer items-center justify-center bg-[#9F93E7] px-3 py-1 font-medium text-white backdrop-blur-3xl hover:bg-morado-600 transition-colors duration-500"
-            [disabled]="recoverForm.invalid || loading()"
           >
             @if (loading()) {
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            } @else {
-              Recuperar Contraseña
-            }
+            <svg
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            } @else { Recuperar Contraseña }
           </button>
 
           <div class="text-center text-sm text-gray-300 mt-6">
             ¿No tienes cuenta en Flor & Cera?
-            <a routerLink="/registrarse" class="text-morado-500 hover:underline">Registrarse</a>
+            <a
+              routerLink="/registrarse"
+              class="text-morado-500 hover:underline"
+            >
+              Registrarse
+            </a>
             <br />
             También puedes
-            <a routerLink="/iniciar-sesion" class="text-morado-500 hover:underline">
+            <a
+              routerLink="/iniciar-sesion"
+              class="text-morado-500 hover:underline"
+            >
               iniciar sesión
             </a>
           </div>
         </form>
       </div>
     </div>
+    <app-modal [(mostrarModal)]="mostrarModal" [titulo]="titulo()" [mensaje]="mensaje() " [tipo]="tipoRespuesta()">
+      
+    </app-modal>
   `,
 })
-export class RecoverPasswordPage {
-  private authService = inject(AuthService);
-  private router = inject(Router);
+export class RecuperarContrasenia {
+  public authService = inject(AuthService);
+  public mostrarModal = signal<boolean>(false);
+  public titulo = signal('');
+  public mensaje = signal('');
 
-  loading = signal(false);
-  message = signal('');
-  isSuccess = signal(false);
+  //variable para el formulario de recuperar contrasena cuando este sea exitoso
+  public tipoRespuesta = signal<'exito' | 'error'>('exito');
 
-  recoverForm = new FormGroup({
+  public router = inject(Router);
+  
+  public loading = signal(false);
+
+  public formulario = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
   });
+  public error = signal('');
 
-  async onSubmit() {
-    if (this.recoverForm.invalid) return;
+  onSubmit() {
+    if (this.formulario.valid) {
+      this.loading.set(true);
+      this.authService
+        .recuperarContrasenia(this.formulario.value.email!)
+        .subscribe({
+          next: (res) => {
+            //momentaneamente
+            //this.error.set(res.msg);
+            this.titulo.set('Éxito');
+            this.mensaje.set(res.msg);
+        
+            this.tipoRespuesta.set('exito');
+            this.mostrarModal.set(true);
 
-    this.loading.set(true);
-    this.message.set('');
-    
-    try {
-      const email = this.recoverForm.value.email!;
-      
-      // Llama al servicio para recuperar contraseña
-      const response = await this.authService.recuperarPassword(email).toPromise();
-      
-      this.isSuccess.set(true);
-      this.message.set('Se ha enviado un correo con las instrucciones para restablecer tu contraseña');
-      
-      // Opcional: Redirigir después de cierto tiempo
-      setTimeout(() => {
-        this.router.navigate(['/iniciar-sesion']);
-      }, 3000);
-       
-    } catch (error: any) {
-      this.isSuccess.set(false);
-      this.message.set(error.error?.msg || 'Ocurrió un error al intentar recuperar la contraseña');
-    } finally {
-      this.loading.set(false);
+          },
+          error: (err) => {
+            //this.error.set(err.error.msg);
+            this.titulo.set('Error');
+            this.mensaje.set(err.error.msg);
+            this.tipoRespuesta.set('error');
+            this.mostrarModal.set(true);
+          },
+        })
+        .add(() => {
+          this.loading.set(false);
+          this.formulario.reset();
+        });
+    } else {
+      this.error.set('Por favor, ingresa un correo electrónico válido.');
     }
+  }
+  //metodo para borrar errores del cuando se escribe un nuevo valor
+  borrarError() {
+    this.error.set('');
   }
 }

@@ -32,7 +32,13 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
 
           <div class=" flex gap-12  lg:w-1/2 justify-center">
             <div class="relative mt-2 flex flex-col gap-2 w-full">
-              <span class="font-medium pl-2">Nombre</span>
+              <span class="font-medium pl-2">
+                Nombre
+                <span class="text-red-500">*</span>
+              </span>
+              @let nombreInvalido = formRegistro.get('nombre')?.invalid &&
+              formRegistro.get('nombre')?.value || errores().nombre;
+
               <svg
                 class="absolute left-4 inset-y-0 my-10"
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +48,9 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               >
                 <path
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="
+                    nombreInvalido ? 'stroke-red-500' : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
@@ -51,20 +59,35 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               </svg>
               <input
                 class="border-[#878787] bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
+                [class]="
+                  nombreInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B] '
+                "
                 type="text"
                 placeholder="Ejm. John"
                 id="nombre"
                 formControlName="nombre"
+                (input)="borrarError('nombre')"
               />
-              @if (formRegistro.get('nombre')?.invalid &&
-              formRegistro.get('nombre')?.value) {
-              <small class="text-red-500">
+
+              @if (errores().nombre) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+              } @else if(nombreInvalido) {
+              <small class="text-red-600">
                 El nombre no es válido (Ej: John)
               </small>
+
               }
             </div>
+
             <div class="relative mt-2 flex flex-col gap-2 w-full">
-              <span class="font-medium pl-2">Apellido</span>
+              <span class="font-medium pl-2">
+                Apellido
+                <span class="text-red-500">*</span>
+              </span>
+              @let apellidoInvalido = formRegistro.get('apellido')?.invalid &&
+              formRegistro.get('apellido')?.value || errores().apellido;
               <svg
                 class="absolute left-4 inset-y-0 my-10"
                 xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +97,9 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               >
                 <path
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="
+                    apellidoInvalido ? 'stroke-red-500' : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
@@ -83,14 +108,21 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               </svg>
               <input
                 class="border-[#878787] bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
+                [class]="
+                  apellidoInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B] '
+                "
                 type="text"
                 placeholder="Ejm. Mata"
                 id="apellido"
                 formControlName="apellido"
+                (input)="borrarError('apellido')"
               />
-              @if (formRegistro.get('apellido')?.invalid &&
-              formRegistro.get('apellido')?.value) {
-              <small class="text-red-500">
+              @if (errores().apellido) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+              }@else if(apellidoInvalido) {
+              <small class="text-red-600">
                 El apellido no es válido (Ej: Mata)
               </small>
               }
@@ -100,8 +132,13 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
           <div
             class="mt-2 flex gap-12 lg:w-1/2 justify-center sm:w-[579px] w-full"
           >
-            <div class="relative mt-2 flex flex-col gap-2 w-full">
-              <span class="font-medium pl-2">Correo Electronico</span>
+            <div class="relative mt-2 flex flex-col gap-1 w-full">
+              <span class="font-medium pl-2">
+                Correo electrónico
+                <span class="text-red-500">*</span>
+              </span>
+              @let emailInvalido = formRegistro.get('email')?.invalid &&
+              formRegistro.get('email')?.value || errores().email;
               <svg
                 class="absolute left-4 inset-y-0 my-10"
                 xmlns="http://www.w3.org/2000/svg"
@@ -111,7 +148,9 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               >
                 <g
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="
+                    emailInvalido ? 'stroke-red-500' : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
@@ -122,57 +161,80 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               </svg>
               <input
                 class="border-[#878787] bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
+                [class]="
+                  emailInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B] '
+                "
                 type="email"
                 placeholder="ejemplo@gmail.com"
                 id="email"
                 formControlName="email"
+                (input)="borrarError('email')"
               />
-              @if (formRegistro.get('email')?.invalid &&
-              formRegistro.get('email')?.value) {
-              <small class="text-red-500">
-                El formato del correo no es válido (Ej: correoexample.com)
+              @if (errores().email) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+              }@else if(emailInvalido) {
+              <small class="text-red-600">
+                El correo electrónico no es válido (Ej:ejemplo&#64;gmail.com)
               </small>
               }
             </div>
             <div class="mt-2 flex flex-col mb-2 w-full ">
-              <label class="pl-3">Género</label>
+              <span class="font-medium pl-2">
+                Género
+                <span class="text-red-500">*</span>
+              </span>
+              @let generoInvalido = formRegistro.get('genero')?.invalid &&
+              formRegistro.get('genero')?.value || errores().genero;
+
               <div class="flex h-[46px] items-center">
                 <input
+                  [class]="
+                    generoInvalido
+                      ? 'border-red-600 outline-red-600'
+                      : 'border-[#878787] outline-[#3C3C3B]'
+                  "
                   type="radio"
                   id="femenino"
                   value="Femenino"
                   formControlName="genero"
-                  [class.border-red-500]="
-                    formRegistro.get('genero')?.invalid &&
-                    formRegistro.get('genero')?.touched
-                  "
                   class="mr-2"
+                  (input)="borrarError('genero')"
                 />
                 <label for="femenino" class="mr-4">Femenino</label>
 
                 <input
                   type="radio"
+                  [class]="
+                    generoInvalido
+                      ? 'border-red-600 outline-red-600'
+                      : 'border-[#878787] outline-[#3C3C3B]'
+                  "
                   id="masculino"
                   value="Masculino"
                   formControlName="genero"
-                  [class.border-red-500]="
-                    formRegistro.get('genero')?.invalid &&
-                    formRegistro.get('genero')?.touched
-                  "
                   class="mr-2"
+                  (input)="borrarError('genero')"
                 />
                 <label for="masculino">Masculino</label>
               </div>
-              @if (formRegistro.get('genero')?.invalid &&
-              formRegistro.get('genero')?.touched) {
-              <small class="text-red-500 ">Seleccione un género</small>
+              @if (errores().genero) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+              }@else if(generoInvalido) {
+              <small class="text-red-600">Selecciona un genero</small>
               }
             </div>
           </div>
 
-          <div class=" flex gap-12 lg:w-1/2 justify-center">
+          <div class=" flex gap-12 lg:w-1/2 justify-center mb-6">
             <div class="relative mt-2 flex flex-col gap-2 w-full">
-              <span class="font-medium pl-2">Contraseña</span>
+              <span class="font-medium pl-2">
+                Contraseña
+                <span class="text-red-500">*</span>
+              </span>
+              @let passwordInvalido = formRegistro.get('password')?.invalid &&
+              formRegistro.get('password')?.value || errores().password;
               <svg
                 class="absolute left-4 inset-y-0 my-10"
                 xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +244,9 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               >
                 <g
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="
+                    passwordInvalido ? 'stroke-red-500' : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
@@ -193,17 +257,24 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               </svg>
               <input
                 class="border-[#878787] bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
+                [class]="
+                  passwordInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B]'
+                "
                 [type]="passwordVisible() ? 'text' : 'password'"
                 type="password"
                 placeholder="T4!s9vL@qZ#8pR"
                 id="password"
                 formControlName="password"
+                (input)="borrarError('password')"
               />
-              @if (formRegistro.get('password')?.invalid &&
-              formRegistro.get('password')?.value) {
-              <small class="text-red-500">
-                La contraseña debe tener al menos 8 caracteres, una letra
-                mayúscula, una letra minúscula, un número y un símbolo especial
+              @if (errores().password) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+              }@else if(passwordInvalido) {
+              <small class="text-red-600">
+                Debe contener al menos una mayúscula, una minúscula, un número y
+                un carácter especial (&#64;$!%*?&).
               </small>
               }
 
@@ -230,7 +301,14 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
             </div>
 
             <div class="relative mt-2 flex flex-col gap-2 w-full">
-              <span class="font-medium pl-2">Confirmar contraseña</span>
+              <span class="font-medium pl-2">
+                Confirmar contraseña
+                <span class="text-red-500">*</span>
+              </span>
+              @let confirmarPasswordInvalido =
+              formRegistro.get('confirmarPassword')?.invalid &&
+              formRegistro.get('confirmarPassword')?.value ||
+              errores().confirmarPassword;
               <svg
                 class="absolute left-4 inset-y-0 my-10"
                 xmlns="http://www.w3.org/2000/svg"
@@ -240,7 +318,11 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               >
                 <g
                   fill="none"
-                  stroke="#3C3C3B"
+                  [class]="
+                    confirmarPasswordInvalido
+                      ? 'stroke-red-500'
+                      : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
@@ -252,10 +334,16 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
               <input
                 class="border-[#878787] bg-white border p-1.5 pl-12 w-full h-[46px] rounded-[15px] outline-[#3C3C3B]"
                 [type]="passwordVisible() ? 'text' : 'password'"
+                [class]="
+                  confirmarPasswordInvalido
+                    ? 'border-red-600 outline-red-600 text-red-600'
+                    : 'border-[#878787] outline-[#3C3C3B]'
+                "
                 formControlName="confirmarPassword"
                 type="confirmarPassword"
                 placeholder="T4!s9vL@qZ#8pR"
                 id="confirmarPassword"
+                (input)="borrarError('confirmarPassword')"
               />
               <svg
                 class="absolute right-4 inset-y-0 my-10 cursor-pointer"
@@ -277,17 +365,24 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                 />
                 }
               </svg>
-              @if (formRegistro.hasError('mismatch')) {
-              <small class="text-red-500">Las contraseñas no coinciden</small>
+              @if (errores().confirmarPassword) {
+                <small class="text-red-600">Este campo es obligatorio.</small>
+              }@else if(confirmarPasswordInvalido) {
+                <small class="text-red-600">
+                  Debe contener al menos una mayúscula, una minúscula, un número y
+                  un carácter especial (&#64;$!%*?&).
+                </small>
               }
             </div>
           </div>
-          @if (validacion()) {
+          @if (formRegistro.hasError('mismatch')) {
+          <small class="text-red-500">Las contraseñas no coinciden</small>
+          } @if (validacion()) {
           <small class="text-red-500 block mt-2">{{ validacion() }}</small>
           }
 
           <button
-            class="mt-8 relative inline-flex h-12 overflow-hidden rounded-[15px] p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 w-2/3 sm:w-1/5 "
+            class="mt-4 relative inline-flex h-12 overflow-hidden rounded-[15px] p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 w-2/3 sm:w-1/5 "
           >
             <span
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
@@ -325,12 +420,6 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
           </p>
         </form>
         <!-- Modal -->
-        <app-modal
-          [(visible)]="showModal"
-          [title]="'Registro exitoso'"
-          [message]="modalMessage()"
-          [closeButtonText]="'Aceptar'"
-        />
       </section>
     </main>
     <footeer></footeer>
@@ -345,7 +434,7 @@ export class RegisterPage {
   modalMessage = signal('');
 
   //variable para los errores de los campos
-  public errores = signal<Record<string, string>>({
+  public errores = signal<any>({
     nombre: '',
     apellido: '',
     email: '',
@@ -394,36 +483,22 @@ export class RegisterPage {
 
       email: new FormControl('', [Validators.email, Validators.required]), //valodacion de correo y que no sea vacio: required
       password: new FormControl('', [
-        Validators.minLength(8),
         Validators.required,
         Validators.pattern(
-          '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$'
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/
         ),
       ]),
       confirmarPassword: new FormControl('', [Validators.required]),
     },
     { validators: this.passwordMatchValidator }
   );
+  //metodo para borrar errores del cuando se escribe un nuevo valor
+  borrarError(campo: string) {
+    this.errores.update((prev) => ({ ...prev, [campo]: '' })); //setea los errores
+  }
 
   //crear un metodo para utilizar cada vez que se presiona un boton
   onSubmit() {
-    // Marcar todos los campos como touched
-    Object.values(this.formRegistro.controls).forEach((control) => {
-      control.markAsTouched();
-    });
-
-    // Verificar validación antes de enviar
-    if (this.formRegistro.invalid) {
-      this.validacion.set('Complete correctamente todos los campos');
-      this.carga.set(false);
-      setTimeout(() => {
-        this.validacion.set('');
-      }, 3000);
-      return;
-    }
-
-    // Marcar todos los campos como touched para mostrar errores
-    console.log(this.formRegistro.value);
     if (this.formRegistro.valid) {
       this.carga.set(true);
 
@@ -443,7 +518,7 @@ export class RegisterPage {
             this.carga.set(false);
             this.modalMessage.set(response.msg); //mensaje de respuesta del backend
 
-            this.showModal.set(true);
+            //this.showModal.set(true);
           },
           error: ({ error }: { error: any }) => {
             const { details = [] } = error;
@@ -457,18 +532,19 @@ export class RegisterPage {
           },
         });
     } else {
-      this.validacion.set('Complete correctamente los campos');
+      this.errores.set({
+        nombre: this.formRegistro.get('nombre')?.hasError('required'),
+        apellido: this.formRegistro.get('apellido')?.hasError('required'),
+        email: this.formRegistro.get('email')?.hasError('required'),
+        genero: this.formRegistro.get('genero')?.hasError('required'),
+        password: this.formRegistro.get('password')?.hasError('required'),
+        confirmarPassword: this.formRegistro
+          .get('confirmarPassword')
+          ?.hasError('required'),
+      });
       this.carga.set(false);
     }
     setTimeout(() => {
-      this.errores.set({
-        nombre: '',
-        apellido: '',
-        email: '',
-        genero: '',
-        password: '',
-        confirmarPassword: '',
-      });
       this.validacion.set('');
     }, 3000);
   }

@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Headers } from '../components/header.component';
 import { Footeer } from '../components/footer.component';
 import { RouterLink } from '@angular/router';
 import { Card } from '../components/card.component';
+import { promocion } from '../interfaces/promocion.interface';
+import { PromocionesService } from '../../services/admin/promociones.service';
+import { producto } from '../interfaces/producto.interface';
+import { ProductosService } from '../../services/admin/productos.service';
 
 @Component({
   imports: [Headers, Footeer, Card],
@@ -13,11 +17,35 @@ import { Card } from '../components/card.component';
       <!--Seccion banner -->
       <section class="w-full relative">
         <!-- elementos dentro del banner -->
-        <div class="text-center md:text-left md:w-1/2 absolute top-[25%] left-[10%]">
-          <h1 class="text-5xl font-bold font-playfair text-pink-600 text-outline-pink">
-            Artesanía <span class="block pl-10">para tu, piel</span>
+        <div
+          class="text-center md:text-left md:w-1/2 absolute top-[25%] left-[10%]"
+        >
+          <div
+            class="size-12 absolute top-[50%] right-[110%] bg-[#c5feff] rounded-full justify-center items-center flex"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="#3C3C3B"
+              class="size-8"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+
+          <h1
+            class="text-5xl font-bold font-playfair text-pink-600 text-outline-pink"
+          >
+            Artesanía
+            <span class="block pl-10">para tu, piel</span>
           </h1>
-          <p class="text-3xl font-bold font-playfair text-outline-purple mt-">magia para tu hogar</p>
+          <p class="text-3xl font-bold font-playfair text-outline-purple mt-">
+            magia para tu hogar
+          </p>
           <a
             href="#catalogo"
             class="inline-block mt-4 px-12 py-2 bg-morado-600 text-white font-semibold rounded-full hover:bg-morado-700 transition"
@@ -25,91 +53,111 @@ import { Card } from '../components/card.component';
             Ver catálogo
           </a>
         </div>
-        <img src="banner1-foto.png" alt="" class="absolute left-[40%]">
+        <img src="banner1-foto.png" alt="" class="absolute left-[40%]" />
         <a href="#" target="_blank" rel="noopener noreferrer">
           <img
             src="banner1.png"
             alt="Banner description"
             class="w-full h-[240px] sm:h-auto object-cover"
           />
-          <!-- class="w-full sm:h-auto object-cover" -->
         </a>
+        <div
+          class="size-12 absolute top-[46%] left-[95%] bg-[#c5feff] rounded-full justify-center items-center flex"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="size-8"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
       </section>
       <!--Seccion de beneficios -->
-      <section class="flex flex-col py-6 px-14 lg:px-40 ">
-        <h2
-          class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
-        >
-          Beneficios o características clave
-        </h2>
+      <section class="py-10 ">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2
+            class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
+          >
+            Beneficios o características clave
+          </h2>
 
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
-        >
-          <article class="text-center flex flex-col items-center">
-            <img src="beneficios1.png" alt="" class="sm:w-36 w-28 mb-4 " />
-            <h3 class="font-semibold font-playfair mb-2 text-[17px]">
-              Ingredientes naturales
-            </h3>
-            <p class="text-sm">
-              Los productos están elaborados con ingredientes naturales, libres
-              de sustancias artificiales. Esto garantiza suavidad y cuidado para
-              la piel.
-            </p>
-          </article>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          >
+            <article class="text-center flex flex-col items-center">
+              <img src="beneficios1.png" alt="" class="sm:w-36 w-28 mb-4 " />
+              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+                Ingredientes naturales
+              </h3>
+              <p class="text-sm">
+                Los productos están elaborados con ingredientes naturales,
+                libres de sustancias artificiales. Esto garantiza suavidad y
+                cuidado para la piel.
+              </p>
+            </article>
 
-          <article class="text-center flex flex-col items-center">
-            <img src="beneficios2.png" alt="" class="sm:w-36 w-28  mb-4" />
-            <h3 class="font-semibold font-playfair mb-2 text-[17px]">
-              Producción artesanal
-            </h3>
-            <p class="text-sm">
-              Cada vela y jabón es creado de manera artesanal, con procesos
-              cuidadosos y atención al detalle. Esto asegura calidad, texturas
-              únicas y aromas duraderos.
-            </p>
-          </article>
+            <article class="text-center flex flex-col items-center">
+              <img src="beneficios2.png" alt="" class="sm:w-36 w-28  mb-4" />
+              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+                Producción artesanal
+              </h3>
+              <p class="text-sm">
+                Cada vela y jabón es creado de manera artesanal, con procesos
+                cuidadosos y atención al detalle. Esto asegura calidad, texturas
+                únicas y aromas duraderos.
+              </p>
+            </article>
 
-          <article class="text-center flex flex-col items-center">
-            <img src="beneficios1.png" alt="" class="sm:w-36 w-28  mb-4" />
-            <h3 class="font-semibold font-playfair mb-2 text-[17px]">
-              Personalización
-            </h3>
-            <p class="text-sm">
-              Los clientes pueden elegir fragancias, formas y colores según sus
-              preferencias. Esto permite ofrecer productos exclusivos y
-              adaptados a cada necesidad.
-            </p>
-          </article>
+            <article class="text-center flex flex-col items-center">
+              <img src="beneficios1.png" alt="" class="sm:w-36 w-28  mb-4" />
+              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+                Personalización
+              </h3>
+              <p class="text-sm">
+                Los clientes pueden elegir fragancias, formas y colores según
+                sus preferencias. Esto permite ofrecer productos exclusivos y
+                adaptados a cada necesidad.
+              </p>
+            </article>
 
-          <article class="text-center flex flex-col items-center">
-            <img src="beneficios1.png" alt="" class="sm:w-36 w-28  mb-4" />
-            <h3 class="font-semibold font-playfair mb-2 text-[17px]">
-              Beneficios ecológicos
-            </h3>
-            <p class="text-sm">
-              Son biodegradables y no contaminan el medio ambiente. Su
-              producción sostenible reduce el impacto ecológico, siendo una
-              opción responsable.
-            </p>
-          </article>
+            <article class="text-center flex flex-col items-center">
+              <img src="beneficios1.png" alt="" class="sm:w-36 w-28  mb-4" />
+              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+                Beneficios ecológicos
+              </h3>
+              <p class="text-sm">
+                Son biodegradables y no contaminan el medio ambiente. Su
+                producción sostenible reduce el impacto ecológico, siendo una
+                opción responsable.
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 
       <!--Seccion de productos destacados -->
-      <section class="flex flex-col py-6 px-14 xl:px-40 bg-celeste-200">
-        <h2
-          class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
-        >
-          Productos destacados
-        </h2>
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-4"
-        >
-          <card></card>
-          <card></card>
-          <card></card>
-          <card></card>
+      <section class="bg-celeste-200 py-10">
+        <div class="max-w-6xl mx-auto px-4">
+          <h2
+            class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
+          >
+            Ultimos productos
+          </h2>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          >
+          @for(producto of productos; track producto._id){
+
+            <card [producto]="producto"></card>
+          }
+            
+          </div>
         </div>
       </section>
 
@@ -217,16 +265,16 @@ import { Card } from '../components/card.component';
           <p
             class="absolute top-[45%] left-[15%] md:top-[20%] md:left-[40%]  text-[17px] lg:text-[18px] text-center lg:left-[45%]"
           >
-            <span class="font-bold text-[19px] md:text-[22px]"
-              >Personaliza</span
-            >
-            cada detalle para <br /><span
-              class="font-bold text-[19px] md:text-[21px]"
-              >crear </span
-            >algo
-            <span class="font-bold text-[19px] md:text-[21px]"
-              >verdaderamente único.</span
-            >
+            <span class="font-bold text-[19px] md:text-[22px]">
+              Personaliza
+            </span>
+            cada detalle para
+            <br />
+            <span class="font-bold text-[19px] md:text-[21px]">crear</span>
+            algo
+            <span class="font-bold text-[19px] md:text-[21px]">
+              verdaderamente único.
+            </span>
           </p>
           <img
             src="banner2-dibujo.png"
@@ -358,8 +406,25 @@ import { Card } from '../components/card.component';
         </div>
       </section>
     </main>
-
     <footeer></footeer>
   `,
 })
-export class HomePage {}
+export class HomePage {
+  public serviceProductos = inject(ProductosService);
+  public productos: producto[] = [];
+  ngOnInit(){
+    this.obtenerProductos(1);
+  }
+  
+  obtenerProductos(numeroPagina: number) {
+    this.serviceProductos.obtener(numeroPagina).subscribe({
+      next: (respuesta: any) => {
+        console.log('Respuesta del backend:', respuesta);
+        this.productos = respuesta.productos
+        console.log('Productos filtrados:', this.productos);
+      },
+      error: (err) => console.error('Error al cargar productos', err),
+    });
+  }
+  
+}

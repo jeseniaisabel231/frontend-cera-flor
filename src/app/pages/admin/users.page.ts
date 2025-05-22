@@ -3,7 +3,6 @@ import { Navegacion } from '../../components/navegacion.component';
 import { Presentation } from '../../components/admin/presentation.component';
 import { TablaComponent } from '../../components/admin/tabla.component';
 import { UsuariosService } from '../../../services/admin/usuarios.service';
-import { usuario } from '../../../../interfaces/usuario.interface';
 import {
   FormControl,
   FormGroup,
@@ -13,6 +12,7 @@ import {
 import { Router } from '@angular/router';
 import { Loading } from '../../components/loading.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { usuario } from '../../interfaces/usuario.interface';
 
 @Component({
   imports: [Navegacion, Presentation, TablaComponent, Loading, FormsModule],
@@ -26,7 +26,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
       >
         <presentation titulo="Usuarios" class="col-span-5"></presentation>
 
-        
         <div
           class="overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md "
         >
@@ -50,22 +49,22 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
               [(ngModel)]="busqueda"
               class="flex-1 bg-transparent text-[14px] font-normal text-[#3B3D3E] outline-none pl-2"
               type="search"
-              placeholder="Buscar"
+              placeholder="Buscar usuario"
               id="search"
               name="search"
             />
           </div>
           <div class="overflow-auto w-full mt-4">
-
             @if (carga()){
             <loading></loading>
             } @else {
-              
-            <tabla 
-            [datosTabla]="usuarios()" 
-            titulo="usuario" 
-            acciones="Visualizar"
-            [columnasMostrar]="[]"
+
+            <tabla
+              [datosTabla]="datosBuscados()"
+              [servicio]="serviceUsuarios"
+              titulo="usuario"
+              acciones="Visualizar"
+              [columnasMostrar]="[]"
             ></tabla>
             }
           </div>
@@ -76,6 +75,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 })
 export class UsersPage {
   //estado de carga
+  public usuarios: usuario[] = [];
+  
   public carga = signal<boolean>(true);
 
   public serviceUsuarios = inject(UsuariosService);
@@ -83,20 +84,15 @@ export class UsersPage {
   public busqueda = signal<string>('');
 
   //variable que almacena datos filtrados de barra de busqueda
-  public datosBuscados = linkedSignal<usuario[]>(() => {
-    const datosUsuarios = this.usuarios();
-    if (this.busqueda() !== '') {
-      return datosUsuarios.filter((registro) =>
-        Object.values(registro).some((valor) =>
-          valor.toString().toLowerCase().includes(this.busqueda().toLowerCase())
-        )
-      );
-    }
-    return datosUsuarios;
-  });
+  public datosBuscados = linkedSignal<usuario[]>(() =>
+    this.usuarios.filter((registro) =>
+      Object.values(registro).some((valor: any) =>
+        valor.toString().toLowerCase().includes(this.busqueda().toLowerCase())
+      )
+    )
+  );
 
   //variable que almacena lo que traera del backend
-  public usuarios = signal<usuario[]>([]);
 
   public datosUsuarios = new FormGroup({
     //id : number,
@@ -106,15 +102,13 @@ export class UsersPage {
   });
 
   //consumo de endpoint de usuarios
-  constructor(
-    
-  ) {
+  constructor() {
     this.serviceUsuarios
       .obtener()
       .subscribe({
         next: (respuesta: any) => {
-          this.usuarios.set(respuesta.clientes);
-          this.datosBuscados.set(respuesta.clientes);
+          this.usuarios = respuesta.clientes;
+          this.datosBuscados.set(this.usuarios);
           console.log(respuesta.clientes);
         },
       })

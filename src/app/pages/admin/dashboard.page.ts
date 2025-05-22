@@ -1,26 +1,19 @@
 import { Component, signal } from '@angular/core';
 import { Navegacion } from '../../components/navegacion.component';
-import { Presentation } from "../../components/admin/presentation.component";
-
+import { Presentation } from '../../components/admin/presentation.component';
+import { BaseChartDirective } from 'ng2-charts';
 @Component({
-  imports: [Navegacion, Presentation],
+  imports: [Navegacion, Presentation, BaseChartDirective],
   template: `
     <div class="bg-[#efecff] w-full flex min-h-dvh">
       <navegacion></navegacion>
       <!-- Contenido principal -->
 
-      <div class="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full border-l border-[#d0c9fe]">
-        <presentation titulo="Dashboard" class="col-span-5"></presentation>
+      <div class="grid grid-cols-3 gap-4 p-6 w-full border-l border-[#d0c9fe]">
+        <presentation titulo="Dashboard" class="col-span-3"></presentation>
 
-        <div
-          class="col-span-3 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10"
-        >
-          <h3 class="text-[17px] font-semibold mb-2 ">
-            Total de ventas obtenidas al mes
-          </h3>
-        </div>
-        <div class="col-span-2 row-start-2 rounded-[18px] py-4 px-10  bg-white">
-          <h3 class="text-[17px] font-semibold mb-2 ">Usuarios registrados</h3>
+        <div class="col-span-1 row-start-2 rounded-[18px] py-4 px-10  bg-white">
+          <h3 class="text-[17px] font-semibold mb-2 text-center">Clientes</h3>
           <div class="flex  gap-3 justify-center mt-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -40,13 +33,13 @@ import { Presentation } from "../../components/admin/presentation.component";
             </svg>
             <p class="text-4xl font-bold">
               2
-              <span class="text-base font-normal ml-1">usuarios</span>
+              
             </p>
           </div>
         </div>
 
-        <div class="col-span-2 row-start-3  rounded-[18px] py-4 px-10 bg-white">
-          <h3 class="text-[17px] font-semibold mb-2 ">Productos vendidos</h3>
+        <div class="col-span-1 row-start-2  rounded-[18px] py-4 px-10 bg-white">
+          <h3 class="text-[17px] font-semibold mb-2 text-center">Ventas</h3>
           <div class="flex  gap-3 justify-center mt-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -66,8 +59,8 @@ import { Presentation } from "../../components/admin/presentation.component";
             </p>
           </div>
         </div>
-        <div class="col-span-2 row-start-4 rounded-[18px] py-6 px-10  bg-white">
-          <h3 class="text-[17px] font-semibold mb-2 ">Productos activos</h3>
+        <div class="col-span-1 row-start-2 rounded-[18px] py-6 px-10  bg-white">
+          <h3 class="text-[17px] font-semibold mb-2 text-center">Productos</h3>
           <div class="flex  gap-3 justify-center mt-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -83,8 +76,34 @@ import { Presentation } from "../../components/admin/presentation.component";
             </svg>
             <p class="text-4xl font-bold">
               70
-              <span class="text-base font-normal ml-1">productos activos</span>
+              <span class="text-base font-normal ">productos activos</span>
             </p>
+          </div>
+        </div>
+        <div class="col-span-3 row-span-4">
+          <div class="grid grid-cols-5  gap-4">
+            <div
+              class="col-span-3 h-[340px] w-full flex justify-center bg-white rounded-[18px]  p-4"
+            >
+              <canvas
+                baseChart
+                [data]="datos()"
+                [options]="opciones()"
+                [type]="'line'"
+              ></canvas>
+            </div>
+            <div
+              class="col-span-2 h-[340px] w-full flex justify-center bg-white rounded-[18px] "
+            >
+              <div class="p-4">
+                <canvas
+                  baseChart
+                  [data]="datosProductos()"
+                  [options]="opcionesProductos()"
+                  [type]="'doughnut'"
+                ></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -95,4 +114,95 @@ export class DashboardPage {
   //1.false: menu de navegacion oculto
   //Variable que hara que la barra de navegacion se muestre o no se muestre
   public mostrar = signal<boolean>(true);
+  //variables para la grafica
+  public datos = signal<any>({
+    labels: [
+      'Lunes',
+      'Martes',
+      'Miercoles',
+      'Jueves',
+      'Viernes',
+      'Sabado',
+      'Domingo',
+    ],
+    datasets: [
+      {
+        label: 'Semana Pasada',
+        data: [
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+        ],
+        fill: true,
+        borderColor: '#626260',
+        backgroundColor: 'rgba(98, 98, 96, 0.2)',
+        tension: 0.18,
+        borderDash: [5, 5],
+      },
+      {
+        label: 'Semana Actual',
+        data: [
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+          Math.random() * 100,
+        ],
+        fill: true,
+        borderColor: '#3c3c3b',
+        backgroundColor: 'rgba(60, 60, 59, 0.2)',
+        tension: 0.18,
+        borderDash: [5, 5],
+      },
+    ],
+  });
+  public opciones = signal<any>({
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'VENTAS SEMANALES',
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          border: {
+            dash: [50, 5], // Línea punteada en eje X
+          }, // Línea punteada en eje X
+        },
+      },
+      y: {
+        grid: {
+          borderDash: [5, 5], // Línea punteada en eje Y
+        },
+      },
+    },
+  });
+  public datosProductos = signal<any>({
+    labels: ['Jabones Artesanales', 'Velas Artesanales'],
+    datasets: [
+      {
+        label: 'Productos Vendidos',
+        data: [Math.random() * 100, Math.random() * 100],
+        backgroundColor: ['#3c3c3b', '#626260'],
+      },
+    ],
+  });
+  public opcionesProductos = signal<any>({
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'PRODUCTOS VENDIDOS',
+        with: '200px',
+      },
+    },
+  });
 }

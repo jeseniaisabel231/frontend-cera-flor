@@ -91,7 +91,7 @@ import { RouterLink } from '@angular/router';
       >
         <ul class="flex flex-row gap-14 font-semibold">
           <li><a routerLink="/inicio">Inicio</a></li>
-          <li><a href="#">Catálogo</a></li>
+          <li><a href="/catalogo">Catálogo</a></li>
           <li><a href="#">Personalización</a></li>
           <li><a href="#">Sobre nosotros</a></li>
         </ul>

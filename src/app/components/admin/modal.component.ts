@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-export type TituloForms = 'usuario' | 'venta' | 'promocion';
+export type TituloForms = 'usuario' | 'venta';
 export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
 @Component({
   selector: 'modal',
@@ -76,7 +76,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                 }
                 @else if(item.toString() === 'productos') { 
                   <div class="space-y-3">
-                    @for (prod of productos(verDatos()[item]); track $index) {
+                    <!-- @for (prod of productos(verDatos()[item]); track $index) {
                       <div class="p-3 border border-gray-200 rounded-lg bg-gray-50">
                         <div class="flex justify-between items-start">
                           <h3 class="font-medium text-gray-900">{{ prod?.nombre }}</h3>
@@ -86,7 +86,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                           <p class="mt-1 text-sm text-gray-600">{{ prod?.descripcion }}</p>
                         }
                       </div>
-                    } 
+                    }  -->
                   </div>
                 }
                 @else {
@@ -119,13 +119,14 @@ export class ModalComponent {
       'imagen',
       'email',
       'genero',
+      'telefono',
+      'direccion',
+      'cedula',
+      'fecha_nacimiento',
+      'createdAt',
+      'updatedAt',
     ],
-    promocion: [
-      'nombre',
-      'descripcion',
-      'fecha de inicio',///pendienteee
-      'fecha de fin',
-    ],
+    
     venta: [
       'cliente_id',
       'productos',
@@ -158,13 +159,13 @@ export class ModalComponent {
     });
   }
   public nombreCliente(usuario: any): string {
-    return `${usuario.nombre} ${usuario.apellido}`;
+    return `${usuario?.nombre} ${usuario?.apellido}`;
   }
   public producto(producto: any): number {
     return producto.length;
   }
   public productos(productos: any): any[] {
     console.log(productos);
-    return productos.map((item: any) => item.producto_id);
+    return productos?.map((item: any) => item?.producto_id);
   }
 }

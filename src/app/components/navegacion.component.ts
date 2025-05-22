@@ -8,34 +8,18 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
   imports: [NgClass, RouterLink],
   template: `
     <aside
-      [ngClass]="{
-        'animate-activa': mostrar(),
-        'animate-inactiva': !mostrar()
-      }"
+      
       class="w-full md:w-[360px]   flex px-10 flex-col "
     >
       <div class="flex items-center gap-2 py-6 justify-center">
-        <button type="button" (click)="toggleMenu()">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="15"
-            height="10"
-            viewBox="0 0 15 10"
-            fill="none"
-          >
-            <path
-              d="M0 10H15V8.3332H0V10ZM0 5.8332H15V4.1668H0V5.8332ZM0 0V1.6668H15V0H0Z"
-              fill="#3B3D3E"
-            />
-          </svg>
-        </button>
-        <img src="logo.png" alt="Logo de Flor y Cera" class="w-[43px]" />
+        
+        <img src="logo.png" alt="Logo de Flor y Cera" class="w-[43px] object-cover" />
         <h1 class="font-playfair font-extrabold text-[17px] hidden lg:block ">
           Flor & Cera
         </h1>
       </div>
       <div class="flex flex-col items-center gap-4 text-center mb-6">
-        <img src="logo.png" alt="Foto de administrador" class="h-[80px]" />
+        <img src="/administrador/fotoadmin.jpg" class="h-[80px] w-[80px] rounded-full" />
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
             <p class="font-bold text-[18px]">Estefanía Sánchez</p>

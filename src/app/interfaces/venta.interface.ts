@@ -1,7 +1,8 @@
 export interface venta{
-    id: number,
-    id_usuario: number,
-    id_producto: number,
+    _id: string,
+    id_usuario: string,
+    estado: string,
+    id_producto: string,
     fecha: string,
     cantidad: number,
     total: number,

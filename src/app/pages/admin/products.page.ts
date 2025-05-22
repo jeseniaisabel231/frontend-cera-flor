@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Navegacion } from '../../components/navegacion.component';
 import { FormProducto } from '../../components/admin/formproduct.component';
 import { Presentation } from '../../components/admin/presentation.component';
@@ -7,12 +7,26 @@ import { ProductosService } from '../../../services/admin/productos.service';
 import { producto } from '../../interfaces/producto.interface';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
 import { Action } from 'rxjs/internal/scheduler/Action';
 import { Actions } from '../../components/admin/modal.component';
-import { ToastComponent } from "../../components/toast.component";
+import { ToastComponent } from '../../components/toast.component';
+import { ModalAvisosComponent } from '../../components/admin/modalavisos.component';
+
 @Component({
-  imports: [Navegacion, FormProducto, Presentation, Loading, ToastComponent],
+  imports: [
+    Navegacion,
+    FormProducto,
+    Presentation,
+    Loading,
+    FormsModule,
+    ModalAvisosComponent,
+  ],
   template: `
     <div class="bg-[#efecff] w-full flex min-h-dvh">
       <navegacion></navegacion>
@@ -48,9 +62,10 @@ import { ToastComponent } from "../../components/toast.component";
               <input
                 class="flex-1 bg-transparent text-[14px] font-normal text-[#3B3D3E] outline-none pl-2"
                 type="search"
-                placeholder="Buscar"
+                placeholder="Buscar por nombre"
                 id="search"
                 name="search"
+                [(ngModel)]="busqueda"
               />
             </div>
             <button
@@ -80,6 +95,36 @@ import { ToastComponent } from "../../components/toast.component";
             [idRegistro]="idRegistro()"
           ></formulario>
 
+          <div class="flex gap-8">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="size-8 cursor-pointer"
+              (click)="paginaAnterior()"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="size-8"
+              (click)="siguientePagina()"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
+                clip-rule="evenodd"
+              
+              />
+            </svg>
+          </div>
           <!--Lista de productos en cartas -->
 
           @if(carga()){
@@ -88,19 +133,25 @@ import { ToastComponent } from "../../components/toast.component";
           <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-6"
           >
-            @for( item of datosBuscados(); track $index) {
+            @for( item of productos; track $index) {
 
-            <div class="bg-white   flex flex-col w-[240px]">
-              <img
-                [src]="item?.imagen"
-                alt=""
-                class="w-full h-48 object-cover rounded-t-xl"
-              />
+            <div class="flexflex-col border border-gray-300 rounded-xl h-104">
               <div
-                class="p-4 flex flex-col flex-grow border border-gray-300 rounded-b-xl"
+                class="flex justify-center border-b-1 border-gray-300 h-56 w-60 "
               >
+                <img
+                  [src]="item?.imagen"
+                  alt=""
+                  class="object-cover h-full w-full rounded-t-xl"
+                />
+              </div>
+              <div class="flex flex-col justify-between p-4">
                 <p class="text-sm text-gray-400">
-                  {{ item?.id_categoria?.nombre }}
+                  {{
+                    item?.id_categoria?._id === '680fd248f613dc80267ba5d7'
+                      ? 'Jabones Artesanales'
+                      : 'Velas Artesanales'
+                  }}
                 </p>
                 <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
                 <p class="text-md font-bold mt-2">$ {{ item?.precio }}</p>
@@ -108,57 +159,63 @@ import { ToastComponent } from "../../components/toast.component";
                   <span class="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
                   {{ item?.stock }} ejemplares disponibles
                 </p>
-                <div class="flex justify-between items-center pt-4">
-                  <button
-                    class="bg-green-400 text-white px-6 h-10 rounded-full hover:bg-green-500 w-auto"
-                    (click)="abrirFormulario(item)"
+              </div>
+              <div class="flex justify-center items-center px-4 gap-2">
+                <button
+                  class="bg-green-400 text-white px-4 h-10 rounded-2xl hover:bg-green-500"
+                  (click)="abrirFormulario(item)"
+                  title="Visualizar producto"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="size-6"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="26"
-                      height="26"
-                      viewBox="0 0 512 512"
-                    >
-                      <path
-                        fill="#3C3C3B"
-                        fill-rule="evenodd"
-                        d="M256 42.667c117.822 0 213.334 95.512 213.334 213.333c0 117.82-95.512 213.334-213.334 213.334c-117.82 0-213.333-95.513-213.333-213.334S138.18 42.667 256 42.667m21.38 192h-42.666v128h42.666zM256.217 144c-15.554 0-26.837 11.22-26.837 26.371c0 15.764 10.986 26.963 26.837 26.963c15.235 0 26.497-11.2 26.497-26.667c0-15.446-11.262-26.667-26.497-26.667"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    class="bg-indigo-400 text-white px-6 h-10 rounded-full hover:bg-indigo-500 w-auto" (click)="editarProducto(item)"
+                    <path
+                      fill-rule="evenodd"
+                      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34zM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="bg-indigo-400 text-white px-4 h-10 rounded-2xl hover:bg-indigo-500 w-auto"
+                  (click)="editarProducto(item)"
+                  title="Editar producto"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="size-6"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="26"
-                      height="26"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="#3C3C3B"
-                        d="M10 15q-.425 0-.712-.288T9 14v-2.425q0-.4.15-.763t.425-.637l8.6-8.6q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4t-.137.738-.438.662l-8.6 8.6q-.275.275-.637.438t-.763.162zm9.6-9.2 1.425-1.4-1.4-1.4L18.2 4.4zM5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6.5q.35 0 .575.175t.35.45.087.55-.287.525l-4.65 4.65q-.275.275-.425.638T7 10.75V15q0 .825.588 1.412T9 17h4.225q.4 0 .763-.15t.637-.425L19.3 11.75q.25-.25.525-.288t.55.088.45.35.175.575V19q0 .825-.587 1.413T19 21z"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    class="bg-red-400 text-white px-6  rounded-full hover:bg-red-500 h-10 "
-                    (click)="eliminarProducto(item._id)"
+                    <path
+                      d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712m-2.218 5.93-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32z"
+                    />
+                    <path
+                      d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  class="bg-red-400 text-white px-4  rounded-2xl hover:bg-red-500 h-10 "
+                  (click)="eliminarProducto(item._id)"
+                  title="Eliminar producto"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class="size-6"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="18"
-                      viewBox="0 0 14 18"
-                      fill="none"
-                    >
-                      <path
-                        d="M12.958 2.571h-3.25v-.964c0-.426-.142-.835-.396-1.136C9.058.169 8.713 0 8.354 0H5.646c-.36 0-.704.17-.958.47-.254.302-.396.71-.396 1.137v.964h-3.25a.5.5 0 0 0-.383.189.7.7 0 0 0-.159.454c0 .17.057.334.159.455.101.12.239.188.383.188h.575l.643 12.251C2.308 17.188 3.005 18 3.885 18h6.23c.884 0 1.567-.795 1.625-1.888l.643-12.255h.575a.5.5 0 0 0 .383-.188.7.7 0 0 0 .159-.455.7.7 0 0 0-.159-.454.5.5 0 0 0-.383-.189M4.853 15.43h-.02a.5.5 0 0 1-.376-.18.7.7 0 0 1-.165-.44l-.271-9a.72.72 0 0 1 .145-.462.51.51 0 0 1 .377-.204.5.5 0 0 1 .389.172.7.7 0 0 1 .172.448l.271 9a.8.8 0 0 1-.034.248.7.7 0 0 1-.11.213.6.6 0 0 1-.172.147.5.5 0 0 1-.206.058m2.689-.643c0 .17-.057.334-.159.454A.5.5 0 0 1 7 15.43a.5.5 0 0 1-.383-.189.7.7 0 0 1-.159-.454v-9a.7.7 0 0 1 .159-.455A.5.5 0 0 1 7 5.143c.144 0 .281.068.383.188s.159.284.159.455zM8.625 2.57h-3.25v-.964a.4.4 0 0 1 .02-.123.3.3 0 0 1 .058-.105.3.3 0 0 1 .089-.07.2.2 0 0 1 .104-.023h2.708q.054 0 .104.023a.3.3 0 0 1 .089.07q.038.045.058.105a.4.4 0 0 1 .02.123zm1.083 12.24a.7.7 0 0 1-.165.44.5.5 0 0 1-.376.18h-.02a.5.5 0 0 1-.206-.058.6.6 0 0 1-.171-.147.7.7 0 0 1-.111-.213.8.8 0 0 1-.034-.248l.27-9a.7.7 0 0 1 .05-.244.7.7 0 0 1 .123-.204.5.5 0 0 1 .18-.132.47.47 0 0 1 .415.018.6.6 0 0 1 .171.146.7.7 0 0 1 .111.214q.038.12.034.248z"
-                        fill="#fff"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.5 4.478v.227a49 49 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A49 49 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a53 53 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951m-6.136-1.452a51 51 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a50 50 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452m-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
             }
@@ -166,21 +223,24 @@ import { ToastComponent } from "../../components/toast.component";
 
           }
         </div>
-        
       </div>
     </div>
+    <app-modal
+      [(mostrarModal)]="mostrarModalConfirmacion"
+      [titulo]="'Confirmar eliminación'"
+      [mensaje]="'¿Estás seguro de eliminar este producto?'"
+      [tipo]="'confirmacion'"
+      (confirmar)="confirmarEliminacion()"
+    ></app-modal>
   `,
 })
 export class ProductsPage {
-
-  //variable que almacena el id de productos
-  public idRegistro = signal<string>('');
-
+  public idRegistro = signal<string>(''); //almacena el id del producto a editar
   public mostrarModal = signal<boolean>(false);
-  //estado de carga
-  public carga = signal<boolean>(true);
+  public carga = signal<boolean>(true); //variable para mostrar el loading
   public serviceProductos = inject(ProductosService);
   public busqueda = signal<string>('');
+  public numeroPagina = signal<number>(1); //almacena el numero de pagina
 
   //variable para setear los datos en el formulario
   public enviarDatos = signal<producto | null>(null);
@@ -188,26 +248,19 @@ export class ProductsPage {
   //creacion de variable que almacenara la accion del formulario
   public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
 
+  //variables para el modal avisos
+  public mostrarModalConfirmacion = signal<boolean>(false);
+  public productoEliminar = signal<string | null>(null);
+
   //variable que almacena datos filtrados de barra de busqueda
-  public datosBuscados = linkedSignal<producto[]>(() => {
-    const datosProductos = this.productos();
-    if (this.busqueda() !== '') {
-      const imprimir = datosProductos.filter((registro) =>
-        Object.values(registro).some((valor) =>
-          valor.toString().toLowerCase().includes(this.busqueda().toLowerCase())
-        )
-      );
-      console.log(imprimir);
-      return imprimir;
-    }
-
-    return datosProductos;
-  });
+  public datosBuscados = linkedSignal<producto[]>(() =>
+    this.productos.filter((registro) =>
+      registro.nombre.toLowerCase().includes(this.busqueda().toLowerCase())
+    )
+  );
   //variable que almacena lo que traera del backend
-  public productos = signal<producto[]>([]);
+  public productos: producto[] = [];
   public datosProductos = new FormGroup({
-    //id : number,
-
     nombre: new FormControl('', [Validators.required]),
     apellido: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -229,40 +282,72 @@ export class ProductsPage {
   }
   //metodo para ver el formulario de registro
   public verFormulario() {
-    this.enviarDatos.set(null)
+    this.enviarDatos.set(null);
     this.mostrarModal.set(true);
     this.accionAsignada.set('Registrar'); //cambia el valor de la accion asignada al formulario
   }
 
   //metodo para eliminar un producto cuando doy click al boton
   public eliminarProducto(id: string) {
-    this.serviceProductos.eliminar(id).subscribe({
-      next: (respuesta) => {
-        console.log(respuesta);
-        this.productos.set(
-          this.productos().filter((producto) => producto._id !== id)
-        );
+    //this.serviceProductos.eliminar(id).subscribe();
+    this.productoEliminar.set(id);
+    this.mostrarModalConfirmacion.set(true);
+  }
+  public confirmarEliminacion() {
+    const id = this.productoEliminar();
+    if (id) {
+      this.serviceProductos.eliminar(id).subscribe({
+        next: () => {
+          // Actualiza la lista después de eliminar
+          this.obtenerProductos(this.numeroPagina());
+          // Muestra mensaje de éxito
+          this.mostrarMensaje(
+            'Éxito',
+            'Producto eliminado correctamente',
+            'exito'
+          );
+        },
+        error: () => {
+          this.mostrarMensaje(
+            'Error',
+            'No se pudo eliminar este producto',
+            'error'
+          );
+        },
+      });
+    }
+  }
+  private obtenerProductos(numeroPagina: number) {
+    this.serviceProductos.obtener(numeroPagina).subscribe({
+      next: (respuesta: any) => {
+        console.log('Respuesta del backend:', respuesta);
+        this.productos = respuesta.productos;
+        this.datosBuscados.set(this.productos);
       },
+    }).add(() => {
+      this.carga.set(false); // Cambia el estado de carga a false después de obtener los productos
     });
   }
+  private mostrarMensaje(
+    titulo: string,
+    mensaje: string,
+    tipo: 'exito' | 'error' | 'confirmacion'
+  ) {}
   //consumo de endpoint de usuarios
-  constructor(
-    private router: Router,
-    private breakpointObserver: BreakpointObserver
-  ) {
-    this.serviceProductos
-      .obtener()
-      .subscribe({
-        next: (respuesta: any) => {
-          this.productos.set(respuesta.productos);
-          this.datosBuscados.set(respuesta.productos);
-          console.log(respuesta.productos);
-        },
-      })
-      .add(() => {
-        this.carga.set(false);
-      }); //cambia estado de carga;
+  constructor() {
+    effect(() => {
+      const pagina = this.numeroPagina();
+      console.log('Pagina actual:', pagina);
+      this.obtenerProductos(pagina);
+    })
   }
 
-
+  //metodo para pasar a la siguiente pagina
+  public siguientePagina() {
+    this.numeroPagina.update((estadoPagina) => estadoPagina + 1);
+  }
+  //metodo para pasar a la anterior pagina
+  public paginaAnterior() {
+    this.numeroPagina.update((estadoPagina) => estadoPagina - 1);
+  }
 }

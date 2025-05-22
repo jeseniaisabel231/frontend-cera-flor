@@ -48,6 +48,7 @@ import { TablaComponent } from '../../components/admin/tabla.component';
               placeholder="Buscar"
               id="search"
               name="search"
+              [(ngModel)]="busqueda"
             />
           </div>
           @if (carga()){
@@ -55,9 +56,11 @@ import { TablaComponent } from '../../components/admin/tabla.component';
           } @else {
 
           <tabla
-            [datosTabla]="ventas()"
+            [datosTabla]="datosBuscados()"
             titulo="venta"
             acciones="Visualizar"
+            [servicio]="serviceVentas"
+
           ></tabla>
           }
         </div>

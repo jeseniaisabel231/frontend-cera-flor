@@ -8,18 +8,45 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
   imports: [NgClass, RouterLink],
   template: `
     <aside
-      
-      class="w-full md:w-[360px]   flex px-10 flex-col "
+      class="w-full md:w-[360px]   flex px-10 flex-col bg-[#efecff]"
+      [class]="mostrar() ? 'animate-activa' : 'animate-inactiva'"
     >
-      <div class="flex items-center gap-2 py-6 justify-center">
-        
-        <img src="logo.png" alt="Logo de Flor y Cera" class="w-[43px] object-cover" />
-        <h1 class="font-playfair font-extrabold text-[17px] hidden lg:block ">
-          Flor & Cera
-        </h1>
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2 py-6 justify-center">
+          <img
+            src="logo.png"
+            alt="Logo de Flor y Cera"
+            class="w-[43px] object-cover"
+          />
+          <h1 class="font-playfair font-extrabold text-[17px] hidden lg:block ">
+            Flor & Cera
+          </h1>
+        </div>
+        <div (click)="mostrar.set(!mostrar())" class="cursor-pointer">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+          >
+            <g
+              fill="none"
+              stroke="#3C3C3B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 3v18m5-12l3 3l-3 3" />
+            </g>
+          </svg>
+        </div>
       </div>
       <div class="flex flex-col items-center gap-4 text-center mb-6">
-        <img src="/administrador/fotoadmin.jpg" class="h-[80px] w-[80px] rounded-full" />
+        <img
+          src="/administrador/fotoadmin.jpg"
+          class="h-[80px] w-[80px] rounded-full"
+        />
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
             <p class="font-bold text-[18px]">Estefanía Sánchez</p>
@@ -211,15 +238,42 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
         </ul>
       </nav>
     </aside>
+    @if(!mostrar()) {
+    <div class=" flex flex-col bg-[#e0daff] px-4 pt-8 gap-4 items-center h-full">
+        <img
+          src="logo.png"
+          alt="Logo de Flor y Cera"
+          class="w-[44px] object-cover"
+        />
+
+        <div (click)="mostrar.set(!mostrar())" class="cursor-pointer ">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+          >
+            <g
+              fill="none"
+              stroke="#3C3C3B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M15 3v18m-5-6l-3-3l3-3" />
+            </g>
+          </svg>
+        </div>
+    </div>
+    }
   `,
 })
 export class Navegacion {
-  public mostrar = signal<boolean>(true);
-
+  public mostrar = signal<boolean>(false);
   //para mantener el color de cada opcion del menu
   //servicio de ruta
   public servicioRuta = inject(ActivatedRoute);
-
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
   constructor(private router: Router) {
     console.log(this.rutaActiva());
@@ -228,7 +282,6 @@ export class Navegacion {
   public toggleMenu(): void {
     this.mostrar.set(!this.mostrar());
   }
-
   salir() {
     localStorage.removeItem('token'); //remuevo el token para salir de secion
     this.router.navigate(['/iniciar-sesion']); // Redirigir al login

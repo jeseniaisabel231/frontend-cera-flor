@@ -111,25 +111,12 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
               </div>
               <div class="flex flex-col justify-between p-4">
                 <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
+
+                <span>
+                  Promocion creada el: {{ item.createdAt }}
+                </span>
               </div>
               <div class="flex justify-center items-center px-4 gap-2">
-                <button
-                  class="bg-green-400 text-white px-4 h-10 rounded-2xl hover:bg-green-500 w-auto"
-                  (click)="visualizarPromociones(item)"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34zM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
                 <button
                   class="bg-indigo-400 text-white px-4 h-10 rounded-2xl hover:bg-indigo-500 w-auto"
                   (click)="editarPromociones(item)"
@@ -267,7 +254,7 @@ export class PromotionsPage {
     }
   }
   private obtenerPromociones() {
-    this.servicePromociones.obtener().subscribe({
+    this.servicePromociones.obtener(1).subscribe({
       next: (respuesta: any) => {
         this.promociones = respuesta.promociones;
         this.datosBuscados.set(this.promociones);
@@ -282,7 +269,7 @@ export class PromotionsPage {
 
   constructor() {
     this.servicePromociones
-      .obtener()
+      .obtener(1)
       .subscribe({
         next: (respuesta: any) => {
           this.promociones = respuesta.promociones;

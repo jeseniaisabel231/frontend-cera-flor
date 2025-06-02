@@ -12,9 +12,9 @@ export class PromocionesService {
   private http = inject(HttpClient);
   public promociones = signal<promocion[]>([]);
 
-  obtener() {
+  obtener(page: number) {
     return this.http
-      .get(`${this.urlBackend}/api/promociones`, {
+      .get(`${this.urlBackend}/api/promociones?page=${page}&limit=4`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(

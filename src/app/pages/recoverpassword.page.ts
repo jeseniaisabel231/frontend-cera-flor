@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { ModalAvisosComponent } from "../components/admin/modalavisos.component";
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 
 @Component({
   imports: [RouterLink, ReactiveFormsModule, ModalAvisosComponent],
@@ -15,19 +15,81 @@ import { ModalAvisosComponent } from "../components/admin/modalavisos.component"
     <div
       class="min-h-screen bg-[#bebebe] flex items-center justify-center px-4"
     >
+      @if(tipoRespuesta() == 'exito') {
+
+      <div class="w-full max-w-md">
+        <form action="" class="bg-[#3C3C3B] rounded-2xl shadow-md p-8">
+          <h2
+            class="text-white text-2xl mb-4 text-center font-medium text-[25px] "
+          >
+            Restablecer contraseña
+          </h2>
+          <div class="gap-2 flex flex-col mb-6">
+            <div class="flex flex-col gap-1">
+              <label for="" class="font-medium text-white">
+                Contraseña
+                <span class="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                name=""
+                id=""
+                placeholder="Contrasena"
+                class="px-4 py-3 placeholder-gray-400  bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] "
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label for="" class="font-medium text-white">
+                Confirmar contrasena
+              </label>
+              <input
+                type="text"
+                placeholder="Confirmar contrasena"
+                class="px-4 py-3 placeholder-gray-400  bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] "
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label for="" class="font-medium text-white">
+                Codigo de confirmacion
+                <span class="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                name=""
+                id=""
+                placeholder="Codigo de confirmacion"
+                class="px-4 py-3 placeholder-gray-400  bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] "
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="relative inline-flex h-[46px] overflow-hidden rounded-[15px] p-[1px] w-full cursor-pointer items-center justify-center bg-[#9F93E7] px-3 py-1 font-medium text-white backdrop-blur-3xl hover:bg-morado-600 transition-colors duration-500"
+          >
+            Recuperar
+          </button>
+        </form>
+      </div>
+      }@else {
       <div class="w-full max-w-md">
         <form
           class="bg-[#3C3C3B] rounded-2xl shadow-md p-8"
           [formGroup]="formulario"
           (ngSubmit)="onSubmit()"
         >
-          <h2 class="text-white text-2xl mb-4 text-center font-medium text-[25px] ">
+          <h2
+            class="text-white text-2xl mb-4 text-center font-medium text-[25px] "
+          >
             Recuperar contraseña
           </h2>
-          <span class="font-medium text-white">Correo electrónico <span class="text-red-400"> *</span></span>
-          
+          <label class="font-medium text-white">
+            Correo electrónico
+            <span class="text-red-400">*</span>
+          </label>
+
           <div class="mb-6 mt-1 relative">
-            @let emailInvalido = formulario.get('email')?.invalid && formulario.get('email')?.value;
+            @let emailInvalido = formulario.get('email')?.invalid &&
+            formulario.get('email')?.value;
 
             <input
               type="email"
@@ -35,9 +97,13 @@ import { ModalAvisosComponent } from "../components/admin/modalavisos.component"
               class="px-4 py-3 placeholder-gray-400  bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] "
               formControlName="email"
               (input)="borrarError()"
-              [class]="emailInvalido ? 'border-red-400 outline-red-400 text-red-400' : 'border-[#878787] outline-[#3C3C3B] text-[#3C3C3B]'"
+              [class]="
+                emailInvalido
+                  ? 'border-red-400 outline-red-400 text-red-400'
+                  : 'border-[#878787] outline-[#3C3C3B] text-[#3C3C3B]'
+              "
             />
-            
+
             <div class="absolute left-3 top-3 text-gray-400 cursor-pointer">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +113,9 @@ import { ModalAvisosComponent } from "../components/admin/modalavisos.component"
               >
                 <g
                   fill="none"
-                  [class]="emailInvalido ? 'stroke-red-400' : 'stroke-[#3C3C3B]'"
+                  [class]="
+                    emailInvalido ? 'stroke-red-400' : 'stroke-[#3C3C3B]'
+                  "
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
@@ -58,12 +126,13 @@ import { ModalAvisosComponent } from "../components/admin/modalavisos.component"
               </svg>
             </div>
             @if(error()) {
-            <small class="text-red-400"> {{error()}}</small>
+            <small class="text-red-400">{{ error() }}</small>
             }@else if(emailInvalido){
-            <small class="text-red-400">Por favor, ingresa un correo electrónico válido.</small>
+            <small class="text-red-400">
+              Por favor, ingresa un correo electrónico válido.
+            </small>
             }
           </div>
-
 
           <button
             type="submit"
@@ -112,10 +181,14 @@ import { ModalAvisosComponent } from "../components/admin/modalavisos.component"
           </div>
         </form>
       </div>
+      }
     </div>
-    <app-modal [(mostrarModal)]="mostrarModal" [titulo]="titulo()" [mensaje]="mensaje() " [tipo]="tipoRespuesta()">
-      
-    </app-modal>
+    <app-modal
+      [(mostrarModal)]="mostrarModal"
+      [titulo]="titulo()"
+      [mensaje]="mensaje()"
+      [tipo]="tipoRespuesta()"
+    ></app-modal>
   `,
 })
 export class RecuperarContrasenia {
@@ -125,16 +198,57 @@ export class RecuperarContrasenia {
   public mensaje = signal('');
 
   //variable para el formulario de recuperar contrasena cuando este sea exitoso
-  public tipoRespuesta = signal<'exito' | 'error'>('exito');
+  public tipoRespuesta = signal<'exito' | 'error'>('error');
+
+  public formPassword = new FormGroup({
+    email: new FormControl('', [Validators.required]),
+    nuevaPassword: new FormControl('', [Validators.required]),
+    codigoRecuperacion: new FormControl('', [Validators.required]),
+  });
 
   public router = inject(Router);
-  
+
   public loading = signal(false);
 
   public formulario = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
   });
   public error = signal('');
+  // onSubmitRecoverPassword() {
+  //   if (this.formPassword.valid) {
+  //     this.loading.set(true);
+  //     this.authService
+  //       .restablecerContrasenia(
+  //         this.formPassword.value.email!,
+  //         this.formPassword.value.nuevaPassword!,
+  //         this.formPassword.value.codigoRecuperacion!
+  //       )
+  //       .subscribe({
+  //         next: (res) => {
+  //           //momentaneamente
+  //           //this.error.set(res.msg);
+  //           this.titulo.set('Éxito');
+  //           this.mensaje.set(res.msg);
+
+  //           this.tipoRespuesta.set('exito');
+  //           this.mostrarModal.set(true);
+  //         },
+  //         error: (err) => {
+  //           //this.error.set(err.error.msg);
+  //           this.titulo.set('Error');
+  //           this.mensaje.set(err.error.msg);
+  //           this.tipoRespuesta.set('error');
+  //           this.mostrarModal.set(true);
+  //         },
+  //       })
+  //       .add(() => {
+  //         this.loading.set(false);
+  //         this.formPassword.reset();
+  //       });
+  //   } else {
+  //     this.error.set('Por favor, ingresa un correo electrónico válido.');
+  //   }
+  // }
 
   onSubmit() {
     if (this.formulario.valid) {
@@ -147,10 +261,9 @@ export class RecuperarContrasenia {
             //this.error.set(res.msg);
             this.titulo.set('Éxito');
             this.mensaje.set(res.msg);
-        
+
             this.tipoRespuesta.set('exito');
             this.mostrarModal.set(true);
-
           },
           error: (err) => {
             //this.error.set(err.error.msg);
@@ -172,4 +285,6 @@ export class RecuperarContrasenia {
   borrarError() {
     this.error.set('');
   }
+
+  //metodo para el formulario de reestablecer contrasnia
 }

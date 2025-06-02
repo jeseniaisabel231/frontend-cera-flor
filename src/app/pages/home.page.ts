@@ -1,98 +1,158 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { Headers } from '../components/header.component';
-import { Footeer } from '../components/footer.component';
+import { httpResource } from '@angular/common/http';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Card } from '../components/card.component';
-import { promocion } from '../interfaces/promocion.interface';
-import { PromocionesService } from '../../services/admin/promociones.service';
-import { producto } from '../interfaces/producto.interface';
+import { environment } from '../../environments/environment';
 import { ProductosService } from '../../services/admin/productos.service';
+import { Card } from '../components/card.component';
+import { Footeer } from '../components/footer.component';
+import { Headers } from '../components/header.component';
+import { producto } from '../interfaces/producto.interface';
 
 @Component({
-  imports: [Headers, Footeer, Card],
+  imports: [Headers, Footeer, Card, RouterLink],
 
   template: `
-    <headers></headers>
-    <main class="flex flex-col ">
+    <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
+    <main class="flex flex-col">
       <!--Seccion banner -->
-      <section class="w-full relative">
+      <section class="relative w-full">
         <!-- elementos dentro del banner -->
-        <div
-          class="text-center md:text-left md:w-1/2 absolute top-[25%] left-[10%]"
-        >
-          <div
-            class="size-12 absolute top-[50%] right-[110%] bg-[#c5feff] rounded-full justify-center items-center flex"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="#3C3C3B"
-              class="size-8"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
 
-          <h1
-            class="text-5xl font-bold font-playfair text-pink-600 text-outline-pink"
-          >
-            Artesanía
-            <span class="block pl-10">para tu, piel</span>
-          </h1>
-          <p class="text-3xl font-bold font-playfair text-outline-purple mt-">
-            magia para tu hogar
-          </p>
-          <a
-            href="#catalogo"
-            class="inline-block mt-4 px-12 py-2 bg-morado-600 text-white font-semibold rounded-full hover:bg-morado-700 transition"
-          >
-            Ver catálogo
-          </a>
-        </div>
-        <img src="banner1-foto.png" alt="" class="absolute left-[40%]" />
-        <a href="#" target="_blank" rel="noopener noreferrer">
-          <img
-            src="banner1.png"
-            alt="Banner description"
-            class="w-full h-[240px] sm:h-auto object-cover"
-          />
-        </a>
         <div
-          class="size-12 absolute top-[46%] left-[95%] bg-[#c5feff] rounded-full justify-center items-center flex"
+          id="default-carousel"
+          class="relative w-full"
+          data-carousel="slide"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="size-8"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-              clip-rule="evenodd"
-            />
-          </svg>
+          <!-- Carousel wrapper -->
+          <div class="relative aspect-[21/9] w-full overflow-hidden rounded-lg md:h-96">
+            <!-- Item 1 -->
+            <div class="duration-700 ease-in-out" data-carousel-item>
+              <img src="banner1.png" alt="Banner description" class="w-full" />
+            </div>
+            @for (
+              promocion of promocionesResource.value().promociones;
+              track promocion._id
+            ) {
+              <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                <img
+                  [src]="promocion.imagen"
+                  [alt]="promocion.descripcion"
+                  class="absolute top-1/2 left-1/2 block w-full -translate-x-1/2 -translate-y-1/2"
+                />
+              </div>
+            }
+
+            <!-- Slider indicators -->
+            <div
+              class="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 space-x-3 rtl:space-x-reverse"
+            >
+              <button
+                type="button"
+                class="h-3 w-3 rounded-full"
+                aria-current="true"
+                aria-label="Slide 1"
+                data-carousel-slide-to="0"
+              ></button>
+              <button
+                type="button"
+                class="h-3 w-3 rounded-full"
+                aria-current="false"
+                aria-label="Slide 2"
+                data-carousel-slide-to="1"
+              ></button>
+              <button
+                type="button"
+                class="h-3 w-3 rounded-full"
+                aria-current="false"
+                aria-label="Slide 3"
+                data-carousel-slide-to="2"
+              ></button>
+              <button
+                type="button"
+                class="h-3 w-3 rounded-full"
+                aria-current="false"
+                aria-label="Slide 4"
+                data-carousel-slide-to="3"
+              ></button>
+              <button
+                type="button"
+                class="h-3 w-3 rounded-full"
+                aria-current="false"
+                aria-label="Slide 5"
+                data-carousel-slide-to="4"
+              ></button>
+            </div>
+            <!-- Slider controls -->
+            <button
+              type="button"
+              class="group absolute start-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none"
+              data-carousel-prev
+            >
+              <span
+                class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70"
+              >
+                <svg
+                  class="h-4 w-4 text-white rtl:rotate-180 dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+                <span class="sr-only">Previous</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="group absolute end-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none"
+              data-carousel-next
+            >
+              <span
+                class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70"
+              >
+                <svg
+                  class="h-4 w-4 text-white rtl:rotate-180 dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span class="sr-only">Next</span>
+              </span>
+            </button>
+          </div>
         </div>
       </section>
       <!--Seccion de beneficios -->
-      <section class="py-10 ">
-        <div class="max-w-6xl mx-auto px-4">
+      <section class="py-10">
+        <div class="mx-auto max-w-6xl px-4">
           <h2
-            class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
+            class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
           >
             Beneficios o características clave
           </h2>
 
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+            class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8"
           >
-            <article class="text-center flex flex-col items-center">
-              <img src="beneficios1.png" alt="" class="sm:w-36 w-28 mb-4 " />
-              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+            <article class="flex flex-col items-center text-center">
+              <img src="beneficios1.png" alt="" class="mb-4 w-28 sm:w-36" />
+              <h3 class="font-playfair mb-2 text-[17px] font-semibold">
                 Ingredientes naturales
               </h3>
               <p class="text-sm">
@@ -102,9 +162,9 @@ import { ProductosService } from '../../services/admin/productos.service';
               </p>
             </article>
 
-            <article class="text-center flex flex-col items-center">
-              <img src="beneficios2.png" alt="" class="sm:w-36 w-28  mb-4" />
-              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+            <article class="flex flex-col items-center text-center">
+              <img src="beneficios2.png" alt="" class="mb-4 w-28 sm:w-36" />
+              <h3 class="font-playfair mb-2 text-[17px] font-semibold">
                 Producción artesanal
               </h3>
               <p class="text-sm">
@@ -114,9 +174,9 @@ import { ProductosService } from '../../services/admin/productos.service';
               </p>
             </article>
 
-            <article class="text-center flex flex-col items-center">
-              <img src="beneficios1.png" alt="" class="sm:w-36 w-28  mb-4" />
-              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+            <article class="flex flex-col items-center text-center">
+              <img src="beneficios1.png" alt="" class="mb-4 w-28 sm:w-36" />
+              <h3 class="font-playfair mb-2 text-[17px] font-semibold">
                 Personalización
               </h3>
               <p class="text-sm">
@@ -126,9 +186,9 @@ import { ProductosService } from '../../services/admin/productos.service';
               </p>
             </article>
 
-            <article class="text-center flex flex-col items-center">
-              <img src="beneficios1.png" alt="" class="sm:w-36 w-28  mb-4" />
-              <h3 class="font-semibold font-playfair mb-2 text-[17px]">
+            <article class="flex flex-col items-center text-center">
+              <img src="beneficios1.png" alt="" class="mb-4 w-28 sm:w-36" />
+              <h3 class="font-playfair mb-2 text-[17px] font-semibold">
                 Beneficios ecológicos
               </h3>
               <p class="text-sm">
@@ -143,163 +203,161 @@ import { ProductosService } from '../../services/admin/productos.service';
 
       <!--Seccion de productos destacados -->
       <section class="bg-celeste-200 py-10">
-        <div class="max-w-6xl mx-auto px-4">
+        <div class="mx-auto max-w-6xl px-4">
           <h2
-            class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
+            class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
           >
-            Ultimos productos
+            Nuevos Productos
           </h2>
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
-          @for(producto of productos; track producto._id){
-
-            <card [producto]="producto"></card>
-          }
-            
+            @for (producto of productos; track producto._id) {
+              <card [producto]="producto" (emitirCantidad)="recibirCantidad($event)"></card>
+            }
           </div>
         </div>
       </section>
 
       <!--Seccion de personalizacion -->
-      <section class="w-full relative">
-        <a href="" class="block relative w-full h-full overflow-hidden">
+      <a class="relative w-full" routerLink="/personalizacion-producto">
+        <a href="" class="relative block h-full w-full overflow-hidden">
           <img
             src="banner2.png"
             alt=""
-            class="w-full h-[500px] md:h-[300px] xl:h-auto object-cover"
+            class="h-[500px] w-full object-cover md:h-[300px] xl:h-auto"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-8 lg:w-12 animate-float3 top-[10%] left-[20%]"
+            class="animate-float3 absolute top-[10%] left-[20%] w-8 lg:w-12"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-4 lg:w-6 animate-float1 top-[65%] left-[1%]"
+            class="animate-float1 absolute top-[65%] left-[1%] w-4 lg:w-6"
           />
 
           <img
             src="banner2-flor1.png"
             alt=""
-            class="absolute w-6 lg:w-10 animate-float2 top-[10%] left-[3%]"
+            class="animate-float2 absolute top-[10%] left-[3%] w-6 lg:w-10"
           />
 
           <img
             src="banner2-flor3.png"
             alt=""
-            class="absolute w-6 lg:w-8 animate-float2 top-[75%] left-[5%]"
+            class="animate-float2 absolute top-[75%] left-[5%] w-6 lg:w-8"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-6 lg:w-8 animate-float1 top-[85%] left-[30%]"
+            class="animate-float1 absolute top-[85%] left-[30%] w-6 lg:w-8"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-4 lg:w-6 animate-float2 top-[15%] left-[40%]"
+            class="animate-float2 absolute top-[15%] left-[40%] w-4 lg:w-6"
           />
 
           <img
             src="banner2-flor2.png"
             alt=""
-            class="absolute w-6 lg:w-12 animate-float1 top-[9%] left-[50%]"
+            class="animate-float1 absolute top-[9%] left-[50%] w-6 lg:w-12"
           />
 
           <img
             src="banner2-flor3.png"
             alt=""
-            class="absolute w-4 lg:w-8 animate-float2 top-[78%] left-[70%]"
+            class="animate-float2 absolute top-[78%] left-[70%] w-4 lg:w-8"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-4 lg:w-5 animate-float3 top-[15%] left-[75%]"
+            class="animate-float3 absolute top-[15%] left-[75%] w-4 lg:w-5"
           />
 
           <img
             src="banner2-flor1.png"
             alt=""
-            class="absolute w-8 lg:w-10 animate-float1 top-[20%] left-[80%]"
+            class="animate-float1 absolute top-[20%] left-[80%] w-8 lg:w-10"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-5 animate-float2 top-[70%] left-[85%]"
+            class="animate-float2 absolute top-[70%] left-[85%] w-5"
           />
 
           <img
             src="banner2-burbuja.png"
             alt=""
-            class="absolute w-4 lg:w-10 animate-float3 top-[13%] left-[90%]"
+            class="animate-float3 absolute top-[13%] left-[90%] w-4 lg:w-10"
           />
 
           <img
             src="banner2-flor2.png"
             alt=""
-            class="absolute w-4 sm:w-8 animate-float1 top-[80%] left-[95%] "
+            class="animate-float1 absolute top-[80%] left-[95%] w-4 sm:w-8"
           />
 
           <p
-            class="absolute lg:left-[10%] top-[15%] md:top-[23%] md:left-[5%] left-[15%] text-[35px] lg:text-[55px]  text-celeste-600 text-outline-sky font-bold [text-shadow:2px_2px_6px_rgba(0,0,0,0.5)] text-4xl "
+            class="text-celeste-600 text-outline-sky absolute top-[15%] left-[15%] text-4xl text-[35px] font-bold [text-shadow:2px_2px_6px_rgba(0,0,0,0.5)] md:top-[23%] md:left-[5%] lg:left-[10%] lg:text-[55px]"
           >
             ¡Tu producto,
           </p>
           <div
-            class="absolute top-[25%] lg:left-[20%] md:top-[40%] lg:top-[50%] left-[30%] md:left-[10%] bg-[#fbd800] px-10 py-2 md:py-4 lg:py-6 rounded-[15px] [box-shadow:8px_6px_12px_#806BFF]"
+            class="absolute top-[25%] left-[30%] rounded-[15px] bg-[#fbd800] px-10 py-2 [box-shadow:8px_6px_12px_#806BFF] md:top-[40%] md:left-[10%] md:py-4 lg:top-[50%] lg:left-[20%] lg:py-6"
           >
             <p
-              class="text-[32px] lg:text-5xl text-celeste-600 text-outline-pink font-bold [text-shadow:2px_3px_6px_rgba(0,0,0,0.5)]"
+              class="text-celeste-600 text-outline-pink text-[32px] font-bold [text-shadow:2px_3px_6px_rgba(0,0,0,0.5)] lg:text-5xl"
             >
               tu estilo!
             </p>
           </div>
           <p
-            class="absolute top-[45%] left-[15%] md:top-[20%] md:left-[40%]  text-[17px] lg:text-[18px] text-center lg:left-[45%]"
+            class="absolute top-[45%] left-[15%] text-center text-[17px] md:top-[20%] md:left-[40%] lg:left-[45%] lg:text-[18px]"
           >
-            <span class="font-bold text-[19px] md:text-[22px]">
+            <span class="text-[19px] font-bold md:text-[22px]">
               Personaliza
             </span>
             cada detalle para
             <br />
-            <span class="font-bold text-[19px] md:text-[21px]">crear</span>
+            <span class="text-[19px] font-bold md:text-[21px]">crear</span>
             algo
-            <span class="font-bold text-[19px] md:text-[21px]">
+            <span class="text-[19px] font-bold md:text-[21px]">
               verdaderamente único.
             </span>
           </p>
           <img
             src="banner2-dibujo.png"
             alt=""
-            class="absolute md:w-3xs md:top-[43%] md:left-[38%] w-44 top-[58%] left-[30%] lg:left-[48%] transition-transform transform hover:scale-120 duration-300"
+            class="absolute top-[58%] left-[30%] w-44 transform transition-transform duration-300 hover:scale-120 md:top-[43%] md:left-[38%] md:w-3xs lg:left-[48%]"
           />
           <a
-            class="absolute top-[83%] left-[28%] md:top-[45%] md:left-[70%] lg:top-[45%] lg:left-[75%] bg-morado-600 text-amarrillo-500 font-bold py-2 px-6 lg:py-4 rounded-2xl w-50 xl:w-60 text-center transform transition-all duration-300 ease-in-out hover:scale-105 hover:bg-morado-700 hover:text-white"
+            class="bg-morado-600 text-amarrillo-500 hover:bg-morado-700 absolute top-[83%] left-[28%] w-50 transform rounded-2xl px-6 py-2 text-center font-bold transition-all duration-300 ease-in-out hover:scale-105 hover:text-white md:top-[45%] md:left-[70%] lg:top-[45%] lg:left-[75%] lg:py-4 xl:w-60"
           >
             ¡Comienza a crear ahora!
           </a>
         </a>
-      </section>
+      </a>
       <!--Seccion de necesitas ayuda -->
-      <section class="w-full px-14 py-6 bg-[#ffe3e3]">
-        <div class="max-w-7xl mx-auto">
+      <section class="w-full bg-[#ffe3e3] px-14 py-6">
+        <div class="mx-auto max-w-7xl">
           <!-- Título centrado -->
           <h2
-            class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
+            class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
           >
             Preguntas Frecuentes
           </h2>
 
           <!-- Layout de 3 columnas -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
             <!-- Columna izquierda con imágenes -->
             <div class="flex flex-col items-center">
               <img
@@ -311,40 +369,40 @@ import { ProductosService } from '../../services/admin/productos.service';
 
             <!-- Columna central con preguntas -->
             <div class="flex flex-col gap-4">
-              <div class="border-l-4 border-morado-400 pl-4">
-                <p class="font-semibold text-morado-700">
+              <div class="border-morado-400 border-l-4 pl-4">
+                <p class="text-morado-700 font-semibold">
                   🧠 Funcionamiento de la personalización con inteligencia
                   artificial
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   La IA analiza las preferenicas del cliente para recomendar y
                   diseñar productos únicos.
                 </p>
               </div>
               <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="font-semibold text-morado-700">
+                <p class="text-morado-700 font-semibold">
                   🕯️ Selección de aromas y colores
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   Los clientes pueden elegir personalmente los aromas, colores a
                   sus productos.
                 </p>
               </div>
-              <div class="border-l-4 border-morado-400 pl-4">
-                <p class="font-semibold text-morado-700">
+              <div class="border-morado-400 border-l-4 pl-4">
+                <p class="text-morado-700 font-semibold">
                   🧴 Ingredientes utilizados
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   Todos los artículos se elaboran con ingredientes 100%
                   naturales, , veganos y seguros para la piel.
                 </p>
               </div>
 
               <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="font-semibold text-morado-700">
+                <p class="text-morado-700 font-semibold">
                   🧼 Cuidado y mantenimiento
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   Se recomienda almacenar los productos en ambientes frescos y
                   secos, protegidos de la luz solar directa. En el caso de las
                   velas, deben utilizarse sobre superficies estables y alejadas
@@ -356,46 +414,46 @@ import { ProductosService } from '../../services/admin/productos.service';
             <!-- Columna derecha con preguntas -->
             <div class="flex flex-col gap-4">
               <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="font-semibold text-morado-700">
+                <p class="text-morado-700 font-semibold">
                   🖼️ Visualización previa del diseño
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   El sistema genera una representación digital del producto
                   personalizado una vez completado el formulario, permitiendo al
                   cliente aprobar el diseño antes de confirmar la compra.
                 </p>
               </div>
-              <div class="border-l-4 border-morado-400 pl-4">
-                <p class="font-semibold text-morado-700">
+              <div class="border-morado-400 border-l-4 pl-4">
+                <p class="text-morado-700 font-semibold">
                   📦 Tiempos de entrega
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   El proceso de fabricación tiene una duración de 2 a 4 días
                   laborables. Posteriormente, el envío estándar tarda entre 3 y
                   5 días hábiles, variando según la ubicación del destinatario.
                 </p>
               </div>
               <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="font-semibold text-morado-700">💳 Opciones de pago</p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-morado-700 font-semibold">💳 Opciones de pago</p>
+                <p class="text-sm text-gray-600">
                   Se aceptan tarjetas de crédito/débito y transferencias.
                 </p>
               </div>
-              <div class="border-l-4 border-morado-400 pl-4">
-                <p class="font-semibold text-morado-700">
+              <div class="border-morado-400 border-l-4 pl-4">
+                <p class="text-morado-700 font-semibold">
                   🤖 Flexibilidad en la personalización
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   Los clientes pueden optar tanto por productos prediseñados
                   como por creaciones personalizadas asistidas por inteligencia
                   artificial, según sus preferencias.
                 </p>
               </div>
               <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="font-semibold text-morado-700">
+                <p class="text-morado-700 font-semibold">
                   📩 Soporte al cliente
                 </p>
-                <p class="text-gray-600 text-sm">
+                <p class="text-sm text-gray-600">
                   El equipo de atención al cliente está disponible de lunes a
                   sábado a través de múltiples canales WhatsApp y Instagram para
                   resolver cualquier consulta.
@@ -412,19 +470,30 @@ import { ProductosService } from '../../services/admin/productos.service';
 export class HomePage {
   public serviceProductos = inject(ProductosService);
   public productos: producto[] = [];
-  ngOnInit(){
+  public nuevaCantidad = signal(0);
+  ngOnInit() {
     this.obtenerProductos(1);
   }
-  
+
   obtenerProductos(numeroPagina: number) {
     this.serviceProductos.obtener(numeroPagina).subscribe({
       next: (respuesta: any) => {
         console.log('Respuesta del backend:', respuesta);
-        this.productos = respuesta.productos
+        this.productos = respuesta.productos;
         console.log('Productos filtrados:', this.productos);
       },
       error: (err) => console.error('Error al cargar productos', err),
     });
   }
-  
+  public promocionesResource = httpResource<any>(
+    () => `${environment.urlApi}/api/promociones`,
+
+    {
+      defaultValue: [],
+    },
+  );
+
+  recibirCantidad(cantidad: number) {
+    this.nuevaCantidad.set(cantidad)
+  }
 }

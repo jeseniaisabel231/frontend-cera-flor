@@ -1,78 +1,90 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { Headers } from '../components/header.component';
-import { Footeer } from '../components/footer.component';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Card } from '../components/card.component';
-import { promocion } from '../interfaces/promocion.interface';
-import { PromocionesService } from '../../services/admin/promociones.service';
+import { TitleCasePipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
 import { ProductosService } from '../../services/admin/productos.service';
-import { producto } from '../interfaces/producto.interface';
-import { categorias } from '../interfaces/categoria.interface';
-import { BarranavComponent } from '../components/barranav.component';
 import { CategoryService } from '../../services/categorias.service';
+import { BarranavComponent } from '../components/barranav.component';
+import { Card } from '../components/card.component';
+import { Footeer } from '../components/footer.component';
+import { Headers } from '../components/header.component';
+import { Loading } from '../components/loading.component';
+import { categorias } from '../interfaces/categoria.interface';
+import { producto } from '../interfaces/producto.interface';
 
 @Component({
-  imports: [Headers, Footeer, Card, RouterLink, BarranavComponent],
-
+  imports: [
+    Headers,
+    Footeer,
+    Card,
+    RouterLink,
+    BarranavComponent,
+    TitleCasePipe,
+    Loading,
+  ],
   template: `
-    <headers></headers>
+    <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
     <main class="flex flex-col">
-      <barranav></barranav>
-      <section class="py-10">
-        <div class="max-w-4xl mx-auto text-center md:text-left">
-          <h1 id="catalogo-heading" class="text-4xl font-bold">
-            Descubre el arte de lo natural: Jabones y Velas Artesanales para tu
-            bienestar
-          </h1>
-          <p class="mt-4 text-gray-700">
-            Nuestros jabones y velas están hechos con ingredientes naturales...
-          </p>
-        </div>
-      </section>
-      <section aria-labelledby="categorias-heading" class="bg-yellow-50 py-10">
-        <div class="max-w-5xl mx-auto text-center">
-          <h2 id="categorias-heading" class="text-3xl font-semibold">
-            Categorías
+      <barranav
+        rutaSeccionSeleccionada="catalogo"
+        [rutaCategoriaSeleccionada]="titulo().replace('-', ' ')"
+      />
+      <div class="relative aspect-[16/9]  md:h-115">
+        <img [src]="getBannerImage()" alt="Banner description" class="w-full" />
+      </div>
+      <section class="bg-yellow-50 pt-34 sm:pt-8 pb-8">
+        <div class="mx-auto max-w-5xl text-center mt-8">
+          <h2
+            class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
+          >
+            Selecciona una categoría
           </h2>
 
           <div
-            class="flex flex-col md:flex-row justify-center items-center gap-10 mt-8"
+            class="mt-8 flex flex-col items-center justify-center gap-20 md:flex-row"
           >
             <!-- Jabones -->
-            @for(categoria of categorias; track categoria._id){
-
-            <article class="flex flex-col items-center text-center">
-              <div class="rounded-full bg-green-100 p-4">
-                <img
-                  [src]="categoria.imagen"
-                  [alt]="'Imagen de ' + categoria.nombre"
-                  class="rounded-full size-40 object-cover"
-                />
-              </div>
-              <h3 class="mt-4 text-lg">
-                {{ categoria.nombre }}
-              </h3>
-              <button
-                (click)="seleccionarCategoria(categoria._id)"
-                class="mt-3 inline-flex items-center px-4 py-2 bg-morado-600 text-white rounded-full hover:bg-morado-700 transition"
+            @for (categoria of categorias; track categoria._id) {
+              <article
+                class="flex cursor-pointer flex-col items-center text-center"
               >
-                Ver más →
-              </button>
-            </article>
+                <div
+                  class="rounded-full bg-green-100 p-4 shadow-lg transition duration-300 hover:scale-105 hover:shadow-2xl"
+                >
+                  <img
+                    [src]="categoria.imagen"
+                    [alt]="'Imagen de ' + categoria.nombre"
+                    class="size-40 rounded-full object-cover"
+                  />
+                </div>
+                <h3 class="mt-4 text-lg">
+                  {{ categoria.nombre }}
+                </h3>
+                <a
+                  [routerLink]="'/catalogo'"
+                  [queryParams]="{
+                    categoria: categoria.nombre.replace(' ', '-'),
+                  }"
+                  class="bg-morado-600 hover:bg-morado-700 mt-3 inline-flex items-center rounded-full px-4 py-2 text-white transition"
+                >
+                  Ver más →
+                </a>
+              </article>
             }
           </div>
         </div>
       </section>
 
       <section class="bg-green-50 py-10">
-        <div class="max-w-6xl mx-auto px-4">
-          <h2 class="text-3xl font-semibold text-center mb-6">
-            {{ titulo() }}
+        <div class="mx-auto max-w-6xl px-4">
+          <h2
+            class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
+          >
+            {{ titulo().replace('-', ' ') | titlecase }}
           </h2>
           <!-- Filtros de productos-->
-          <div
-            class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8"
-          >
+          <div class="mb-8 flex flex-col items-center gap-14 md:flex-row">
             <div>
               <label for="filter" class="mr-2 font-medium text-gray-700">
                 Filtrar por:
@@ -101,15 +113,25 @@ import { CategoryService } from '../../services/categorias.service';
           </div>
 
           <!-- Grid para los productos-->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          >
-            @for(producto of productos; track producto._id){
-
-            <!-- Card producto -->
-            <card [producto]="producto"></card>
-            }
-          </div>
+          @if (carga()) {
+            <loading></loading>
+          } @else if (errorCarga()) {
+            <div class="text-center text-red-500">
+              Error al cargar los productos
+            </div>
+          } @else {
+            <div
+              class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            >
+              @for (producto of productos; track producto._id) {
+                <card [producto]="producto" (emitirCantidad)="recibirCantidad($event)"></card>
+              } @empty {
+                <p class="col-span-full text-center">
+                  No se encontraron productos
+                </p>
+              }
+            </div>
+          }
         </div>
       </section>
     </main>
@@ -122,45 +144,72 @@ export class CatalogPage {
   public productos: producto[] = [];
   public categorias: categorias[] = [];
   public productosFiltrados: producto[] = [];
-  public titulo = signal('Jabones Artesanales');
-  public categoriaSeleccionada = signal('');
+  public carga = signal<boolean>(true);
+  public errorCarga = signal<boolean>(false);
   public tipoFiltro: string | null = null;
+  public rutaActiva = inject(ActivatedRoute);
+  public titulo = toSignal(
+    this.rutaActiva.queryParams.pipe(map((params) => params['categoria'])),
+  );
+  public nuevaCantidad = signal(0);
+  public banners = {
+    'jabones-artesanales': 'bannerJA.png',
+    'velas-artesanales': 'bannerVA.png',
+  };
+  public getBannerImage(): string {
+    const categoria = this.titulo()?.toLowerCase() || 'jabones-artesanales';
+    return this.banners[categoria as keyof typeof this.banners] || this.banners['jabones-artesanales'];
+  }
 
   ngOnInit() {
     this.cargarCategorias();
-    this.obtenerProductos(1);
+    this.rutaActiva.queryParams.subscribe((params) => {
+      const categoria = params['categoria'];
+      if (categoria) {
+        this.obtenerProductos(1, 20); // vuelve a cargar productos cuando cambia la categoría
+      } else {
+        // Manejar caso cuando no hay categoría seleccionada
+        this.carga.set(false);
+      }
+    });
   }
   cargarCategorias() {
     this.serviceCategorias.obtener().subscribe({
       next: (respuesta: any) => {
         this.categorias = respuesta.categorias;
-        this.categoriaSeleccionada.set(this.categorias[0]._id);
-        this.titulo.set(this.categorias[0].nombre);
       },
       error: (err) => console.error('Error al cargar categorías', err),
     });
   }
 
-  obtenerProductos(numeroPagina: number) {
-    this.serviceProductos.obtener(numeroPagina).subscribe({
-      next: (respuesta: any) => {
-        console.log('Respuesta del backend:', respuesta);
-        this.productos = respuesta.productos.filter(
-          (producto: producto) =>
-            producto.id_categoria._id === this.categoriaSeleccionada()
-        );
-        console.log('Productos filtrados:', this.productos);
-      },
-      error: (err) => console.error('Error al cargar productos', err),
-    });
+  obtenerProductos(numeroPagina: number, limit: number) {
+    this.carga.set(true);
+    this.errorCarga.set(false);
+    this.serviceProductos
+      .obtener(numeroPagina, limit)
+      .subscribe({
+        next: (respuesta: any) => {
+          console.log('Respuesta del backend:', respuesta);
+          this.productos = respuesta.productos.filter(
+            (producto: producto) =>
+              producto.id_categoria.nombre.replace(' ', '-').toLowerCase() ===
+              this.titulo().toLowerCase(),
+          );
+          console.log('Productos filtrados:', this.productos);
+          this.carga.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar productos', err);
+          this.errorCarga.set(true);
+          this.carga.set(false);
+        },
+      })
+      .add(() => {
+        this.carga.set(false);
+      });
   }
-
-  seleccionarCategoria(categoria: string) {
-    this.categoriaSeleccionada.set(categoria);
-    this.titulo.set(
-      this.categorias.find((cat) => cat._id === categoria)?.nombre || ''
-    );
-    this.obtenerProductos(1);
+  recibirCantidad(cantidad: number) {
+    this.nuevaCantidad.set(cantidad)
   }
 
   filtrarPorTipo(event: Event) {}

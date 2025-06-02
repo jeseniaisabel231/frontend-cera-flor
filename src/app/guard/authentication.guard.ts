@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
+//decodifica el token
 function isAuthenticated() {
   const token = localStorage.getItem('token');
   console.log('Token:', token);

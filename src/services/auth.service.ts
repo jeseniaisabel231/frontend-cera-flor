@@ -12,9 +12,10 @@ interface respuestaLogin {
   providedIn: 'root',
 })
 export class AuthService {
-   private urlBackend = environment.urlApi;
+  private urlBackend = environment.urlApi;
   //private urlBackend = 'https://tesis-ecommerce.onrender.com';
   private http = inject(HttpClient);
+  private datosUsuario: any = {};
 
   //endpoint de login
   login(email: string, password: string) {
@@ -33,7 +34,7 @@ export class AuthService {
     genero: string,
     email: string,
     password: string,
-    
+
     //confirmPassword: string,
   ): Observable<respuestaLogin> {
     // Método POST: enviar todos los datos necesarios
@@ -51,12 +52,48 @@ export class AuthService {
             // Considera usar un servicio de autenticación en lugar de localStorage directo
             localStorage.setItem('token', response.token);
           }
-        })
+        }),
       );
   }
   recuperarContrasenia(email: string): Observable<any> {
     return this.http.post<any>(`${this.urlBackend}/api/recuperar-contrasenia`, {
       email,
     });
+  }
+  restablecerContrasenia(
+    email: string,
+    nuevaPassword: string,
+    codigoRecuperacion: number,
+  ) {
+    return this.http.post<any>(`${this.urlBackend}/api/cambiar-contrasenia`, {
+      email,
+      nuevaPassword,
+      codigoRecuperacion,
+    });
+  }
+  perfil() {
+    return this.http
+      .get<any>(`${this.urlBackend}/api/perfil`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .pipe(
+        tap((response) => {
+          this.datosUsuario = response;
+          localStorage.setItem(
+            'datosUsuario',
+            JSON.stringify(this.datosUsuario),
+          );
+        }),
+      );
+  }
+
+  get estadoAutenticacion(): boolean {
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    if (!token) return false;
+
+    return Date.now() < JSON.parse(atob(token.split('.')[1])).exp * 1000;
   }
 }

@@ -14,6 +14,7 @@ import { promocion } from '../../interfaces/promocion.interface';
 import { FormGroup } from '@angular/forms';
 import { Actions, ModalComponent, TituloForms } from './modal.component';
 import { SwitchComponent } from '../switch.component';
+import { transformaFecha } from '../../utils/transformaFecha';
 
 export type DatosTabla = usuario | venta | promocion; //representacion de la clave
 
@@ -66,7 +67,11 @@ export type DatosTabla = usuario | venta | promocion; //representacion de la cla
             >
               <span>{{ fila[columna] }}</span>
             </div>
-            }@else{
+            }@else if(columna.toString() === 'fecha_venta'){
+              {{ transformaFecha(fila[columna]) }}
+            }
+            
+            @else{
             {{ fila[columna] }}
 
             }
@@ -201,8 +206,11 @@ export class TablaComponent {
   public verificarTipo(item: any): string {
     if (item.estado === 'activo' || item.estado === 'inactivo') {
       return 'cliente';
-    }else{
+    } else {
       return 'venta';
     }
+  }
+  public transformaFecha(fecha: string): string {
+    return transformaFecha(fecha);
   }
 }

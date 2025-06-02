@@ -8,8 +8,7 @@ import {
   model,
   viewChild,
 } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-
+import { transformaFecha } from '../../utils/transformaFecha';
 export type TituloForms = 'usuario' | 'venta';
 export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
 @Component({
@@ -73,20 +72,22 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                   <div class="mt-1 text-gray-900 p-2 bg-gray-50 rounded-md">
                     {{ nombreCliente(verDatos()[item]) }}
                   </div>
+                }@else if(item.toString().includes('fecha') || item.toString() === 'createdAt' || item.toString() === 'updatedAt') {
+                  <div class="mt-1 text-gray-900 p-2 bg-gray-50 rounded-md">
+                    {{ transformaFecha(verDatos()[item]) }}
+                  </div>
+
                 }
                 @else if(item.toString() === 'productos') { 
                   <div class="space-y-3">
-                    <!-- @for (prod of productos(verDatos()[item]); track $index) {
+                    @for (prod of verDatos()[item]; track $index) {
                       <div class="p-3 border border-gray-200 rounded-lg bg-gray-50">
                         <div class="flex justify-between items-start">
-                          <h3 class="font-medium text-gray-900">{{ prod?.nombre }}</h3>
-                          <span class="text-sm font-semibold text-blue-600">{{ prod?.precio }}$</span>
+                          <h3 class="font-medium text-gray-900">Cantidad: {{ prod?.cantidad }}</h3>
+                          <span class="text-sm font-semibold text-blue-600">Subtotal: {{ prod?.subtotal }}$</span>
                         </div>
-                        @if(prod?.descripcion) {
-                          <p class="mt-1 text-sm text-gray-600">{{ prod?.descripcion }}</p>
-                        }
                       </div>
-                    }  -->
+                    } 
                   </div>
                 }
                 @else {
@@ -164,8 +165,8 @@ export class ModalComponent {
   public producto(producto: any): number {
     return producto.length;
   }
-  public productos(productos: any): any[] {
-    console.log(productos);
-    return productos?.map((item: any) => item?.producto_id);
+
+  public transformaFecha(fecha: string): string {
+    return transformaFecha(fecha);
   }
 }

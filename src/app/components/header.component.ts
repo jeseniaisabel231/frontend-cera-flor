@@ -1,32 +1,33 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, effect, inject, model, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { CarritoService } from '../../services/carrito.service';
+import { decodificarToken } from '../utils/decodificarToken';
 @Component({
   imports: [RouterLink],
   selector: 'headers',
   template: `
-    <header
-      class="flex flex-col h-[20dvh] sticky top-0 z-50 bg-morado-700 shadow-md"
-    >
+    <header class="sticky top-0 z-50 flex flex-col shadow-md">
       <div
-        class=" flex items-center  bg-amarrillo-500 px-10 lg:px-28 py-2 justify-between "
+        class="bg-amarrillo-500 flex items-center justify-between px-10 py-2 lg:px-28"
       >
-        <a class="flex items-center gap-x-3 cursor-pointer">
+        <a class="flex cursor-pointer items-center gap-x-3">
           <img src="logo.png" alt="Flor & Cera" />
-          <h1 class="font-playfair font-bold text-[25px] hidden lg:block ">
+          <h1 class="font-playfair hidden text-[25px] font-bold lg:block">
             Flor & Cera
           </h1>
         </a>
 
-        <div class="flex gap-x-7 w-4/5 justify-end cursor-pointer">
-          <div class="relative w-full justify-end flex">
+        <div class="flex w-4/5 cursor-pointer justify-end gap-x-7">
+          <div class="relative flex w-full justify-end">
             <input
-              class="h-10 w-full sm:w-3/5 bg-white border border-gris-500 rounded-[15px] p-2 pl-4 pr-10 outline-[#3C3C3B] "
+              class="border-gris-500 h-10 w-full rounded-[15px] border bg-white p-2 pr-10 pl-4 outline-[#3C3C3B] sm:w-3/5"
               placeholder="Buscar productos...."
               id="search"
               name="search"
             />
             <svg
-              class="absolute right-2 inset-y-0 my-auto "
+              class="absolute inset-y-0 right-2 my-auto"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -40,8 +41,22 @@ import { RouterLink } from '@angular/router';
             </svg>
           </div>
 
-          <div class="flex flex-row  items-center ">
-            <div class="flex flex-row  items-center pr-3 gap-2">
+          <div class="flex flex-row items-center">
+            @if (usuarioAutenticado && menuVisible()) {
+              <div
+                class="absolute -bottom-3 rounded-lg border border-[#a0a0a0] bg-white p-2"
+              >
+                <ol>
+                  <li>Mi perfil</li>
+                  <li>Mis pedidos</li>
+                  <li (click)="cerrarSesion()">Cerrar Sesion</li>
+                </ol>
+              </div>
+            }
+            <button
+              class="flex flex-row items-center gap-2 pr-3"
+              (click)="verMenu()"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="28"
@@ -57,13 +72,13 @@ import { RouterLink } from '@angular/router';
                   d="M19 20.75a1 1 0 0 0 1-1v-1.246c.004-2.806-3.974-5.004-8-5.004s-8 2.198-8 5.004v1.246a1 1 0 0 0 1 1zM15.604 6.854a3.604 3.604 0 1 1-7.208 0a3.604 3.604 0 0 1 7.208 0"
                 />
               </svg>
-              <a class="hidden sm:block whitespace-nowrap" href="#">
+              <span class="hidden whitespace-nowrap sm:block" href="#">
                 Mi cuenta
-              </a>
-            </div>
+              </span>
+            </button>
             <div class="h-10 border-[1px] border-[#a0a0a0]"></div>
 
-            <div class="flex flex-row  items-center pl-3 gap-1 relative">
+            <div class="relative flex flex-row items-center gap-1 pl-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="26"
@@ -75,28 +90,75 @@ import { RouterLink } from '@angular/router';
                   d="M864 158.704H672.815V97.328c0-52.944-43.056-96-96-96H449.183c-52.944 0-96 43.056-96 96v61.376H159.999c-35.344 0-64 28.656-64 64v735.968c0 35.344 28.656 64 64 64h704c35.344 0 64-28.656 64-64V222.704c0-35.344-28.656-64-64-64zM417.184 97.328c0-17.664 14.336-32 32-32h127.632c17.664 0 32 14.336 32 32v61.376H417.184zM864 958.672H160V222.704h193.184v65.84s-.848 31.967 31.809 31.967c36 0 32.192-31.967 32.192-31.967v-65.84h191.632v65.84s-2.128 32.128 31.872 32.128c32 0 32.128-32.128 32.128-32.128v-65.84h191.184z"
                 />
               </svg>
-              <a class="hidden sm:block" href="#">Compras</a>
+              <a class="hidden sm:block" routerLink="/carrito">Compras</a>
               <span
                 id="cart-counter"
                 class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white"
-              >
-                20
-              </span>
+              >{{cantidadProducto}}</span>
             </div>
           </div>
         </div>
       </div>
       <nav
-        class="flex w-full bg-morado-500 text-white h-18 items-center justify-center"
+        class="bg-morado-500 flex h-14 w-full items-center justify-center text-white"
       >
         <ul class="flex flex-row gap-14 font-semibold">
           <li><a routerLink="/inicio">Inicio</a></li>
-          <li><a href="/catalogo">Catálogo</a></li>
-          <li><a href="#">Personalización</a></li>
+          <li>
+            <a
+              routerLink="/catalogo"
+              [queryParams]="{ categoria: 'jabones-artesanales' }"
+            >
+              Catálogo
+            </a>
+          </li>
+          <li><a routerLink="/personalizacion-producto">Personalización</a></li>
           <li><a href="#">Sobre nosotros</a></li>
         </ul>
       </nav>
     </header>
   `,
 })
-export class Headers {}
+export class Headers {
+  public serviceAuth = inject(AuthService);
+  public usuarioAutenticado = decodificarToken();
+  public menuVisible = signal(false);
+  public router = inject(Router);
+  public serviceCarrito = inject(CarritoService);
+  public cantidadProducto = 0;
+  public nuevaCantidad = model<number>(0);
+
+  constructor() {
+    // Verificar si el usuario está autenticado al cargar el componente
+    this.serviceCarrito.obtenerCarrito().subscribe({
+      next: (respuesta) => {
+        this.cantidadProducto = this.serviceCarrito.cantidadProductos;
+        console.log('Carrito obtenido:', this.serviceCarrito.cantidadProductos);
+      },
+      error: (error) => {
+        console.error('Error al obtener el carrito:', error);
+      },
+    });
+    effect(() => {
+      if (this.nuevaCantidad() > 0) {
+        console.log('Cantidad nueva:', this.nuevaCantidad());
+        this.cantidadProducto += this.nuevaCantidad();
+        this.nuevaCantidad.set(0); // Resetea la cantidad después de actualizar
+      }
+    })
+  }
+
+  //metodo para ver modal
+  verMenu() {
+    if (this.usuarioAutenticado) {
+      this.menuVisible.set(!this.menuVisible());
+      
+    } else {
+      this.router.navigate(['/iniciar-sesion']);
+    }
+  }
+  cerrarSesion() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/inicio']);
+  }
+}

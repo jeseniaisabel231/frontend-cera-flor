@@ -97,6 +97,7 @@ import { Actions } from './modal.component';
 
         <!-- Título y descripción -->
         <div class="col-span-2 gap-6 w-full">
+          
           <!-- Título -->
           <div>
             <label class="block text-sm font-medium mb-1" for="titulo">
@@ -113,6 +114,7 @@ import { Actions } from './modal.component';
               {{ errores().nombre }}
             </small>
           </div>
+          
         </div>
 
         <!-- Botón -->
@@ -142,6 +144,7 @@ export class FormProm {
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null),
     nombre: new FormControl(''),
+    createdAt: new FormControl(''),
   });
 
   public toFormData(): FormData {
@@ -187,6 +190,7 @@ export class FormProm {
         this.formulario.patchValue({
           nombre: datos.nombre,
           imagen: datos.imagen,
+          createdAt: datos.createdAt,
         });
 
         // Cargar la imagen preview si existe
@@ -206,6 +210,7 @@ export class FormProm {
           this.formulario.setValue({
             nombre: '',
             imagen: null,
+            createdAt: '',
           });
         }
         this.formulario.reset();

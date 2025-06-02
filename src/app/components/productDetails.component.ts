@@ -1,42 +1,51 @@
-import { Component } from '@angular/core';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
+import { Component, input, linkedSignal } from '@angular/core';
+import { environment } from '../../environments/environment';
+import { producto } from '../interfaces/producto.interface';
 
 @Component({
   selector: 'product-details',
   template: `
     <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2  gap-6 ">
+      @if(productoResource().isLoading()){
+      <div class="flex items-center justify-center">
+        <div
+          class="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"
+        ></div>
+      </div>
+      } @else {
+
       <figure>
         <img
-          src="#"
+          [src]="productoResource().value()?.producto.imagen"
           alt="Jabón de avena"
-          class="rounded-xl shadow-md object-cover"
+          class="rounded-xl shadow-md object-cover size-80"
         />
       </figure>
-
       <article>
-        <h1
-          id="producto-principal"
-          class="text-2xl font-bold text-green-900 mb-2"
+        <h2
+          class="text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
         >
-          Jabón de avena
-        </h1>
+          {{ productoResource().value()?.producto.nombre }}
+        </h2>
         <p class="mb-4">
-          En Flor & Cera, creemos en el poder de lo natural y lo artesanal.
-          Nuestra pasión por el bienestar y el cuidado de la piel nos llevó a
-          crear jabones y velas hechos a mano, utilizando ingredientes puros,
-          libres de químicos agresivos y respetuosos con el medio ambiente.
+          {{ productoResource().value()?.producto.descripcion }}
         </p>
 
         <h2 class="font-semibold mb-2">Beneficios</h2>
         <ul class="list-disc list-inside space-y-1 mb-4">
-          <li>Hecho a mano con ingredientes naturales</li>
-          <li>Cuida tu piel de forma suave y efectiva</li>
-          <li>Libre de químicos agresivos</li>
+          @for ( beneficio of productoResource().value()?.producto.beneficios;
+          track beneficio ) {
+          <li>{{ beneficio }}</li>
+          }
         </ul>
 
         <div class="flex items-center space-x-4">
-          <span class="text-xl font-bold">$4.00</span>
+          <span class="text-xl font-bold">
+            $ {{ productoResource().value()?.producto.precio }}
+          </span>
           <div class="flex items-center border rounded px-2 py-1">
-            <button class="px-2">−</button>
+            <button class="px-2">-</button>
             <span class="px-2">1</span>
             <button class="px-2">+</button>
           </div>
@@ -48,7 +57,13 @@ import { Component } from '@angular/core';
           </button>
         </div>
       </article>
+      }
     </div>
   `,
 })
-export class ProductDetailsComponent {}
+export class ProductDetailsComponent {
+  public producto_id = input();
+  public id = linkedSignal(() => this.producto_id());
+
+  public productoResource = input.required<HttpResourceRef<any>>()
+}

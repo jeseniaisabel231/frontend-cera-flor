@@ -12,6 +12,8 @@ import { AuthGuard, NoAuthGuard } from './guard/authentication.guard';
 import { CatalogPage, } from './pages/catalog.page';
 import { ProductDetailPage } from './pages/productDetail.page';
 import { ShoppingCardPage } from './pages/shoppingCard.page';
+import { PersonalizationPage } from './pages/personalization.page';
+import { PaymentPage } from './pages/payment,page';
 
 
 export const routes: Routes = [
@@ -22,11 +24,13 @@ export const routes: Routes = [
   { path: 'catalogo/:categoria', component: CatalogPage },
   { path:'detalle-producto/:id', component: ProductDetailPage},
   { path: 'carrito', component: ShoppingCardPage },
+  { path: 'personalizacion-producto', component: PersonalizationPage },
   {
     path: 'recuperar-contrasena',
     component: RecuperarContrasenia,
     canActivate: [NoAuthGuard],
   }, // Ruta única
+  { path: 'informacion-pago', component: PaymentPage},
 
   {
     path: 'admin',
@@ -42,5 +46,5 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '**', redirectTo: 'carrito', pathMatch: 'full' },
+  { path: '**', redirectTo: 'iniciar-sesion', pathMatch: 'full' },
 ];

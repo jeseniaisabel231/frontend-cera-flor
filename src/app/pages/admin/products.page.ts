@@ -28,19 +28,19 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
     ModalAvisosComponent,
   ],
   template: `
-    <div class="bg-[#efecff] w-full flex min-h-dvh">
+    <main class="bg-[#efecff] w-full flex min-h-dvh">
       <navegacion></navegacion>
 
-      <div
-        class="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full border-l border-[#d0c9fe]"
+      <section
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-6 w-full border-l border-[#d0c9fe]"
       >
         <presentation
           titulo="Productos y catálogo"
           class="col-span-5"
         ></presentation>
 
-        <div
-          class="overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md"
+        <article
+          class="relative overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md"
         >
           <div class="flex justify-between">
             <div
@@ -95,136 +95,145 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
             [idRegistro]="idRegistro()"
           ></formulario>
 
-          <div class="flex gap-8">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="size-8 cursor-pointer"
+          <div class="relative">
+            <button
+              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 z-10"
               (click)="paginaAnterior()"
             >
-              <path
-                fill-rule="evenodd"
-                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="size-8"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-8 cursor-pointer"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 z-10"
               (click)="siguientePagina()"
             >
-              <path
-                fill-rule="evenodd"
-                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
-                clip-rule="evenodd"
-              
-              />
-            </svg>
-          </div>
-          <!--Lista de productos en cartas -->
-
-          @if(carga()){
-          <loading></loading>
-          }@else {
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-6"
-          >
-            @for( item of productos; track $index) {
-
-            <div class="flexflex-col border border-gray-300 rounded-xl h-104">
-              <div
-                class="flex justify-center border-b-1 border-gray-300 h-56 w-60 "
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-8"
               >
-                <img
-                  [src]="item?.imagen"
-                  alt=""
-                  class="object-cover h-full w-full rounded-t-xl"
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
+                  clip-rule="evenodd"
                 />
-              </div>
-              <div class="flex flex-col justify-between p-4">
-                <p class="text-sm text-gray-400">
-                  {{
-                    item?.id_categoria?._id === '680fd248f613dc80267ba5d7'
-                      ? 'Jabones Artesanales'
-                      : 'Velas Artesanales'
-                  }}
-                </p>
-                <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
-                <p class="text-md font-bold mt-2">$ {{ item?.precio }}</p>
-                <p class="text-sm text-green-600 flex items-center mt-1">
-                  <span class="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
-                  {{ item?.stock }} ejemplares disponibles
-                </p>
-              </div>
-              <div class="flex justify-center items-center px-4 gap-2">
-                <button
-                  class="bg-green-400 text-white px-4 h-10 rounded-2xl hover:bg-green-500"
-                  (click)="abrirFormulario(item)"
-                  title="Visualizar producto"
+              </svg>
+            </button>
+
+            <!--Lista de productos en cartas -->
+
+            @if(carga()){
+            <loading></loading>
+            }@else {
+            <section
+              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-6 "
+            >
+              @for( item of productos; track $index) {
+
+              <div
+                class="flex flex-col border border-gray-300 rounded-xl h-auto min-h-[400px] max-w-[300px] mx-auto w-full"
+              >
+                <figure
+                  class="relative pt-[75%] overflow-hidden border-b border-gray-300"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
+                  <img
+                    [src]="item?.imagen"
+                    alt="{{ item?.nombre }}"
+                    class="absolute top-0 left-0 w-full h-full object-cover rounded-t-md"
+                  />
+                </figure>
+                <div class="flex flex-col justify-between p-4">
+                  <p class="text-sm text-gray-400">
+                    {{
+                      item?.id_categoria?._id === '680fd248f613dc80267ba5d7'
+                        ? 'Jabones Artesanales'
+                        : 'Velas Artesanales'
+                    }}
+                  </p>
+                  <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
+                  <p class="text-md font-bold mt-2">$ {{ item?.precio }}</p>
+                  <p class="text-sm text-green-600 flex items-center mt-1">
+                    <span class="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
+                    {{ item?.stock }} ejemplares disponibles
+                  </p>
+                </div>
+                <div class="flex justify-center items-center px-4 gap-2 pb-4">
+                  <button
+                    class="bg-green-400 text-white px-4 h-10 rounded-2xl hover:bg-green-500"
+                    (click)="abrirFormulario(item)"
+                    title="Visualizar producto"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34zM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="bg-indigo-400 text-white px-4 h-10 rounded-2xl hover:bg-indigo-500 w-auto"
-                  (click)="editarProducto(item)"
-                  title="Editar producto"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34zM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="bg-indigo-400 text-white px-4 h-10 rounded-2xl hover:bg-indigo-500 w-auto"
+                    (click)="editarProducto(item)"
+                    title="Editar producto"
                   >
-                    <path
-                      d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712m-2.218 5.93-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32z"
-                    />
-                    <path
-                      d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="bg-red-400 text-white px-4  rounded-2xl hover:bg-red-500 h-10 "
-                  (click)="eliminarProducto(item._id)"
-                  title="Eliminar producto"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712m-2.218 5.93-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32z"
+                      />
+                      <path
+                        d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="bg-red-400 text-white px-4  rounded-2xl hover:bg-red-500 h-10 "
+                    (click)="eliminarProducto(item._id)"
+                    title="Eliminar producto"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M16.5 4.478v.227a49 49 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A49 49 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a53 53 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951m-6.136-1.452a51 51 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a50 50 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452m-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.5 4.478v.227a49 49 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A49 49 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a53 53 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951m-6.136-1.452a51 51 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a50 50 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452m-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
+              }
+            </section>
+
             }
           </div>
-
-          }
-        </div>
-      </div>
-    </div>
+        </article>
+      </section>
+    </main>
     <app-modal
       [(mostrarModal)]="mostrarModalConfirmacion"
       [titulo]="'Confirmar eliminación'"
@@ -293,6 +302,7 @@ export class ProductsPage {
     this.productoEliminar.set(id);
     this.mostrarModalConfirmacion.set(true);
   }
+  
   public confirmarEliminacion() {
     const id = this.productoEliminar();
     if (id) {
@@ -318,15 +328,18 @@ export class ProductsPage {
     }
   }
   private obtenerProductos(numeroPagina: number) {
-    this.serviceProductos.obtener(numeroPagina).subscribe({
-      next: (respuesta: any) => {
-        console.log('Respuesta del backend:', respuesta);
-        this.productos = respuesta.productos;
-        this.datosBuscados.set(this.productos);
-      },
-    }).add(() => {
-      this.carga.set(false); // Cambia el estado de carga a false después de obtener los productos
-    });
+    this.serviceProductos
+      .obtener(numeroPagina)
+      .subscribe({
+        next: (respuesta: any) => {
+          console.log('Respuesta del backend:', respuesta);
+          this.productos = respuesta.productos;
+          this.datosBuscados.set(this.productos);
+        },
+      })
+      .add(() => {
+        this.carga.set(false); // Cambia el estado de carga a false después de obtener los productos
+      });
   }
   private mostrarMensaje(
     titulo: string,
@@ -339,7 +352,7 @@ export class ProductsPage {
       const pagina = this.numeroPagina();
       console.log('Pagina actual:', pagina);
       this.obtenerProductos(pagina);
-    })
+    });
   }
 
   //metodo para pasar a la siguiente pagina

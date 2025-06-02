@@ -13,9 +13,9 @@ export class ProductosService {
   private http = inject(HttpClient);
   public productos = signal<producto[]>([]); // Variable para guardar los productos luego de interceptar
 
-  obtener(page: number) {
+  obtener(page: number, limit: number = 4) {
     return this.http
-      .get(`${this.urlBackend}/api/productos?page=${page}&limit=4`, {
+      .get(`${this.urlBackend}/api/productos?page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(

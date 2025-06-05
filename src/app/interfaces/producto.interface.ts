@@ -5,7 +5,7 @@ export interface producto{
     descripcion: string,
     beneficios: string,
     caracteristicas: string,
-    precio: string,
+    precio: number,
     stock: string,
     imagen: string,
     categoria: string,

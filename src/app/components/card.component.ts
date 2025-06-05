@@ -8,11 +8,10 @@ import type { producto } from '../interfaces/producto.interface';
   selector: 'card',
   standalone: true,
   template: `
-    <article class="flex h-98 cursor-pointer flex-col rounded-xl border border-gray-300 bg-white">
-      <div
-        class=""
-        [routerLink]="['/detalle-producto', producto()._id]"
-      >
+    <article
+      class="flex h-98 cursor-pointer flex-col rounded-xl border border-gray-300 bg-white"
+    >
+      <div class="" [routerLink]="['/detalle-producto', producto()._id]">
         <img
           [src]="producto().imagen"
           [alt]="producto().nombre"
@@ -33,11 +32,11 @@ import type { producto } from '../interfaces/producto.interface';
           </div>
         </div>
       </div>
-      <div class="flex  gap-4 px-4">
-        <div class="flex items-center rounded border px-2 py-1">
-          <button class="px-2" (click)="decrementarCantidad()">-</button>
-          <span class="px-2">{{cantidad()}}</span>
-          <button class="px-2" (click)="incrementarCantidad()">+</button>
+      <div class="flex gap-4 px-4">
+        <div class="flex items-center rounded-full border border-gray-300">
+          <button class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200" (click)="decrementarCantidad()" title="Disminuir cantidad" >-</button>
+          <span class="px-2">{{ cantidad() }}</span>
+          <button class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200" (click)="incrementarCantidad()" title="Aumentar cantidad">+</button>
         </div>
         <button
           (click)="agregarAlCarrito()"
@@ -56,11 +55,11 @@ export class Card {
   public emitirCantidad = output<number>();
 
   //metodo para incrementar
-  incrementarCantidad(){
+  incrementarCantidad() {
     this.cantidad.update((cantidadActual) => cantidadActual + 1);
   }
 
-  decrementarCantidad(){
+  decrementarCantidad() {
     this.cantidad.update((cantidadActual) => {
       if (cantidadActual > 1) {
         return cantidadActual - 1;
@@ -71,11 +70,12 @@ export class Card {
   //metodo para agregar al carrito
   agregarAlCarrito() {
     console.log('Producto agregado al carrito:', this.producto().nombre);
-    this.serviceCarrito.agregarCarrito(this.producto(), this.cantidad()).subscribe({
-      next: () => {
-        this.emitirCantidad.emit(1);
-      }
-    });
-
+    this.serviceCarrito
+      .agregarCarrito(this.producto(), this.cantidad())
+      .subscribe({
+        next: () => {
+          this.emitirCantidad.emit(1);
+        },
+      });
   }
 }

@@ -14,6 +14,7 @@ import { ProductDetailPage } from './pages/productDetail.page';
 import { ShoppingCardPage } from './pages/shoppingCard.page';
 import { PersonalizationPage } from './pages/personalization.page';
 import { PaymentPage } from './pages/payment,page';
+import { AboutUsPage } from './pages/aboutUs.page';
 
 
 export const routes: Routes = [
@@ -21,7 +22,6 @@ export const routes: Routes = [
   { path: 'registro', component: RegisterPage, canActivate: [NoAuthGuard] },
   { path: 'inicio', component: HomePage },
   { path: 'catalogo', component: CatalogPage },
-  { path: 'catalogo/:categoria', component: CatalogPage },
   { path:'detalle-producto/:id', component: ProductDetailPage},
   { path: 'carrito', component: ShoppingCardPage },
   { path: 'personalizacion-producto', component: PersonalizationPage },
@@ -30,7 +30,8 @@ export const routes: Routes = [
     component: RecuperarContrasenia,
     canActivate: [NoAuthGuard],
   }, // Ruta única
-  { path: 'informacion-pago', component: PaymentPage},
+  { path: 'informacion-pago', component: PaymentPage, canActivate: [AuthGuard] },
+  { path: 'sobre-nosotros', component: AboutUsPage},
 
   {
     path: 'admin',

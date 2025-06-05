@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { of, tap } from 'rxjs';
 import { carrito } from '../app/interfaces/carrito.interface';
 import { environment } from '../environments/environment';
@@ -9,27 +9,39 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class CarritoService {
-  private carrito: carrito = {} as carrito; // Inicializa el carrito como un objeto vacío
+  public carrito = signal<carrito>({
+    _id: '',
+    cliente_id: '',
+    productos: [],
+    estado: '',
+    total: 0,
+  }); // Inicializa el carrito como un objeto vacío
   private http = inject(HttpClient);
   public serviceAuth = inject(AuthService);
   private urlBackend = environment.urlApi;
-  public cantidadProductos = 0;
+  public cantidadProductos = signal(0);
 
   obtenerCarrito() {
     if (!this.serviceAuth.estadoAutenticacion) {
       const carritoLocalString = localStorage.getItem('carrito');
-      const carritoLocal = carritoLocalString
-        ? JSON.parse(carritoLocalString)
-        : {
-            productos: [],
-          };
-      this.carrito = carritoLocal;
-      this.cantidadProductos = carritoLocal.productos?.length ?? 0;
-      console.log('Service Carrito local obtenido :', this.carrito);
+      if (carritoLocalString) {
+        const carritoLocal = JSON.parse(carritoLocalString) as carrito;
+        this.carrito.set(carritoLocal);
+        this.cantidadProductos.set(carritoLocal.productos?.length ?? 0);
+      }
       return of({
-        carrito: this.carrito,
+        carrito: this.carrito(),
         msg: 'Carrito obtenido del almacenamiento local',
-      });
+      }).pipe(
+        tap(() => {
+          const carritoLocalString = localStorage.getItem('carrito');
+          if (carritoLocalString) {
+            const carritoLocal = JSON.parse(carritoLocalString) as carrito;
+            this.carrito.set(carritoLocal);
+            this.cantidadProductos.set(carritoLocal.productos?.length ?? 0);
+          }
+        }),
+      );
     }
 
     return this.http
@@ -41,29 +53,51 @@ export class CarritoService {
       })
       .pipe(
         tap((respuesta) => {
-          this.carrito = respuesta.carrito;
-          this.cantidadProductos = respuesta.carrito?.productos?.length || 0;
+          this.carrito.set(respuesta.carrito);
+          this.cantidadProductos.set(respuesta.carrito?.productos?.length || 0);
           console.log('Carrito obtenido:', this.carrito);
         }),
       );
   }
   agregarCarrito(producto: any, cantidad: number = 1) {
     if (!this.serviceAuth.estadoAutenticacion) {
-      console.log(this.carrito.productos);
-      this.carrito.productos.push({ producto_id: producto, cantidad } as any); // TODO: Revisar el funcionamiento luego
-      this.cantidadProductos += 1; // Incrementa la cantidad de productos en el carrito
-      localStorage.setItem('carrito', JSON.stringify(this.carrito));
       return of({
-        carrito: this.carrito,
+        carrito: this.carrito(),
         msg: 'Producto agregado al carrito local',
-      });
+      }).pipe(
+        tap(() => {
+          console.log(this.carrito().productos);
+          this.carrito.update((carritoActual) => {
+            const productoExistente = carritoActual.productos.find(
+              (item: any) => item.producto_id?._id === producto._id,
+            );
+            if (productoExistente) {
+              // Si el producto ya existe, solo se incrementa la cantidad
+              productoExistente.cantidad += cantidad;
+              console.log(
+                'Producto existente en el carrito local:',
+                productoExistente,
+              );
+            } else {
+              carritoActual.productos.push({
+                producto_id: producto,
+                cantidad,
+              } as any); // TODO: Revisar el funcionamiento luego
+              this.cantidadProductos.update((count) => count + 1); // Incrementa la cantidad de productos en el carrito
+            }
+            carritoActual.total += producto.precio * cantidad; // Actualiza el total del carrito
+            localStorage.setItem('carrito', JSON.stringify(carritoActual));
+            return carritoActual;
+          });
+        }),
+      );
     }
 
     return this.http
       .put<any>(
         `${this.urlBackend}/api/carritos/agregar`,
         {
-          producto_id: producto.producto_id._id,
+          producto_id: producto._id,
           cantidad,
         },
         {
@@ -75,21 +109,26 @@ export class CarritoService {
       )
       .pipe(
         tap((respuesta) => {
-          this.carrito = respuesta.carrito;
+          this.carrito.set(respuesta.carrito);
           console.log('Producto agregado al carrito:', respuesta);
-          this.cantidadProductos = this.cantidadProductos + 1; // Incrementa la cantidad de productos en el carrito
+          this.cantidadProductos.update(
+            (cantidadActual) => cantidadActual + 1, // Incrementa la cantidad de productos en el carrito
+          );
         }),
       );
   }
   vaciarCarrito() {
     if (!this.serviceAuth.estadoAutenticacion) {
-      this.carrito = {} as carrito; // Resetea el carrito local
-      this.cantidadProductos = 0; // Resetea la cantidad de productos en el carrito
-      localStorage.removeItem('carrito'); // Elimina el carrito del almacenamiento local
       return of({
-        carrito: this.carrito,
+        carrito: this.carrito(),
         msg: 'Carrito local vaciado',
-      });
+      }).pipe(
+        tap(() => {
+          this.carrito.set({} as carrito); // Resetea el carrito local
+          this.cantidadProductos.set(0); // Resetea la cantidad de productos en el carrito
+          localStorage.removeItem('carrito'); // Elimina el carrito del almacenamiento local
+        }),
+      );
     }
 
     return this.http
@@ -101,25 +140,35 @@ export class CarritoService {
       })
       .pipe(
         tap((respuesta) => {
-          this.carrito = {} as carrito;
+          this.carrito.set({} as carrito);
           console.log('Carrito vaciado:', respuesta);
-          this.cantidadProductos = 0; // Resetea la cantidad de productos en el carrito
+          this.cantidadProductos.set(0); // Resetea la cantidad de productos en el carrito
         }),
       );
   }
   eliminarCarrito(producto_id: string) {
     if (!this.serviceAuth.estadoAutenticacion) {
-      const productosActualizados = this.carrito.productos.filter(
-        (producto: any) => producto.producto_id._id !== producto_id,
-      );
-      this.carrito.productos = productosActualizados;
-      this.cantidadProductos -= 1; // Decrementa la cantidad de productos en el carrito
-      localStorage.setItem('carrito', JSON.stringify(this.carrito));
+      const carritoActual = this.carrito();
+      const productoIndice = carritoActual.productos.findIndex(
+        (producto: any) => producto.producto_id._id === producto_id,
+      )
+      const productoEliminado = carritoActual.productos[productoIndice];
+      carritoActual.productos.splice(productoIndice, 1); // Elimina el producto del carrito
+      carritoActual.total -= 
+        productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
+      localStorage.setItem('carrito', JSON.stringify(carritoActual)); // Actualiza el carrito en el almacenamiento local
+
+
       console.log('Producto eliminado del carrito local:', producto_id);
       return of({
-        carrito: this.carrito,
+        carrito: carritoActual,
         msg: 'Producto eliminado del carrito local',
-      });
+      }).pipe(
+        tap((respuesta) => {
+
+          this.interceptarEliminarProducto(respuesta, producto_id);
+        }),
+      );
     }
     return this.http
       .put<any>(
@@ -134,33 +183,33 @@ export class CarritoService {
       )
       .pipe(
         tap((respuesta) => {
-          console.log('Producto eliminado del carrito:', respuesta);
-          this.cantidadProductos -= 1; // Decrementa la cantidad de productos en el carrito
-          const productosActualizados = this.carrito.productos.filter(
-            (producto: any) => producto.producto_id._id !== producto_id,
-          );
-          this.carrito.productos = productosActualizados;
+          this.interceptarEliminarProducto(respuesta, producto_id);
         }),
       );
   }
+
   modificarCantidadCarrito(producto_id: string, cantidad: number) {
     if (!this.serviceAuth.estadoAutenticacion) {
-      const indiceProducto = this.carrito.productos.findIndex(
-        (producto: any) => producto.producto_id._id === producto_id,
-      );
-      console.log('Índice del producto encontrado:', indiceProducto);
-      if (indiceProducto !== -1) {
-        this.carrito.productos[indiceProducto].cantidad += cantidad;
-        localStorage.setItem('carrito', JSON.stringify(this.carrito));
-        console.log(
-          'Cantidad del producto modificada en el carrito local:',
-          this.carrito,
-        );
-      }
       return of({
-        carrito: this.carrito,
-        msg: 'Cantidad del producto modificada en el carrito local',
-      });
+        carrito: this.carrito(),
+        msg: 'Cantidad modificada en el carrito local',
+      }).pipe(
+        tap(() => {
+          this.carrito.update((carritoActual) => {
+            const productoIndice = carritoActual.productos.findIndex(
+              (producto: any) => producto.producto_id._id === producto_id,
+            );
+            if (productoIndice !== -1) {
+              carritoActual.productos[productoIndice].cantidad += cantidad;
+              carritoActual.total +=
+                carritoActual.productos[productoIndice].producto_id.precio *
+                cantidad; // Actualiza el total del carrito
+            }
+            localStorage.setItem('carrito', JSON.stringify(carritoActual));
+            return carritoActual;
+          });
+        }),
+      );
     }
     return this.http
       .put<any>(
@@ -174,19 +223,40 @@ export class CarritoService {
         },
       )
       .pipe(
-        tap((respuesta) => {
-          console.log(
-            'Cantidad del producto modificada en el carrito:',
-            respuesta,
-          );
-          const indiceProducto = this.carrito.productos.findIndex(
-            (producto: any) => producto.producto_id._id === producto_id,
-          );
-          console.log('Índice del producto encontrado:', indiceProducto);
-          if (indiceProducto !== -1) {
-            this.carrito.productos[indiceProducto].cantidad += cantidad;
-          }
+        tap(() => {
+          
+          this.carrito.update((carritoActual) => {
+            const indiceProducto = carritoActual.productos.findIndex(
+              (producto: any) => producto.producto_id._id === producto_id,
+            );
+            if (indiceProducto !== -1) {
+              carritoActual.productos[indiceProducto].cantidad += cantidad;
+              carritoActual.total +=
+                carritoActual.productos[indiceProducto].producto_id.precio *
+                cantidad; // Actualiza el total del carrito
+                console.log('Producto actualizado en el carrito:', carritoActual);
+            }
+            return carritoActual;
+          });
         }),
       );
+  }
+  private interceptarEliminarProducto(respuesta: any, producto_id: string) {
+    console.log('Producto eliminado del carrito:', respuesta);
+    this.cantidadProductos.update(
+      (cantidadProductos) => cantidadProductos - 1, // Decrementa la cantidad de productos en el carrito
+    );
+    this.carrito.update((carritoActual) => {
+      const productoIndice = carritoActual.productos.findIndex(
+        (producto: any) => producto.producto_id._id === producto_id,
+      );
+      if (productoIndice !== -1) {
+        const productoEliminado = carritoActual.productos[productoIndice];
+        carritoActual.total -=
+          productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
+        carritoActual.productos.splice(productoIndice, 1); // Elimina el producto del carrito
+      }
+      return carritoActual;
+    });
   }
 }

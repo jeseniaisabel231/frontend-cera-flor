@@ -33,7 +33,7 @@ import { producto } from '../interfaces/producto.interface';
       <div class="relative aspect-[16/9]  md:h-115">
         <img [src]="getBannerImage()" alt="Banner description" class="w-full" />
       </div>
-      <section class="bg-yellow-50 pt-34 sm:pt-8 pb-8">
+      <section class="pt-34 sm:pt-8 pb-8">
         <div class="mx-auto max-w-5xl text-center mt-8">
           <h2
             class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
@@ -84,7 +84,7 @@ import { producto } from '../interfaces/producto.interface';
             {{ titulo().replace('-', ' ') | titlecase }}
           </h2>
           <!-- Filtros de productos-->
-          <div class="mb-8 flex flex-col items-center gap-14 md:flex-row">
+          <!-- <div class="mb-8 flex flex-col items-center gap-14 md:flex-row">
             <div>
               <label for="filter" class="mr-2 font-medium text-gray-700">
                 Filtrar por:
@@ -110,7 +110,7 @@ import { producto } from '../interfaces/producto.interface';
                 <option value="precio_desc">Precio: mayor a menor</option>
               </select>
             </div>
-          </div>
+          </div> -->
 
           <!-- Grid para los productos-->
           @if (carga()) {

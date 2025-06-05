@@ -44,17 +44,88 @@ import { decodificarToken } from '../utils/decodificarToken';
           <div class="flex flex-row items-center">
             @if (usuarioAutenticado && menuVisible()) {
               <div
-                class="absolute -bottom-3 rounded-lg border border-[#a0a0a0] bg-white p-2"
+                class="absolute right-55 -bottom-14 z-50 w-48 rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-200"
               >
-                <ol>
-                  <li>Mi perfil</li>
-                  <li>Mis pedidos</li>
-                  <li (click)="cerrarSesion()">Cerrar Sesion</li>
-                </ol>
+                <ul class="py-1 text-sm text-gray-700">
+                  <li>
+                    <a
+                      href="/perfil"
+                      class="block px-4 py-2 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
+                    >
+                      <div class="flex items-center gap-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        Mi perfil
+                      </div>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a
+                      href="/pedidos"
+                      class="block px-4 py-2 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
+                    >
+                      <div class="flex items-center gap-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                          />
+                        </svg>
+                        Mis pedidos
+                      </div>
+                    </a>
+                  </li>
+
+                  <li class="my-1 border-t border-gray-100"></li>
+
+                  <li>
+                    <button
+                      (click)="cerrarSesion()"
+                      class="flex w-full items-center gap-2 px-4 py-2 text-left text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
+                      </svg>
+                      Cerrar sesión
+                    </button>
+                  </li>
+                </ul>
               </div>
             }
             <button
-              class="flex flex-row items-center gap-2 pr-3"
+              class="group flex flex-row items-center gap-2 pr-3"
               (click)="verMenu()"
             >
               <svg
@@ -62,39 +133,48 @@ import { decodificarToken } from '../utils/decodificarToken';
                 width="28"
                 height="28"
                 viewBox="0 0 24 24"
+                class="stroke-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:stroke-[#7a0dc7]"
               >
                 <path
                   fill="none"
-                  stroke="#3C3C3B"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="1.5"
                   d="M19 20.75a1 1 0 0 0 1-1v-1.246c.004-2.806-3.974-5.004-8-5.004s-8 2.198-8 5.004v1.246a1 1 0 0 0 1 1zM15.604 6.854a3.604 3.604 0 1 1-7.208 0a3.604 3.604 0 0 1 7.208 0"
                 />
               </svg>
-              <span class="hidden whitespace-nowrap sm:block" href="#">
+              <span
+                class="hidden whitespace-nowrap text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
+              >
                 Mi cuenta
               </span>
             </button>
             <div class="h-10 border-[1px] border-[#a0a0a0]"></div>
 
-            <div class="relative flex flex-row items-center gap-1 pl-3">
+            <div class="group relative flex flex-row items-center gap-1 pl-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="26"
                 height="26"
                 viewBox="0 0 1024 1024"
+                class="fill-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:fill-[#7a0dc7]"
               >
                 <path
-                  fill="#3C3C3B"
                   d="M864 158.704H672.815V97.328c0-52.944-43.056-96-96-96H449.183c-52.944 0-96 43.056-96 96v61.376H159.999c-35.344 0-64 28.656-64 64v735.968c0 35.344 28.656 64 64 64h704c35.344 0 64-28.656 64-64V222.704c0-35.344-28.656-64-64-64zM417.184 97.328c0-17.664 14.336-32 32-32h127.632c17.664 0 32 14.336 32 32v61.376H417.184zM864 958.672H160V222.704h193.184v65.84s-.848 31.967 31.809 31.967c36 0 32.192-31.967 32.192-31.967v-65.84h191.632v65.84s-2.128 32.128 31.872 32.128c32 0 32.128-32.128 32.128-32.128v-65.84h191.184z"
                 />
               </svg>
-              <a class="hidden sm:block" routerLink="/carrito">Compras</a>
+              <a
+                class="hidden text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
+                routerLink="/carrito"
+              >
+                Compras
+              </a>
               <span
                 id="cart-counter"
-                class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white"
-              >{{cantidadProducto}}</span>
+                class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors duration-300 ease-in-out group-hover:bg-red-600"
+              >
+                {{ cantidadProducto }}
+              </span>
             </div>
           </div>
         </div>
@@ -113,7 +193,7 @@ import { decodificarToken } from '../utils/decodificarToken';
             </a>
           </li>
           <li><a routerLink="/personalizacion-producto">Personalización</a></li>
-          <li><a href="#">Sobre nosotros</a></li>
+          <li><a routerLink="/sobre-nosotros">Sobre nosotros</a></li>
         </ul>
       </nav>
     </header>
@@ -132,7 +212,7 @@ export class Headers {
     // Verificar si el usuario está autenticado al cargar el componente
     this.serviceCarrito.obtenerCarrito().subscribe({
       next: (respuesta) => {
-        this.cantidadProducto = this.serviceCarrito.cantidadProductos;
+        this.cantidadProducto = this.serviceCarrito.cantidadProductos();
         console.log('Carrito obtenido:', this.serviceCarrito.cantidadProductos);
       },
       error: (error) => {
@@ -145,20 +225,22 @@ export class Headers {
         this.cantidadProducto += this.nuevaCantidad();
         this.nuevaCantidad.set(0); // Resetea la cantidad después de actualizar
       }
-    })
+    });
   }
 
   //metodo para ver modal
   verMenu() {
     if (this.usuarioAutenticado) {
       this.menuVisible.set(!this.menuVisible());
-      
     } else {
       this.router.navigate(['/iniciar-sesion']);
     }
   }
   cerrarSesion() {
     localStorage.removeItem('token');
-    this.router.navigate(['/inicio']);
+    this.menuVisible.set(false);
+    this.router.navigate(['/inicio']).then(() => {
+      window.location.reload();
+    });
   }
 }

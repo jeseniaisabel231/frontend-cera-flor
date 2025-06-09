@@ -23,7 +23,6 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
     Navegacion,
     Presentation,
     Loading,
-    TablaComponent,
     FormProm,
     FormsModule,
     ModalAvisosComponent,

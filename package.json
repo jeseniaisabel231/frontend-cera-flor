@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
     "@pqina/angular-pintura": "^9.0.4",
+    "@stripe/stripe-js": "^7.3.1",
     "@tailwindcss/postcss": "^4.0.17",
     "chart.js": "^4.4.9",
     "ng2-charts": "^8.0.0",

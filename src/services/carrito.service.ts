@@ -241,6 +241,24 @@ export class CarritoService {
         }),
       );
   }
+  pagarCarrito(){
+    this.http.post<any>(`${this.urlBackend}/api/carritos/pagar`, {
+      //pendienteeeeee
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+    }).pipe(
+      tap((respuesta) => {
+        console.log('Pago realizado:', respuesta);
+        this.carrito.set({} as carrito); // Resetea el carrito después del pago
+        this.cantidadProductos.set(0); // Resetea la cantidad de productos en el carrito
+        localStorage.removeItem('carrito'); // Elimina el carrito del almacenamiento local
+      }),
+    ).subscribe();
+  }
+
   private interceptarEliminarProducto(respuesta: any, producto_id: string) {
     console.log('Producto eliminado del carrito:', respuesta);
     this.cantidadProductos.update(

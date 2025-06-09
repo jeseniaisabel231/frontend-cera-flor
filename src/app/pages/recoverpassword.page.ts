@@ -26,20 +26,18 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
           </h2>
           <div class="gap-2 flex flex-col mb-6">
             <div class="flex flex-col gap-1">
-              <label for="" class="font-medium text-white">
+              <label class="font-medium text-white">
                 Contraseña
                 <span class="text-red-400">*</span>
               </label>
               <input
                 type="text"
-                name=""
-                id=""
                 placeholder="Contrasena"
                 class="px-4 py-3 placeholder-gray-400  bg-white pl-12 border p-1.5 w-full h-[46px] rounded-[15px] "
               />
             </div>
             <div class="flex flex-col gap-1">
-              <label for="" class="font-medium text-white">
+              <label class="font-medium text-white">
                 Confirmar contrasena
               </label>
               <input

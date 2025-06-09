@@ -9,7 +9,6 @@ import { RouterLink } from '@angular/router';
   template: `
     <nav class="bg-[#d3c0f4] py-3 pl-4 fixed w-full shadow-sm z-10">
       <div class="mx-auto max-w-7xl">
-        <!-- Breadcrumbs -->
         <ol class="flex items-center space-x-2 text-sm">
           <!-- Inicio -->
           <li>

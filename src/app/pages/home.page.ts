@@ -7,6 +7,7 @@ import { Card } from '../components/card.component';
 import { Footeer } from '../components/footer.component';
 import { Headers } from '../components/header.component';
 import { producto } from '../interfaces/producto.interface';
+import { PromocionesService } from '../../services/admin/promociones.service';
 
 @Component({
   imports: [Headers, Footeer, Card, RouterLink],
@@ -26,14 +27,14 @@ import { producto } from '../interfaces/producto.interface';
           <!-- Carousel wrapper -->
           <div class="relative aspect-[21/9] w-full overflow-hidden rounded-lg md:h-96">
             <!-- Item 1 -->
-            <div class="duration-700 ease-in-out" data-carousel-item>
+            <div class="duration-700 ease-in-out">
               <img src="banner1.png" alt="Banner description" class="w-full" />
             </div>
             @for (
-              promocion of promocionesResource.value().promociones;
+              promocion of promocionesResource.value()?.promociones;
               track promocion._id
             ) {
-              <div class="hidden duration-700 ease-in-out" data-carousel-item>
+              <div class="duration-700 ease-in-out">
                 <img
                   [src]="promocion.imagen"
                   [alt]="promocion.descripcion"
@@ -474,7 +475,6 @@ export class HomePage {
   ngOnInit() {
     this.obtenerProductos(1);
   }
-
   obtenerProductos(numeroPagina: number) {
     this.serviceProductos.obtener(numeroPagina).subscribe({
       next: (respuesta: any) => {
@@ -487,13 +487,12 @@ export class HomePage {
   }
   public promocionesResource = httpResource<any>(
     () => `${environment.urlApi}/api/promociones`,
-
-    {
-      defaultValue: [],
-    },
   );
 
   recibirCantidad(cantidad: number) {
     this.nuevaCantidad.set(cantidad)
+  }
+  //metodo para el boton de siguientes
+  siguienteBotonBanner(){
   }
 }

@@ -1,11 +1,13 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 
 @Component({
-  imports: [Headers, BarranavComponent, CurrencyPipe],
+  imports: [Headers, BarranavComponent, CurrencyPipe, ReactiveFormsModule],
   template: `
     <headers></headers>
     <main class="flex min-h-screen flex-col">
@@ -22,14 +24,19 @@ import { Headers } from '../components/header.component';
                 <legend class="mb-4 text-lg font-medium">
                   Dirección de Envío
                 </legend>
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <form
+                  class="grid grid-cols-1 gap-4 md:grid-cols-2"
+                  [formGroup]="direccion" (ngSubmit)="OnSubmitDireccion()"
+                >
                   <div>
                     <label class="mb-1 block text-sm font-medium">
                       Calle y número
                     </label>
                     <input
                       type="text"
-                      class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      placeholder="Calle Principal 123"
+                      formControlName="calle"
                     />
                   </div>
                   <div>
@@ -38,26 +45,26 @@ import { Headers } from '../components/header.component';
                     </label>
                     <input
                       type="text"
-                      class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      class="ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      placeholder="Provincia"
+                      formControlName="provincia"
                     />
                   </div>
                   <div>
                     <label class="mb-1 block text-sm font-medium">Ciudad</label>
                     <input
                       type="text"
-                      class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      placeholder="Ciudad"
+                      formControlName="ciudad"
                     />
                   </div>
-                  <div>
-                    <label class="mb-1 block text-sm font-medium">
-                      Código Postal
-                    </label>
-                    <input
-                      type="text"
-                      class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
+                  <button
+                    class="bg-morado-400 focus:ring-morado-400 w-full rounded-md focus:ring-2 focus:outline-none"
+                  >
+                    Guardar Dirección
+                  </button>
+                </form>
               </fieldset>
 
               <!-- forma de paago -->
@@ -65,7 +72,6 @@ import { Headers } from '../components/header.component';
                 <legend class="mb-4 text-lg font-medium">Método de Pago</legend>
                 <div class="mb-6 rounded-lg border border-gray-200 p-4">
                   <div class="mb-4 flex items-center">
-                    
                     <label class="block text-sm font-medium text-gray-700">
                       Tarjeta de crédito/débito
                     </label>
@@ -81,7 +87,7 @@ import { Headers } from '../components/header.component';
                       <input
                         type="text"
                         placeholder="1234 5678 9012 3456"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
                       />
                       <figure class="mt-2 flex space-x-2">
                         <svg
@@ -118,7 +124,6 @@ import { Headers } from '../components/header.component';
                             d="M255.746 79.029c0 43.685-35.343 79.029-79.029 79.029-18.44 0-35.343-6.366-48.734-16.904 18.44-14.488 30.075-36.88 30.075-62.125s-11.855-47.637-30.075-62.126C141.373 6.366 158.277 0 176.717 0c43.686 0 79.03 35.563 79.03 79.029"
                           />
                         </svg>
-                        
                       </figure>
                     </div>
 
@@ -132,7 +137,7 @@ import { Headers } from '../components/header.component';
                         <input
                           type="text"
                           placeholder="MM/AA"
-                          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
                         />
                       </div>
                       <div>
@@ -144,28 +149,15 @@ import { Headers } from '../components/header.component';
                         <input
                           type="text"
                           placeholder="CVC"
-                          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
                         />
                       </div>
-                    </div>
-
-                    <div>
-                      <label
-                        class="mb-1 block text-sm font-medium text-gray-700"
-                      >
-                        Nombre en la tarjeta
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Nombre como aparece en la tarjeta"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      />
                     </div>
                   </div>
                 </div>
 
                 <button
-                  class="w-full rounded-full bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                  class="w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
                 >
                   Confirmar Pago
                 </button>
@@ -183,7 +175,7 @@ import { Headers } from '../components/header.component';
                 <ul class="space-y-3 text-gray-700">
                   <li class="flex justify-between">
                     <span>
-                      Subtotal ({{ carritoProductos.productos.length }}
+                      Subtotal ({{ carritoProductos.productos?.length }}
                       productos)
                     </span>
                     <span class="font-medium">
@@ -206,26 +198,6 @@ import { Headers } from '../components/header.component';
                   </li>
                 </ul>
               </div>
-              <!-- <div class="border-t border-gray-200 pt-6">
-                <h3 class="mb-3 font-medium">Productos</h3>
-                <ul class="space-y-4">
-                  <li class="flex items-start">
-                    <img
-                      src="https://via.placeholder.com/60"
-                      alt="Zapatos deportivos"
-                      class="mr-3 h-16 w-16 rounded-md object-cover"
-                    />
-                    <div class="flex-1">
-                      <p class="text-sm font-medium">Zapatos deportivos</p>
-                      <p class="text-xs text-gray-500">
-                        Talla: 28, Color: Negro
-                      </p>
-                      <p class="mt-1 text-sm">$550.00</p>
-                    </div>
-                    <span class="text-sm text-gray-600">x1</span>
-                  </li>
-                </ul>
-              </div> -->
             </aside>
           </article>
         </div>
@@ -238,6 +210,13 @@ export class PaymentPage {
   public carritoProductos: any = {};
   public cantidad = signal(1);
   public nuevaCantidad = signal(0);
+  public servicePerfil = inject(AuthService);
+
+  public direccion = new FormGroup({
+    calle: new FormControl(''),
+    provincia: new FormControl(''),
+    ciudad: new FormControl(''),
+  });
 
   constructor() {
     // Inicializar el carrito al cargar la página
@@ -250,25 +229,6 @@ export class PaymentPage {
       },
     });
   }
-
-  actualizarCantidadEnCarrito(producto: any, cantidad: number = 1) {
-    this.serviceCarrito
-      .modificarCantidadCarrito(producto.producto_id._id, cantidad)
-      .subscribe({
-        error: (error) => {
-          console.error('Error al actualizar cantidad:', error);
-        },
-      });
-  }
-  eliminarProducto(producto_id: string) {
-    console.log('Eliminando producto con ID:', producto_id);
-    this.serviceCarrito.eliminarCarrito(producto_id).subscribe({
-      error: (error) => {
-        console.error('Error al eliminar producto:', error);
-      },
-    });
-  }
-
   calcularSubtotal() {
     const iva = 0.15;
     const impuestos = this.carritoProductos.total * iva;
@@ -278,14 +238,27 @@ export class PaymentPage {
     const iva = 0.15;
     return this.carritoProductos.total * iva;
   }
-  //metodo para incrementar
-  incrementarCantidad(producto: any) {
-    this.actualizarCantidadEnCarrito(producto);
-  }
 
-  decrementarCantidad(producto: any) {
-    if (producto.cantidad > 1) {
-      this.actualizarCantidadEnCarrito(producto, -1);
-    }
+  OnSubmitDireccion() {
+    const direccionData = this.direccion.value;
+    console.log('Datos de dirección:', direccionData);
+    const direccionConcatenada = `${direccionData.calle}, ${direccionData.provincia}, ${direccionData.ciudad}`;
+
+    const formData = new FormData();
+    formData.append('direccion', direccionConcatenada);
+
+    this.servicePerfil
+      .actualizarPerfil( formData)
+      .subscribe({
+        next: (respuesta) => {
+          console.log('Dirección guardada correctamente:', respuesta);
+        },
+        error: (error) => {
+          console.error('Error al guardar la dirección:', error);
+        },
+      });
+  }
+  OnSubmitPago() {
+    
   }
 }

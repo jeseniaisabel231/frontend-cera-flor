@@ -12,10 +12,9 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 
 @Component({
-  imports: [Footeer, Headers, ReactiveFormsModule, ModalAvisosComponent],
+  imports: [Footeer, Headers, ReactiveFormsModule],
 
   template: `
     <headers></headers>
@@ -427,11 +426,17 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
 })
 export class RegisterPage {
   private serviceAuth = inject(AuthService);
-  private serviceRouter = inject(Router); //para las rutas
+  //variable del ojito
+  public passwordVisible = signal<boolean>(false);
+
+  //variable de carga
+  public carga = signal<boolean>(false);
+  //para la contrasena o email
+  public validacion = signal<string>('');
 
   // Señales para el modal
-  showModal = signal<boolean>(false);
-  modalMessage = signal('');
+  public showModal = signal<boolean>(false);
+  public modalMessage = signal('');
 
   //variable para los errores de los campos
   public errores = signal<any>({
@@ -443,13 +448,6 @@ export class RegisterPage {
     confirmarPassword: '',
   }); //para los errores de los campos
 
-  //variable del ojito
-  public passwordVisible = signal<boolean>(false);
-
-  //variable de carga
-  public carga = signal<boolean>(false);
-  //para la contrasena o email
-  public validacion = signal<string>('');
 
   // Validador personalizado para comparar contraseñas
   passwordMatchValidator: ValidatorFn = (

@@ -7,7 +7,7 @@ import { Footeer } from '../components/footer.component';
 import { Headers } from '../components/header.component';
 
 @Component({
-  imports: [Headers, BarranavComponent, Footeer, CurrencyPipe, RouterLink],
+  imports: [Headers, BarranavComponent, CurrencyPipe, RouterLink],
   template: `
     <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
     <main class="flex min-h-screen flex-col bg-gray-50">
@@ -170,7 +170,7 @@ import { Headers } from '../components/header.component';
             </ul>
 
             <button
-              class="mt-6 w-full rounded-full bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+              class="mt-6 w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
               routerLink="/informacion-pago"
               [disabled]="carritoProductos.productos.length === 0"
             >

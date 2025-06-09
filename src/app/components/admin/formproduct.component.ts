@@ -17,14 +17,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { Actions } from './modal.component';
-import Swal from 'sweetalert2';
 import { ToastComponent } from '../toast.component';
 import { IngredientesService } from '../../../services/admin/ingredients.service';
 import { ModalAvisosComponent } from './modalavisos.component';
 
 @Component({
   selector: 'formulario',
-  imports: [ReactiveFormsModule, ToastComponent, ModalAvisosComponent],
+  imports: [ReactiveFormsModule, ModalAvisosComponent],
   template: `
     <dialog
       #modal

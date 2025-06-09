@@ -2,14 +2,15 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
 import type { producto } from '../interfaces/producto.interface';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, DecimalPipe,TitleCasePipe],
   selector: 'card',
   standalone: true,
   template: `
     <article
-      class="flex h-98 cursor-pointer flex-col rounded-xl border border-gray-300 bg-white"
+      class="flex h-106 cursor-pointer flex-col rounded-xl border border-gray-300 bg-white"
     >
       <div class="" [routerLink]="['/detalle-producto', producto()._id]">
         <img
@@ -25,18 +26,38 @@ import type { producto } from '../interfaces/producto.interface';
                 : 'Velas Artesanales'
             }}
           </div>
-          <div class="font-semibold text-gray-800">{{ producto().nombre }}</div>
-          <div class="my-2 font-bold text-purple-600">
+          <div class="font-bold text-[17px] text-gray-800">{{ producto().nombre | titlecase }}</div>
+          <div class=" flex flex-wrap items-center gap-2">
+            <small class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold">
+              {{ producto().aroma | titlecase }}
+            </small>
+            <small class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs font-bold">
+              {{ producto().tipo | titlecase }}
+            </small>
+          </div>
+          <div class="mt-3 font-bold text-[20px] text-purple-600">
             $
-            {{ producto().precio }}
+            {{ producto().precio | number:'1.2-2'  }}
           </div>
         </div>
       </div>
       <div class="flex gap-4 px-4">
         <div class="flex items-center rounded-full border border-gray-300">
-          <button class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200" (click)="decrementarCantidad()" title="Disminuir cantidad" >-</button>
+          <button
+            class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+            (click)="decrementarCantidad()"
+            title="Disminuir cantidad"
+          >
+            -
+          </button>
           <span class="px-2">{{ cantidad() }}</span>
-          <button class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200" (click)="incrementarCantidad()" title="Aumentar cantidad">+</button>
+          <button
+            class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+            (click)="incrementarCantidad()"
+            title="Aumentar cantidad"
+          >
+            +
+          </button>
         </div>
         <button
           (click)="agregarAlCarrito()"

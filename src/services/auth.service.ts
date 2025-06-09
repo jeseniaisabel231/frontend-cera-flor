@@ -13,7 +13,6 @@ interface respuestaLogin {
 })
 export class AuthService {
   private urlBackend = environment.urlApi;
-  //private urlBackend = 'https://tesis-ecommerce.onrender.com';
   private http = inject(HttpClient);
   private datosUsuario: any = {};
 
@@ -71,9 +70,26 @@ export class AuthService {
       codigoRecuperacion,
     });
   }
-  perfil() {
+  obtenerPerfil() {
     return this.http
       .get<any>(`${this.urlBackend}/api/perfil`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .pipe(
+        tap((response) => {
+          this.datosUsuario = response;
+          localStorage.setItem(
+            'datosUsuario',
+            JSON.stringify(this.datosUsuario),
+          );
+        }),
+      );
+  }
+  actualizarPerfil(datosCliente: any) {
+    return this.http
+      .put<any>(`${this.urlBackend}/api/perfil`, datosCliente, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

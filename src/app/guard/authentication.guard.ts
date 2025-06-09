@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { decodificarToken } from '../utils/decodificarToken';
 
 //decodifica el token
 function isAuthenticated() {
@@ -19,3 +20,11 @@ export const NoAuthGuard: CanActivateFn = () => {
 
   return true;
 };
+//cuando es administrador
+export const AdminGuard: CanActivateFn = () => {
+  const tokenDecodificado = decodificarToken();
+  if (tokenDecodificado?.rol !== 'admin') {
+    return false;
+  }
+  return true;
+}

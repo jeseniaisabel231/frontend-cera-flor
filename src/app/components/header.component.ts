@@ -1,8 +1,17 @@
-import { Component, effect, inject, model, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { NgClass } from '@angular/common';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  model,
+  signal,
+} from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
 import { decodificarToken } from '../utils/decodificarToken';
+
 @Component({
   imports: [RouterLink],
   selector: 'headers',
@@ -47,9 +56,8 @@ import { decodificarToken } from '../utils/decodificarToken';
                 class="absolute right-55 -bottom-14 z-50 w-48 rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-200"
               >
                 <ul class="py-1 text-sm text-gray-700">
-                  <li>
+                  <li routerLink="/perfil">
                     <a
-                      href="/perfil"
                       class="block px-4 py-2 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
                     >
                       <div class="flex items-center gap-2">
@@ -72,7 +80,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                     </a>
                   </li>
 
-                  <li>
+                  <li routerLink="/pedidos">
                     <a
                       href="/pedidos"
                       class="block px-4 py-2 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
@@ -183,17 +191,54 @@ import { decodificarToken } from '../utils/decodificarToken';
         class="bg-morado-500 flex h-14 w-full items-center justify-center text-white"
       >
         <ul class="flex flex-row gap-14 font-semibold">
-          <li><a routerLink="/inicio">Inicio</a></li>
-          <li>
+          <li class="relative">
+            <a
+              routerLink="/inicio"
+              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
+              [class.active]="rutaActiva() === 'inicio'"
+              [class.font-medium]="rutaActiva() === 'inicio'"
+              [class.text-opacity-80]="rutaActiva() !== 'inicio'"
+            >
+              Inicio
+            </a>
+          </li>
+          <li class="relative">
             <a
               routerLink="/catalogo"
               [queryParams]="{ categoria: 'jabones-artesanales' }"
+              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
+              [class.active]="rutaActiva() === 'catalogo'"
+              [class.font-medium]="rutaActiva() === 'catalogo'"
+              [class.text-opacity-80]="rutaActiva() !== 'catalogo'"
             >
-              Catálogo
+              Catalogo
             </a>
           </li>
-          <li><a routerLink="/personalizacion-producto">Personalización</a></li>
-          <li><a routerLink="/sobre-nosotros">Sobre nosotros</a></li>
+
+          <li>
+            <a
+              routerLink="/personalizacion-producto"
+              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
+              [class.active]="rutaActiva() === 'personalizacion-producto'"
+              [class.font-medium]="rutaActiva() === 'personalizacion-producto'"
+              [class.text-opacity-80]="
+                rutaActiva() !== 'personalizacion-producto'
+              "
+            >
+              Personalización
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/sobre-nosotros"
+              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
+              [class.active]="rutaActiva() === 'sobre-nosotros'"
+              [class.font-medium]="rutaActiva() === 'sobre-nosotros'"
+              [class.text-opacity-80]="rutaActiva() !== 'sobre-nosotros'"
+            >
+              Sobre nosotros
+            </a>
+          </li>
         </ul>
       </nav>
     </header>
@@ -207,6 +252,8 @@ export class Headers {
   public serviceCarrito = inject(CarritoService);
   public cantidadProducto = 0;
   public nuevaCantidad = model<number>(0);
+  public servicioRuta = inject(ActivatedRoute);
+  public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
 
   constructor() {
     // Verificar si el usuario está autenticado al cargar el componente

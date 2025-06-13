@@ -35,8 +35,6 @@ export class VentasService {
             const index = ventasAnteriores.findIndex(
               (venta) => venta._id === id
             );
-            console.log('index', index);
-            console.log('estado', estado);
             if (index !== -1) {
               ventasAnteriores[index].estado = estado;
             }

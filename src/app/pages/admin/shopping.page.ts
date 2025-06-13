@@ -107,7 +107,6 @@ export class ShoppingPage {
         next: (respuesta: any) => {
           this.ventas.set(respuesta.ventas);
           this.datosBuscados.set(respuesta.ventas);
-          console.log(respuesta.ventas);
         },
       })
       .add(() => {

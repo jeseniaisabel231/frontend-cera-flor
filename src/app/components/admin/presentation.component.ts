@@ -6,7 +6,8 @@ export type TituloDashboard =
   | 'Usuarios'
   | 'Productos y catálogo'
   | 'Ventas'
-  | 'Promociones'; //representacion de la clave
+  | 'Promociones'
+  | 'Ingredientes'; //representacion de la clave
 @Component({
   selector: 'presentation',
   template: `

@@ -1,44 +1,64 @@
 import { Component } from '@angular/core';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
-import { JuegoComponent } from '../components/juego.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [Headers, BarranavComponent, JuegoComponent],
+  imports: [Headers, RouterLink],
   template: `
     <headers></headers>
     <main class="flex flex-col text-center">
-      <barranav rutaSeccionSeleccionada="personalización"></barranav>
-      @if (!escogerOpcion) {
-        <div class="pt-20">
-          <h1 class="mb-4 text-3xl font-bold text-rose-600 md:text-4xl">
-            ¡Bienvenido a tu Laboratorio Artesanal!
-          </h1>
+      <div class="flex justify-center bg-gradient-to-b py-20">
+      <div class="mx-auto w-full max-w-4xl text-center">
+        <h2 class="mb-6 text-3xl font-bold text-rose-600 md:text-4xl">
+          ¿Qué producto quieres crear?
+        </h2>
 
-          <p class="mb-6 text-lg text-gray-700">
-            Crea tu vela o jabón perfecto jugando paso a paso.
-            <br />
-            🎮 ¡Combina aromas, elige colores, formas e ingredientes!
-          </p>
+        <p class="mb-10 text-lg text-gray-700">
+          Elige entre una vela aromática o un jabón personalizado.
+        </p>
 
-          <div class="mb-6 flex justify-center">
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div>
             <img
-              src="banner2-dibujo.png"
-              alt="Ilustración jabón y vela"
-              class="animate-bounce md:h-40 md:w-48"
+              src="velaJP.png"
+              alt="Jabón artesanal"
+              class="mx-auto h-50 w-50 transform cursor-pointer object-contain drop-shadow-lg transition-all duration-300 hover:scale-105 hover:drop-shadow-2xl"
             />
+            <h3 class="mb-2 text-xl font-semibold text-rose-500">🕯️ Vela</h3>
+            <p class="mb-4 text-sm text-gray-600">
+              Ideal para crear ambientes relajantes y decorar tu hogar.
+            </p>
+            <button
+              class="rounded-full bg-rose-500 px-4 py-2 font-medium text-white transition hover:bg-rose-600"
+            >
+              Seleccionar Vela
+            </button>
           </div>
 
-          <button
-            (click)="mostrarJuego()"
-            class="mx-auto rounded-full bg-rose-500 px-6 py-3 text-lg font-semibold text-white shadow-md transition duration-300 hover:bg-rose-600 hover:shadow-lg"
-          >
-            ¡Empezar a crear!
-          </button>
+          <!-- Tarjeta JABÓN -->
+          <div>
+            <img
+              src="jabonJP.png"
+              alt="Jabón artesanal"
+              class="mx-auto h-50 w-50 transform cursor-pointer object-contain drop-shadow-lg transition-all duration-300 hover:scale-105 hover:drop-shadow-2xl"
+            />
+            <h3 class="mb-2 text-xl font-semibold text-teal-600">🧼 Jabón</h3>
+            <p class="mb-4 text-sm text-gray-600">
+              Personaliza tu jabón con ingredientes naturales para el cuidado de
+              tu piel.
+            </p>
+            <button
+              routerLink="/tipos-jabon-juego"
+              class="rounded-full bg-teal-500 px-4 py-2 font-medium text-white transition hover:bg-teal-600"
+            >
+              Seleccionar Jabón
+            </button>
+          </div>
         </div>
-      } @else {
-        <juego></juego>
-      }
+      </div>
+    </div>
+      
     </main>
   `,
 })

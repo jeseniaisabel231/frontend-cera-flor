@@ -512,7 +512,6 @@ export class RegisterPage {
         .subscribe({
           next: (response: any) => {
             //this.serviceRouter.navigate(['/inicio']); //me redireccion a la pantalla de materias, si la peticion fue exitosa
-            console.log(response);
             this.carga.set(false);
             this.modalMessage.set(response.msg); //mensaje de respuesta del backend
 
@@ -524,7 +523,6 @@ export class RegisterPage {
               const { path, msg } = detail;
               this.errores.update((prev) => ({ ...prev, [path]: msg })); //setea los errores
             });
-            console.log(error);
             this.validacion.set(error.msg); //error.response y este contiene el mensaje
             this.carga.set(false);
           },

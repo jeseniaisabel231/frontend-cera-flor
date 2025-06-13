@@ -1,13 +1,24 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, model, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { StripeElementsOptions } from '@stripe/stripe-js';
+import { NgxStripeModule } from 'ngx-stripe';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
+import { PaymentService } from '../../services/payment.service';
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 
 @Component({
-  imports: [Headers, BarranavComponent, CurrencyPipe, ReactiveFormsModule],
+  imports: [
+    Headers,
+    BarranavComponent,
+    CurrencyPipe,
+    ReactiveFormsModule,
+    NgxStripeModule,
+    ModalAvisosComponent,
+  ],
   template: `
     <headers></headers>
     <main class="flex min-h-screen flex-col">
@@ -24,17 +35,20 @@ import { Headers } from '../components/header.component';
                 <legend class="mb-4 text-lg font-medium">
                   Dirección de Envío
                 </legend>
+                <p class="mb-4 text-sm">
+                  Recuerda colocar tu dirección de envío. Si necesitas modificarla, hazlo antes de proceder al pago.
+                </p>
                 <form
                   class="grid grid-cols-1 gap-4 md:grid-cols-2"
-                  [formGroup]="direccion" (ngSubmit)="OnSubmitDireccion()"
+                  [formGroup]="direccion"
                 >
                   <div>
-                    <label class="mb-1 block text-sm font-medium">
+                    <label class="mb-1 block text-sm font-medium ">
                       Calle y número
                     </label>
                     <input
                       type="text"
-                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none "
                       placeholder="Calle Principal 123"
                       formControlName="calle"
                     />
@@ -59,16 +73,55 @@ import { Headers } from '../components/header.component';
                       formControlName="ciudad"
                     />
                   </div>
-                  <button
-                    class="bg-morado-400 focus:ring-morado-400 w-full rounded-md focus:ring-2 focus:outline-none"
-                  >
-                    Guardar Dirección
-                  </button>
+                  @if (modificarDireccion()) {
+                    <button
+                      (click)="OnSubmitDireccion()"
+                      class="mt-6 w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                    >
+                      Guardar dirección
+                    </button>
+                  }
+                  @else {
+                    <button
+                      (click)="modificarDireccion.set(true)"
+                      class="mt-6 w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                    >
+                      Modificar dirección
+                    </button>
+                  }
                 </form>
               </fieldset>
+              <form>
+                <legend class="mb-4 text-lg font-medium">Método de pago</legend>
+                <p class="mb-4 text-sm">
+                  Utiliza una tarjeta de crédito o débito para completar tu
+                  compra. Asegúrate de que la tarjeta esté a tu nombre y tenga
+                  fondos suficientes.
+                </p>
 
-              <!-- forma de paago -->
-              <fieldset>
+                <!-- forma de paago -->
+                <ngx-stripe-card
+                  [elementsOptions]="opcionesFormularioPago"
+                  id="formulariopago"
+                ></ngx-stripe-card>
+
+                <button
+                  (click)="OnSubmitPago($event)"
+                  class="mt-6 w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                  [disabled]="modificarDireccion()"
+                >
+                  Pagar
+                </button>
+              </form>
+              <app-modal
+                [mostrarModal]="mostrarModalExito()"
+                [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
+                [mensaje]="respuestaBack()"
+                [tipo]="tipoRespuesta()"
+                (closed)="cerraTodo()"
+              ></app-modal>
+
+              <!-- <fieldset>
                 <legend class="mb-4 text-lg font-medium">Método de Pago</legend>
                 <div class="mb-6 rounded-lg border border-gray-200 p-4">
                   <div class="mb-4 flex items-center">
@@ -161,7 +214,7 @@ import { Headers } from '../components/header.component';
                 >
                   Confirmar Pago
                 </button>
-              </fieldset>
+              </fieldset> -->
             </section>
 
             <aside class="h-fit lg:w-2/5 lg:pl-4">
@@ -209,8 +262,14 @@ export class PaymentPage {
   public serviceCarrito = inject(CarritoService);
   public carritoProductos: any = {};
   public cantidad = signal(1);
-  public nuevaCantidad = signal(0);
+  public cantidadProducto = signal(0);
   public servicePerfil = inject(AuthService);
+  public servicePayment = inject(PaymentService);
+  public mostrarModalExito = signal(false);
+  public tipoRespuesta = signal<'exito' | 'error'>('exito');
+  public respuestaBack = signal('');
+  public mostrarModal = model<boolean>(false);
+  public modificarDireccion = signal<boolean>(false);
 
   public direccion = new FormGroup({
     calle: new FormControl(''),
@@ -228,6 +287,35 @@ export class PaymentPage {
         console.error('Error al cargar el carrito:', error);
       },
     });
+
+    this.servicePerfil.obtenerPerfil().subscribe({
+      next: (respuesta) => {
+        const {
+          cliente: { direccion },
+        } = respuesta;
+
+        if(direccion) {
+          const [calle, provincia, ciudad] = direccion.split(', ');
+          this.direccion.setValue({
+            calle: calle || '',
+            provincia: provincia || '',
+            ciudad: ciudad || '',
+          });
+        }else{
+          this.modificarDireccion.set(true); // Si no hay dirección, permitimos modificarla
+        }
+      },
+      error: (error) => {
+      },
+    });
+
+    effect(() => {
+      if(this.modificarDireccion()) {
+        this.direccion.enable();
+      }else{
+        this.direccion.disable();
+      }
+    })
   }
   calcularSubtotal() {
     const iva = 0.15;
@@ -238,27 +326,52 @@ export class PaymentPage {
     const iva = 0.15;
     return this.carritoProductos.total * iva;
   }
-
   OnSubmitDireccion() {
     const direccionData = this.direccion.value;
-    console.log('Datos de dirección:', direccionData);
     const direccionConcatenada = `${direccionData.calle}, ${direccionData.provincia}, ${direccionData.ciudad}`;
 
     const formData = new FormData();
     formData.append('direccion', direccionConcatenada);
 
-    this.servicePerfil
-      .actualizarPerfil( formData)
-      .subscribe({
-        next: (respuesta) => {
-          console.log('Dirección guardada correctamente:', respuesta);
-        },
-        error: (error) => {
-          console.error('Error al guardar la dirección:', error);
-        },
-      });
+    this.servicePerfil.actualizarPerfil(formData).subscribe({
+      next: (respuesta) => {
+        this.modificarDireccion.set(false);
+      },
+      error: (error) => {
+      },
+    });
   }
-  OnSubmitPago() {
-    
+  cerraTodo() {
+    this.mostrarModalExito.set(false);
+    if (this.tipoRespuesta() === 'exito') {
+      this.close(); // Solo cerramos el formulario si fue éxito
+    }
+  }
+  public close() {
+    this.mostrarModal.set(false);
+  }
+
+  opcionesFormularioPago: StripeElementsOptions = {
+    locale: 'es',
+  };
+
+  async OnSubmitPago(event: Event) {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+    const servicePaymentPromise = await this.servicePayment.pagarCarrito();
+
+    servicePaymentPromise.subscribe({
+      next: (respuesta: any) => {
+        this.tipoRespuesta.set('exito');
+        this.mostrarModalExito.set(true);
+        this.respuestaBack.set(
+          'Pago realizado con éxito. ¡Gracias por tu compra!',
+        );
+
+      },
+      error: (error: any) => {
+        // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+      },
+    });
   }
 }

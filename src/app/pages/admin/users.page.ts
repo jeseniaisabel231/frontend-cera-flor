@@ -109,7 +109,6 @@ export class UsersPage {
         next: (respuesta: any) => {
           this.usuarios = respuesta.clientes;
           this.datosBuscados.set(this.usuarios);
-          console.log(respuesta.clientes);
         },
       })
       .add(() => {

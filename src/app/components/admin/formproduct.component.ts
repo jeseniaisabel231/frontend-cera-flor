@@ -1,4 +1,3 @@
-import { TitleCasePipe } from '@angular/common';
 import {
   Component,
   effect,
@@ -413,7 +412,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
           <button
             class="bg-indigo-400 text-white px-6 h-10 rounded-full hover:bg-indigo-500 w-auto"
           >
-            {{ acciones() }}
+            {{ acciones() }} productos
           </button>
           }
 
@@ -440,27 +439,18 @@ import { ModalAvisosComponent } from './modalavisos.component';
 export class FormProducto {
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public respuestaBack = signal('');
-  //para ingrdientes
   public ingredientesServicio = inject(IngredientesService);
   //crear una variable para almacenar todos los ingredientes
   public ingredientes = signal<any[]>([]);
-
   public ingredientesSeleccionados = signal<string[]>([]);
-
-  public mostrarModalExito = signal(false); //
-
+  public mostrarModalExito = signal(false); 
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarModal = model<boolean>(false);
   public servicioProductos = input<any>();
-
   public acciones = input.required<Actions>();
-
-  //objeto que almacena los eerores del formulario
-
   //variable para emitir el cambio
   public cambioEmitir = output<any>();
-
   public idRegistro = input<string>();
 
   //variable para almacenar los valores que mostrar en formulario en product.page
@@ -512,7 +502,6 @@ export class FormProducto {
         this.ingredientesSeleccionados().forEach((item) => {
           formData.append('ingredientes[]', item);
         });
-        console.log(formData.getAll('ingredientes[]'));
       } else if (key === 'beneficios' && typeof value === 'string') {
         value.split(',').forEach((item) => {
           formData.append('beneficios[]', item.trim());
@@ -532,7 +521,6 @@ export class FormProducto {
     //llama al servicio de ingredientes
     this.ingredientesServicio.obtener().subscribe({
       next: (ingredientes: any) => {
-        console.log('Estos son los ingredientes', ingredientes);
         this.ingredientes.set(ingredientes.ingredientes);
       },
       error: (error: any) => {
@@ -550,7 +538,6 @@ export class FormProducto {
     effect(() => {
       if (this.acciones() !== 'Registrar') {
         const datos = this.mostrarDatos();
-        console.log(datos);
         this.formulario.patchValue({
           imagen: datos.imagen,
           nombre: datos.nombre,
@@ -565,7 +552,6 @@ export class FormProducto {
             (item: any) => item?._id ?? item
           ),
         });
-        console.log(this.formulario.value);
 
         // Cargar la imagen preview si existe
         if (datos.imagen) {
@@ -575,7 +561,6 @@ export class FormProducto {
         this.ingredientesSeleccionados.set(
           datos.ingredientes.map((item: any) => item?._id ?? item) //almacena los ingredientes seleccionados
         );
-        console.log(this.ingredientesSeleccionados());
         if (this.acciones() === 'Visualizar') {
           this.formulario.disable();
         } else {
@@ -594,7 +579,6 @@ export class FormProducto {
           aroma: '',
           tipo: '',
         });
-        console.log('Es esooo', this.formulario.value);
         this.formulario.enable();
         this.imagePreview = null;
       }
@@ -609,7 +593,6 @@ export class FormProducto {
 
   //funcion que verifica que haciion hace el boton
   onSubmit() {
-    console.log(this.formulario?.value);
     const formData = this.toFormData(); //convierte el formulario a FormData
     //vaciat lo errores
 
@@ -671,7 +654,6 @@ export class FormProducto {
     } else {
       event.target.checked = false; // deselecciona el checkbox porque ya hay 2 seleccionados
     }
-    console.log(this.ingredientesSeleccionados());
   }
 
   //funcion para visualizacion prevvia de la imagen

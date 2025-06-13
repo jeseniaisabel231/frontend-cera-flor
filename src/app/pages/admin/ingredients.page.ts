@@ -1,50 +1,44 @@
 import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
-import { Navegacion } from '../../components/navegacion.component';
-import { FormProducto } from '../../components/admin/formproduct.component';
-import { Presentation } from '../../components/admin/presentation.component';
-import { Loading } from '../../components/loading.component';
-import { ProductosService } from '../../../services/admin/productos.service';
-import { producto } from '../../interfaces/producto.interface';
-import { Router } from '@angular/router';
-import { BreakpointObserver } from '@angular/cdk/layout';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   Validators,
 } from '@angular/forms';
-import { Action } from 'rxjs/internal/scheduler/Action';
 import { Actions } from '../../components/admin/modal.component';
-import { ToastComponent } from '../../components/toast.component';
+import { Presentation } from '../../components/admin/presentation.component';
+import { Loading } from '../../components/loading.component';
+import { Navegacion } from '../../components/navegacion.component';
+
+import { IngredientesService } from '../../../services/admin/ingredients.service';
+import { FormIngredientsComponent } from '../../components/admin/formIngredients.component';
 import { ModalAvisosComponent } from '../../components/admin/modalavisos.component';
+import { ingrediente } from '../../interfaces/ingrediente.interface';
 
 @Component({
   imports: [
     Navegacion,
-    FormProducto,
     Presentation,
-    Loading,
     FormsModule,
     ModalAvisosComponent,
-  ],
+    FormIngredientsComponent,
+    Loading
+],
   template: `
-    <main class="bg-[#efecff] w-full flex min-h-dvh">
+    <main class="flex min-h-dvh w-full bg-[#efecff]">
       <navegacion></navegacion>
 
       <section
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-6 w-full border-l border-[#d0c9fe]"
+        class="grid w-full grid-cols-1 gap-4 border-l border-[#d0c9fe] p-6 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
       >
-        <presentation
-          titulo="Productos y catálogo"
-          class="col-span-5"
-        ></presentation>
+        <presentation titulo="Ingredientes" class="col-span-5"></presentation>
 
         <article
-          class="relative overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md"
+          class="relative col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
         >
           <div class="flex justify-between">
             <div
-              class="flex sm:flex-row sm:items-center w-full sm:w-80 bg-[#F3F5F7] border border-[#eaeaea] rounded-[18px] p-2"
+              class="flex w-full rounded-[18px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
             >
               <svg
                 class="text-[#3B3D3E]"
@@ -60,7 +54,7 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                 />
               </svg>
               <input
-                class="flex-1 bg-transparent text-[14px] font-normal text-[#3B3D3E] outline-none pl-2"
+                class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
                 type="search"
                 placeholder="Buscar por nombre"
                 id="search"
@@ -69,7 +63,7 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
               />
             </div>
             <button
-              class="flex items-center gap-3 px-4 h-[40px] bg-[#41D9B5] rounded-[10px] "
+              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
               (click)="verFormulario()"
             >
               <svg
@@ -84,20 +78,19 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                   fill="#3C3C3B"
                 />
               </svg>
-              Añadir producto
+              Añadir ingrediente
             </button>
           </div>
-          <formulario
+          <form-ingredients
             [(mostrarModal)]="mostrarModal"
             [acciones]="accionAsignada()"
-            [servicioProductos]="serviceProductos"
             [mostrarDatos]="enviarDatos()"
             [idRegistro]="idRegistro()"
-          ></formulario>
+          ></form-ingredients>
 
           <div class="relative">
             <button
-              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 z-10"
+              class="absolute top-1/2 left-0 z-10 -translate-x-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md hover:bg-gray-100"
               (click)="paginaAnterior()"
             >
               <svg
@@ -113,33 +106,13 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                 />
               </svg>
             </button>
-            <button
-              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 z-10"
-              (click)="siguientePagina()"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="size-8"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-
-            <!--Lista de productos en cartas -->
-
             @if(carga()){
             <loading></loading>
             }@else {
             <section
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-6 "
             >
-              @for( item of productos; track $index) {
+              @for( item of ingredientes; track $index) {
 
               <div
                 class="flex flex-col border border-gray-300 rounded-xl h-auto min-h-[400px] max-w-[300px] mx-auto w-full"
@@ -154,13 +127,14 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                   />
                 </figure>
                 <div class="flex flex-col justify-between p-4">
-                  <p class="text-sm text-gray-400">
+                  <!-- <p class="text-sm text-gray-400">
                     {{
                       item?.id_categoria?._id === '680fd248f613dc80267ba5d7'
                         ? 'Jabones Artesanales'
                         : 'Velas Artesanales'
                     }}
-                  </p>
+                  </p> -->
+                  <small>{{item?.tipo}}</small>
                   <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
                   <p class="text-md font-bold mt-2">$ {{ item?.precio }}</p>
                   <p class="text-sm text-green-600 flex items-center mt-1">
@@ -172,7 +146,7 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                   <button
                     class="bg-green-400 text-white px-4 h-10 rounded-2xl hover:bg-green-500"
                     (click)="abrirFormulario(item)"
-                    title="Visualizar producto"
+                    title="Visualizar ingrediente"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -189,8 +163,8 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                   </button>
                   <button
                     class="bg-indigo-400 text-white px-4 h-10 rounded-2xl hover:bg-indigo-500 w-auto"
-                    (click)="editarProducto(item)"
-                    title="Editar producto"
+                    (click)="editarIngrediente(item)"
+                    title="Editar ingrediente"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -208,8 +182,8 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                   </button>
                   <button
                     class="bg-red-400 text-white px-4  rounded-2xl hover:bg-red-500 h-10 "
-                    (click)="eliminarProducto(item._id)"
-                    title="Eliminar producto"
+                    (click)="eliminarIngrediente(item._id)"
+                    title="Eliminar ingrediente"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -230,6 +204,24 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
             </section>
 
             }
+
+            <button
+              class="absolute top-1/2 right-0 z-10 translate-x-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md hover:bg-gray-100"
+              (click)="siguientePagina()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-8"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
           </div>
         </article>
       </section>
@@ -237,55 +229,56 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
     <app-modal
       [(mostrarModal)]="mostrarModalConfirmacion"
       [titulo]="'Confirmar eliminación'"
-      [mensaje]="'¿Estás seguro de eliminar este producto?'"
+      [mensaje]="'¿Estás seguro de eliminar este ingrediente?'"
       [tipo]="'confirmacion'"
       (confirmar)="confirmarEliminacion()"
     ></app-modal>
   `,
 })
-export class ProductsPage {
-  public idRegistro = signal<string>(''); //almacena el id del producto a editar
+export class IngredientsPage {
+  public idRegistro = signal<string>(''); //almacena el id del ingrediente a editar
+  
   public mostrarModal = signal<boolean>(false);
   public carga = signal<boolean>(true); //variable para mostrar el loading
-  public serviceProductos = inject(ProductosService);
+  public servicioIngredientes = inject(IngredientesService);
   public busqueda = signal<string>('');
   public numeroPagina = signal<number>(1); //almacena el numero de pagina
 
   //variable para setear los datos en el formulario
-  public enviarDatos = signal<producto | null>(null);
+  public enviarDatos = signal<ingrediente | null>(null);
 
   //creacion de variable que almacenara la accion del formulario
   public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
 
   //variables para el modal avisos
   public mostrarModalConfirmacion = signal<boolean>(false);
-  public productoEliminar = signal<string | null>(null);
+  public ingredienteEliminar = signal<string | null>(null);
 
   //variable que almacena datos filtrados de barra de busqueda
-  public datosBuscados = linkedSignal<producto[]>(() =>
-    this.productos.filter((registro) =>
-      registro.nombre.toLowerCase().includes(this.busqueda().toLowerCase())
-    )
+  public datosBuscados = linkedSignal<ingrediente[]>(() =>
+    this.ingredientes.filter((registro) =>
+      registro.nombre.toLowerCase().includes(this.busqueda().toLowerCase()),
+    ),
   );
   //variable que almacena lo que traera del backend
-  public productos: producto[] = [];
-  public datosProductos = new FormGroup({
+  public ingredientes: ingrediente[] = [];
+  public datosIngredientes = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
     apellido: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
   //funcion para abrir el formulario con los datos visualizar o editar
-  public abrirFormulario(datos: producto) {
+  public abrirFormulario(datos: ingrediente) {
     this.enviarDatos.set(datos);
     this.mostrarModal.set(true);
     this.accionAsignada.set('Visualizar'); //cambia el valor de la accion asignada al formulario
   }
 
   // Agrega estos métodos en tu ProductsPage
-  public editarProducto(datos: producto) {
+  public editarIngrediente(datos: ingrediente) {
     this.enviarDatos.set(datos);
-    this.idRegistro.set(datos._id); // Establece el ID del producto a editar
+    this.idRegistro.set(datos._id); // Establece el ID del ingrediente a editar
     this.mostrarModal.set(true);
     this.accionAsignada.set('Actualizar'); // Cambia a modo edición
   }
@@ -296,60 +289,60 @@ export class ProductsPage {
     this.accionAsignada.set('Registrar'); //cambia el valor de la accion asignada al formulario
   }
 
-  //metodo para eliminar un producto cuando doy click al boton
-  public eliminarProducto(id: string) {
-    //this.serviceProductos.eliminar(id).subscribe();
-    this.productoEliminar.set(id);
+  //metodo para eliminar un ingrediente cuando doy click al boton
+  public eliminarIngrediente(id: string) {
+    //this.servicioIngredientes.eliminar(id).subscribe();
+    this.ingredienteEliminar.set(id);
     this.mostrarModalConfirmacion.set(true);
   }
-  
+
   public confirmarEliminacion() {
-    const id = this.productoEliminar();
+    const id = this.ingredienteEliminar();
     if (id) {
-      this.serviceProductos.eliminar(id).subscribe({
+      this.servicioIngredientes.eliminar(id).subscribe({
         next: () => {
           // Actualiza la lista después de eliminar
-          this.obtenerProductos(this.numeroPagina());
+          this.obtenerIngredientes(this.numeroPagina());
           // Muestra mensaje de éxito
           this.mostrarMensaje(
             'Éxito',
-            'Producto eliminado correctamente',
-            'exito'
+            'Ingrediente eliminado correctamente',
+            'exito',
           );
         },
         error: () => {
           this.mostrarMensaje(
             'Error',
-            'No se pudo eliminar este producto',
-            'error'
+            'No se pudo eliminar este ingrediente',
+            'error',
           );
         },
       });
     }
   }
-  private obtenerProductos(numeroPagina: number) {
-    this.serviceProductos
+  private obtenerIngredientes(numeroPagina: number) {
+    this.servicioIngredientes
       .obtener(numeroPagina)
       .subscribe({
         next: (respuesta: any) => {
-          this.productos = respuesta.productos;
-          this.datosBuscados.set(this.productos);
+          this.ingredientes = respuesta.ingredientes;
+          this.datosBuscados.set(this.ingredientes);
         },
       })
       .add(() => {
-        this.carga.set(false); // Cambia el estado de carga a false después de obtener los productos
+        this.carga.set(false); // Cambia el estado de carga a false después de obtener los ingredientes
       });
   }
   private mostrarMensaje(
     titulo: string,
     mensaje: string,
-    tipo: 'exito' | 'error' | 'confirmacion'
+    tipo: 'exito' | 'error' | 'confirmacion',
   ) {}
   //consumo de endpoint de usuarios
   constructor() {
     effect(() => {
       const pagina = this.numeroPagina();
-      this.obtenerProductos(pagina);
+      this.obtenerIngredientes(pagina);
     });
   }
 

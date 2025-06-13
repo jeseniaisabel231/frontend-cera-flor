@@ -11,7 +11,7 @@ import { tap } from 'rxjs';
 export class ProductosService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  public productos = signal<producto[]>([]); // Variable para guardar los productos luego de interceptar
+  public productos = signal<producto[]>([]); 
 
   obtener(page: number, limit: number = 4) {
     return this.http

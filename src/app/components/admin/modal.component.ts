@@ -147,10 +147,7 @@ export class ModalComponent {
 
   constructor() {
     effect(() => {
-      console.log(this.verDatos());
-      console.log(
-        `Acción: ${this.acciones()} - Título: ${this.acciones()} ${this.titulo()}`
-      );
+
 
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();

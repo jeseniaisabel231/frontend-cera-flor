@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { of, tap } from 'rxjs';
-import { carrito } from '../app/interfaces/carrito.interface';
+import { carrito, carritoProducto } from '../app/interfaces/carrito.interface';
 import { environment } from '../environments/environment';
 import { AuthService } from './auth.service';
 
@@ -9,39 +9,48 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class CarritoService {
-  public carrito = signal<carrito>({
+  public carrito: carrito = {
     _id: '',
     cliente_id: '',
     productos: [],
     estado: '',
     total: 0,
-  }); // Inicializa el carrito como un objeto vacío
+  };
   private http = inject(HttpClient);
   public serviceAuth = inject(AuthService);
   private urlBackend = environment.urlApi;
-  public cantidadProductos = signal(0);
+  public cantidadProductos = 0;
+
+  constructor() {
+    this.obtenerCarrito().subscribe({
+      next: ({ carrito }) => {
+        this.carrito = carrito;
+        this.cantidadProductos = carrito?.productos?.length ?? 0; // Inicializa la cantidad de productos
+      },
+      error: (error) => {
+        console.error('Error al obtener el carrito:', error);
+      },
+    })
+  }
+
+  get obtenerCantidadProductos() {
+    return this.cantidadProductos;
+  }
 
   obtenerCarrito() {
     if (!this.serviceAuth.estadoAutenticacion) {
       const carritoLocalString = localStorage.getItem('carrito');
+
       if (carritoLocalString) {
         const carritoLocal = JSON.parse(carritoLocalString) as carrito;
-        this.carrito.set(carritoLocal);
-        this.cantidadProductos.set(carritoLocal.productos?.length ?? 0);
+        this.carrito = carritoLocal;
+        this.cantidadProductos = carritoLocal.productos.length ?? 0;
       }
+
       return of({
-        carrito: this.carrito(),
+        carrito: this.carrito,
         msg: 'Carrito obtenido del almacenamiento local',
-      }).pipe(
-        tap(() => {
-          const carritoLocalString = localStorage.getItem('carrito');
-          if (carritoLocalString) {
-            const carritoLocal = JSON.parse(carritoLocalString) as carrito;
-            this.carrito.set(carritoLocal);
-            this.cantidadProductos.set(carritoLocal.productos?.length ?? 0);
-          }
-        }),
-      );
+      });
     }
 
     return this.http
@@ -52,45 +61,35 @@ export class CarritoService {
         },
       })
       .pipe(
-        tap((respuesta) => {
-          this.carrito.set(respuesta.carrito);
-          this.cantidadProductos.set(respuesta.carrito?.productos?.length || 0);
-          console.log('Carrito obtenido:', this.carrito);
+        tap(({ carrito }) => {
+          this.carrito = carrito;
+          this.cantidadProductos = carrito?.productos?.length ?? 0; // Actualiza la cantidad de productos
         }),
       );
   }
   agregarCarrito(producto: any, cantidad: number = 1) {
     if (!this.serviceAuth.estadoAutenticacion) {
-      return of({
-        carrito: this.carrito(),
-        msg: 'Producto agregado al carrito local',
-      }).pipe(
-        tap(() => {
-          console.log(this.carrito().productos);
-          this.carrito.update((carritoActual) => {
-            const productoExistente = carritoActual.productos.find(
-              (item: any) => item.producto_id?._id === producto._id,
-            );
-            if (productoExistente) {
-              // Si el producto ya existe, solo se incrementa la cantidad
-              productoExistente.cantidad += cantidad;
-              console.log(
-                'Producto existente en el carrito local:',
-                productoExistente,
-              );
-            } else {
-              carritoActual.productos.push({
-                producto_id: producto,
-                cantidad,
-              } as any); // TODO: Revisar el funcionamiento luego
-              this.cantidadProductos.update((count) => count + 1); // Incrementa la cantidad de productos en el carrito
-            }
-            carritoActual.total += producto.precio * cantidad; // Actualiza el total del carrito
-            localStorage.setItem('carrito', JSON.stringify(carritoActual));
-            return carritoActual;
-          });
-        }),
+      const productoExistente = this.carrito.productos.find(
+        (item: any) => item.producto_id?._id === producto._id,
       );
+
+      if (productoExistente) {
+        // Si el producto ya existe, solo se incrementa la cantidad
+        productoExistente.cantidad += cantidad;
+      } else {
+        this.carrito.productos.push({
+          producto_id: producto,
+          cantidad,
+        } as carritoProducto); // TODO: Revisar el funcionamiento luego
+        this.cantidadProductos += 1; // Incrementa la cantidad de productos en el carrito
+      }
+      this.carrito.total += producto.precio * cantidad; // Actualiza el total del carrito
+      localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Guarda el carrito actualizado en el almacenamiento local
+
+      return of({
+        carrito: this.carrito,
+        msg: 'Producto agregado al carrito local',
+      });
     }
 
     return this.http
@@ -108,27 +107,28 @@ export class CarritoService {
         },
       )
       .pipe(
-        tap((respuesta) => {
-          this.carrito.set(respuesta.carrito);
-          console.log('Producto agregado al carrito:', respuesta);
-          this.cantidadProductos.update(
-            (cantidadActual) => cantidadActual + 1, // Incrementa la cantidad de productos en el carrito
-          );
+        tap(({ carrito }) => {
+          this.carrito = carrito; // Actualiza el carrito con la respuesta del backend
+          this.cantidadProductos = carrito?.productos?.length ?? 0; // Actualiza la cantidad de productos
         }),
       );
   }
   vaciarCarrito() {
     if (!this.serviceAuth.estadoAutenticacion) {
+      this.carrito = {
+        _id: '',
+        cliente_id: '',
+        productos: [],
+        estado: '',
+        total: 0,
+      }; // Resetea el carrito local
+      this.cantidadProductos = 0; // Resetea la cantidad de productos en el carrito
+      localStorage.removeItem('carrito'); // Elimina el carrito del almacenamiento local
+
       return of({
-        carrito: this.carrito(),
+        carrito: this.carrito,
         msg: 'Carrito local vaciado',
-      }).pipe(
-        tap(() => {
-          this.carrito.set({} as carrito); // Resetea el carrito local
-          this.cantidadProductos.set(0); // Resetea la cantidad de productos en el carrito
-          localStorage.removeItem('carrito'); // Elimina el carrito del almacenamiento local
-        }),
-      );
+      });
     }
 
     return this.http
@@ -139,37 +139,38 @@ export class CarritoService {
         },
       })
       .pipe(
-        tap((respuesta) => {
-          this.carrito.set({} as carrito);
-          console.log('Carrito vaciado:', respuesta);
-          this.cantidadProductos.set(0); // Resetea la cantidad de productos en el carrito
+        tap(() => {
+          this.carrito = {
+            _id: '',
+            cliente_id: '',
+            productos: [],
+            estado: '',
+            total: 0,
+          }; // Resetea el carrito
+          this.cantidadProductos = 0; // Resetea la cantidad de productos en el carrito
         }),
       );
   }
   eliminarCarrito(producto_id: string) {
     if (!this.serviceAuth.estadoAutenticacion) {
-      const carritoActual = this.carrito();
-      const productoIndice = carritoActual.productos.findIndex(
+      const productoIndice = this.carrito.productos.findIndex(
         (producto: any) => producto.producto_id._id === producto_id,
-      )
-      const productoEliminado = carritoActual.productos[productoIndice];
-      carritoActual.productos.splice(productoIndice, 1); // Elimina el producto del carrito
-      carritoActual.total -= 
-        productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
-      localStorage.setItem('carrito', JSON.stringify(carritoActual)); // Actualiza el carrito en el almacenamiento local
-
-
-      console.log('Producto eliminado del carrito local:', producto_id);
-      return of({
-        carrito: carritoActual,
-        msg: 'Producto eliminado del carrito local',
-      }).pipe(
-        tap((respuesta) => {
-
-          this.interceptarEliminarProducto(respuesta, producto_id);
-        }),
       );
+      const productoEliminado = this.carrito.productos[productoIndice];
+
+      this.carrito.productos.splice(productoIndice, 1); // Elimina el producto del carrito
+
+      this.carrito.total -=
+        productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
+
+      localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Actualiza el carrito en el almacenamiento local
+
+      return of({
+        carrito: this.carrito,
+        msg: 'Producto eliminado del carrito local',
+      });
     }
+
     return this.http
       .put<any>(
         `${this.urlBackend}/api/carritos/eliminar`,
@@ -183,33 +184,39 @@ export class CarritoService {
       )
       .pipe(
         tap((respuesta) => {
-          this.interceptarEliminarProducto(respuesta, producto_id);
+          this.cantidadProductos -= 1; // Decrementa la cantidad de productos en el carrito
+          const productoIndice = this.carrito.productos.findIndex(
+            (producto: any) => producto.producto_id._id === producto_id,
+          );
+          if (productoIndice !== -1) {
+            const productoEliminado = this.carrito.productos[productoIndice];
+            this.carrito.total -=
+              productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
+            this.carrito.productos.splice(productoIndice, 1); // Elimina el producto del carrito
+          }
         }),
       );
   }
 
   modificarCantidadCarrito(producto_id: string, cantidad: number) {
     if (!this.serviceAuth.estadoAutenticacion) {
-      return of({
-        carrito: this.carrito(),
-        msg: 'Cantidad modificada en el carrito local',
-      }).pipe(
-        tap(() => {
-          this.carrito.update((carritoActual) => {
-            const productoIndice = carritoActual.productos.findIndex(
-              (producto: any) => producto.producto_id._id === producto_id,
-            );
-            if (productoIndice !== -1) {
-              carritoActual.productos[productoIndice].cantidad += cantidad;
-              carritoActual.total +=
-                carritoActual.productos[productoIndice].producto_id.precio *
-                cantidad; // Actualiza el total del carrito
-            }
-            localStorage.setItem('carrito', JSON.stringify(carritoActual));
-            return carritoActual;
-          });
-        }),
+      const productoIndice = this.carrito.productos.findIndex(
+        (producto: any) => producto.producto_id._id === producto_id,
       );
+
+      if (productoIndice !== -1) {
+        const productoExistente = this.carrito.productos[productoIndice];
+
+        this.carrito.productos[productoIndice].cantidad += cantidad;
+        this.carrito.total += productoExistente.producto_id.precio * cantidad; // Actualiza el total del carrito
+      }
+
+      localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Actualiza el carrito en el almacenamiento local
+
+      return of({
+        carrito: this.carrito,
+        msg: 'Cantidad modificada en el carrito local',
+      });
     }
     return this.http
       .put<any>(
@@ -224,57 +231,17 @@ export class CarritoService {
       )
       .pipe(
         tap(() => {
-          
-          this.carrito.update((carritoActual) => {
-            const indiceProducto = carritoActual.productos.findIndex(
-              (producto: any) => producto.producto_id._id === producto_id,
-            );
-            if (indiceProducto !== -1) {
-              carritoActual.productos[indiceProducto].cantidad += cantidad;
-              carritoActual.total +=
-                carritoActual.productos[indiceProducto].producto_id.precio *
-                cantidad; // Actualiza el total del carrito
-                console.log('Producto actualizado en el carrito:', carritoActual);
-            }
-            return carritoActual;
-          });
+          const indiceProducto = this.carrito.productos.findIndex(
+            (producto: any) => producto.producto_id._id === producto_id,
+          );
+          if (indiceProducto !== -1) {
+            const productoExistente = this.carrito.productos[indiceProducto];
+
+            this.carrito.productos[indiceProducto].cantidad += cantidad;
+            this.carrito.total +=
+              productoExistente.producto_id.precio * cantidad; // Actualiza el total del carrito
+          }
         }),
       );
-  }
-  pagarCarrito(){
-    this.http.post<any>(`${this.urlBackend}/api/carritos/pagar`, {
-      //pendienteeeeee
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-        'Content-Type': 'application/json',
-      },
-    }).pipe(
-      tap((respuesta) => {
-        console.log('Pago realizado:', respuesta);
-        this.carrito.set({} as carrito); // Resetea el carrito después del pago
-        this.cantidadProductos.set(0); // Resetea la cantidad de productos en el carrito
-        localStorage.removeItem('carrito'); // Elimina el carrito del almacenamiento local
-      }),
-    ).subscribe();
-  }
-
-  private interceptarEliminarProducto(respuesta: any, producto_id: string) {
-    console.log('Producto eliminado del carrito:', respuesta);
-    this.cantidadProductos.update(
-      (cantidadProductos) => cantidadProductos - 1, // Decrementa la cantidad de productos en el carrito
-    );
-    this.carrito.update((carritoActual) => {
-      const productoIndice = carritoActual.productos.findIndex(
-        (producto: any) => producto.producto_id._id === producto_id,
-      );
-      if (productoIndice !== -1) {
-        const productoEliminado = carritoActual.productos[productoIndice];
-        carritoActual.total -=
-          productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
-        carritoActual.productos.splice(productoIndice, 1); // Elimina el producto del carrito
-      }
-      return carritoActual;
-    });
   }
 }

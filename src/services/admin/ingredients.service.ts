@@ -8,8 +8,8 @@ import { environment } from '../../environments/environment';
 export class IngredientesService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-    obtener() {
-        return this.http.get<any[]>(`${this.urlBackend}/api/ingredientes`, {
+    obtener(page: number = 1, limit: number = 4) {
+        return this.http.get<any>(`${this.urlBackend}/api/ingredientes?page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
     }

@@ -3,7 +3,7 @@
 
 // @Component({
 //   template: `
-//     <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
+//     <headers [(cantidadProducto)]="cantidadProducto"></headers>
 //     <main class="flex-grow bg-[#f9fafb]" role="main">
 //       <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 md:flex-row lg:px-8">
 //         <!-- Navegación secundaria -->
@@ -191,5 +191,5 @@
 //   imports: [Headers],
 // })
 // export class OrdersPage {
-//   public nuevaCantidad = model<number>(0);
+//   public cantidadProducto = model<number>(0);
 // }

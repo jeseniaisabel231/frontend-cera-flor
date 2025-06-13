@@ -21,7 +21,7 @@ import { httpResource } from '@angular/common/http';
   imports: [Headers, Footeer, Card, BarranavComponent, ProductDetailsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
+    <headers [(cantidadProducto)]="cantidadProducto"></headers>
     <main class="flex flex-col">
       <barranav rutaSeccionSeleccionada="catalogo"
         [rutaCategoriaSeleccionada]="productoResource.value()?.producto?.id_categoria.nombre"
@@ -58,21 +58,18 @@ import { httpResource } from '@angular/common/http';
 export class ProductDetailPage {
   public id = input.required(); //debe ser igual al param de la ruta
   public producto_id = linkedSignal(() => this.id());
-  public nuevaCantidad = signal(0);
+  public cantidadProducto = signal(0);
 
   public serviceProductos = inject(ProductosService);
   public productos = signal<producto[]>([]);
   ngOnInit() {
     this.obtenerProductos(1);
-    console.log('ID del producto:', this.producto_id());
   }
   private obtenerProductos(numeroPagina: number) {
     this.serviceProductos.obtener(numeroPagina).subscribe({
       next: (respuesta: any) => {
-        console.log('Respuesta del backend:', respuesta);
         this.productos.set(respuesta.productos);
       },
-      error: (err) => console.error('Error al cargar productos', err),
     });
   }
   public productoResource = httpResource<any>(
@@ -83,6 +80,6 @@ export class ProductDetailPage {
     }
   );
   recibirCantidad(cantidad: number) {
-    this.nuevaCantidad.set(cantidad)
+    this.cantidadProducto.set(cantidad)
   }
 }

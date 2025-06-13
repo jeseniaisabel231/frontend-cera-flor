@@ -64,7 +64,6 @@ export class SwitchComponent {
 
   cambiarEstado() {
     if (this.verificarTipo() === 'venta') {
-      console.log('cambiar estado de venta');
       this.servicio()
         .editar(this.id(), this.estado() ? 'pendiente' : 'finalizado')
 

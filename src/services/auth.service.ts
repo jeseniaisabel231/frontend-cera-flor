@@ -71,6 +71,7 @@ export class AuthService {
     });
   }
   obtenerPerfil() {
+    
     return this.http
       .get<any>(`${this.urlBackend}/api/perfil`, {
         headers: {
@@ -107,7 +108,6 @@ export class AuthService {
 
   get estadoAutenticacion(): boolean {
     const token = localStorage.getItem('token');
-    console.log('Token:', token);
     if (!token) return false;
 
     return Date.now() < JSON.parse(atob(token.split('.')[1])).exp * 1000;

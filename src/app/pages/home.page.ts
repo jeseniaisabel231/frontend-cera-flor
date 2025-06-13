@@ -13,7 +13,7 @@ import { PromocionesService } from '../../services/admin/promociones.service';
   imports: [Headers, Footeer, Card, RouterLink],
 
   template: `
-    <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
+    <headers [(cantidadProducto)]="cantidadProducto"></headers>
     <main class="flex flex-col">
       <!--Seccion banner -->
       <section class="relative w-full">
@@ -471,16 +471,14 @@ import { PromocionesService } from '../../services/admin/promociones.service';
 export class HomePage {
   public serviceProductos = inject(ProductosService);
   public productos: producto[] = [];
-  public nuevaCantidad = signal(0);
+  public cantidadProducto = signal(0);
   ngOnInit() {
     this.obtenerProductos(1);
   }
   obtenerProductos(numeroPagina: number) {
     this.serviceProductos.obtener(numeroPagina).subscribe({
       next: (respuesta: any) => {
-        console.log('Respuesta del backend:', respuesta);
         this.productos = respuesta.productos;
-        console.log('Productos filtrados:', this.productos);
       },
       error: (err) => console.error('Error al cargar productos', err),
     });
@@ -490,7 +488,7 @@ export class HomePage {
   );
 
   recibirCantidad(cantidad: number) {
-    this.nuevaCantidad.set(cantidad)
+    this.cantidadProducto.set(cantidad)
   }
   //metodo para el boton de siguientes
   siguienteBotonBanner(){

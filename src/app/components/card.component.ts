@@ -90,12 +90,11 @@ export class Card {
   }
   //metodo para agregar al carrito
   agregarAlCarrito() {
-    console.log('Producto agregado al carrito:', this.producto().nombre);
     this.serviceCarrito
       .agregarCarrito(this.producto(), this.cantidad())
       .subscribe({
-        next: () => {
-          this.emitirCantidad.emit(1);
+        next: ({carrito}:any) => {
+          this.emitirCantidad.emit(carrito.productos.length);
         },
       });
   }

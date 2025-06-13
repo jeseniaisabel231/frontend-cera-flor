@@ -8,27 +8,23 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Actions } from './modal.component';
+import { ModalAvisosComponent } from './modalavisos.component';
 
 @Component({
   selector: 'formprom',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ModalAvisosComponent],
   template: `
     <dialog
       #modal
-      class="m-auto bg-white backdrop:bg-gris-600/25 backdrop:backdrop-blur-[2px] rounded-[10px] text-[#3C3C3B]"
+      class="backdrop:bg-gris-600/25 m-auto rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px]"
     >
-      <div class="flex items-center pt-5 justify-between px-7">
-        <h1 class="text-lg text-[#3C3C3B] font-medium mb-6">
+      <div class="flex items-center justify-between px-7 pt-5">
+        <h1 class="mb-6 text-lg font-medium text-[#3C3C3B]">
           Agregar promoción
         </h1>
-        <button (click)="close()" class="focus:outline-none mb-6">
+        <button (click)="close()" class="mb-6 focus:outline-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -49,37 +45,35 @@ import { Actions } from './modal.component';
         (ngSubmit)="onSubmit()"
         [formGroup]="formulario"
       >
-        <div class="col-span-1 h-full mb-4">
+        <div class="col-span-1 mb-4 h-full">
           <label for="foto" class="">
             Imagen del producto
 
             <div
-              class="flex flex-col items-center border border-gray-300  rounded-xl h-47 justify-center"
+              class="flex h-47 flex-col items-center justify-center rounded-xl border border-gray-300"
             >
-              @if(imagePreview !== null) {
-
-              <img
-                [src]="imagePreview"
-                alt=""
-                class="w-full h-full rounded-xl object-cover"
-              />
-              }@else {
-
-              <div class="flex flex-col items-center gap-2 cursor-pointer">
-                <svg
-                  class=""
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="#3C3C3B"
-                    d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
-                  />
-                </svg>
-                <span>Subir una imagen</span>
-              </div>
+              @if (imagePreview !== null) {
+                <img
+                  [src]="imagePreview"
+                  alt=""
+                  class="h-full w-full rounded-xl object-cover"
+                />
+              } @else {
+                <div class="flex cursor-pointer flex-col items-center gap-2">
+                  <svg
+                    class=""
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#3C3C3B"
+                      d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
+                    />
+                  </svg>
+                  <span>Subir una imagen</span>
+                </div>
               }
 
               <input
@@ -92,47 +86,52 @@ import { Actions } from './modal.component';
               />
             </div>
           </label>
-          <small class="text-red-700 font-medium">{{ errores().imagen }}</small>
+          <small class="font-medium text-red-700">{{ errores().imagen }}</small>
         </div>
 
         <!-- Título y descripción -->
-        <div class="col-span-2 gap-6 w-full">
-          
+        <div class="col-span-2 w-full gap-6">
           <!-- Título -->
           <div>
-            <label class="block text-sm font-medium mb-1" for="titulo">
+            <label class="mb-1 block text-sm font-medium" for="titulo">
               Título de la promoción:
             </label>
             <input
               type="text"
               id="titulo"
-              class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-morado-400"
+              class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
               placeholder="Ej: 20% de descuento en jabones"
               formControlName="nombre"
             />
-            <small class="text-red-700 font-medium">
+            <small class="font-medium text-red-700">
               {{ errores().nombre }}
             </small>
           </div>
-          
         </div>
 
         <!-- Botón -->
-        <div class="md:col-span-2 flex justify-end gap-4 mt-6 pb-4">
+        <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           <button
-            class="bg-indigo-400 text-white px-6 h-10 rounded-full hover:bg-indigo-500 w-auto"
+            class="h-10 w-auto rounded-full bg-indigo-400 px-6 text-white hover:bg-indigo-500"
           >
-            Guardar promoción
+            {{ acciones() }} promoción
           </button>
           <button
             type="button"
-            class="bg-gray-300 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-400 transition"
+            class="rounded-full bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="close()"
           >
             Cancelar
           </button>
         </div>
       </form>
+      <app-modal
+        [mostrarModal]="mostrarModalExito()"
+        [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
+        [mensaje]="respuestaBack()"
+        [tipo]="tipoRespuesta()"
+        (closed)="cerraTodo()"
+      ></app-modal>
     </dialog>
   `,
 })
@@ -140,11 +139,23 @@ export class FormProm {
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarModal = model<boolean>(false);
-
+  public mostrarModalExito = signal(false);
+  public tipoRespuesta = signal<'exito' | 'error'>('exito');
+  public respuestaBack = signal('');
+  public servicioPromocion = input<any>();
+  public acciones = input.required<Actions>();
+  public cambioEmitir = output<any>();
+  public idRegistro = input<string>();
+  public mostrarDatos = input<any>(); // Datos a mostrar en el formulario
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null),
     nombre: new FormControl(''),
     createdAt: new FormControl(''),
+  });
+  //objeto que almacena los eerores del formulario
+  public errores = signal({
+    nombre: '',
+    imagen: '',
   });
 
   public toFormData(): FormData {
@@ -154,23 +165,6 @@ export class FormProm {
     });
     return formData;
   }
-
-  public servicioPromocion = input<any>();
-
-  public acciones = input.required<Actions>();
-
-  //objeto que almacena los eerores del formulario
-  public errores = signal({
-    nombre: '',
-    imagen: '',
-  });
-
-  public cambioEmitir = output<any>();
-
-  public idRegistro = input<string>();
-
-  //variable para almacenar los valores que mostrar en formulario en product.page
-  public mostrarDatos = input<any>();
 
   public close() {
     this.mostrarModal.set(false);
@@ -206,7 +200,6 @@ export class FormProm {
         }
       } else if (this.acciones() === 'Registrar') {
         if (this.mostrarDatos()) {
-          console.log(this.mostrarDatos());
           this.formulario.setValue({
             nombre: '',
             imagen: null,
@@ -221,7 +214,6 @@ export class FormProm {
   }
 
   onSubmit() {
-    console.log(this.formulario?.value);
     if (this.formulario?.invalid) {
       alert('Formulario inválido');
       return;
@@ -250,7 +242,6 @@ export class FormProm {
               const { path, msg } = detail;
               this.errores.update((prev) => ({ ...prev, [path]: msg })); //setea los errores
             });
-            console.log(error);
           },
         });
     } else if (this.acciones() === 'Actualizar') {
@@ -259,12 +250,16 @@ export class FormProm {
         .editar(this.idRegistro(), this.formulario?.value)
         .subscribe({
           next: (registroActualizado: any) => {
-            this.cambioEmitir.emit(registroActualizado); //emite el evento de cambio
-            this.formulario?.reset(); //borra los datos almacenad en registrar formulario
-            this.close();
+            this.cambioEmitir.emit(registroActualizado);
+            this.mostrarModalExito.set(true); //muestra el modal de exito
+            this.tipoRespuesta.set('exito'); //setea el tipo de respuesta
+            this.respuestaBack.set(registroActualizado.msg);
+            this.formulario?.reset();
           },
           error: ({ error }: { error: any }) => {
-            alert(error.response);
+            this.tipoRespuesta.set('error');
+            this.mostrarModalExito.set(true); //muestra el modal de error
+            this.respuestaBack.set(error.msg); //mensaje de error
           },
         });
     }
@@ -281,6 +276,12 @@ export class FormProm {
       this.formulario.patchValue({
         imagen: file,
       });
+    }
+  }
+  cerraTodo() {
+    this.mostrarModalExito.set(false);
+    if (this.tipoRespuesta() === 'exito') {
+      this.close(); // Solo cerramos el formulario si fue éxito
     }
   }
 }

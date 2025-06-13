@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import {
   Component,
   computed,
@@ -154,7 +153,12 @@ import { decodificarToken } from '../utils/decodificarToken';
               <span
                 class="hidden whitespace-nowrap text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
               >
-                Mi cuenta
+                @if (serviceAuth.estadoAutenticacion) {
+                  Hola,
+                  <span>{{ obtenerNombre() }}</span>
+                } @else {
+                  Iniciar sesión/Registrarse
+                }
               </span>
             </button>
             <div class="h-10 border-[1px] border-[#a0a0a0]"></div>
@@ -178,10 +182,9 @@ import { decodificarToken } from '../utils/decodificarToken';
                 Compras
               </a>
               <span
-                id="cart-counter"
                 class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors duration-300 ease-in-out group-hover:bg-red-600"
               >
-                {{ cantidadProducto }}
+                {{ cantidadProducto() }}
               </span>
             </div>
           </div>
@@ -250,29 +253,21 @@ export class Headers {
   public menuVisible = signal(false);
   public router = inject(Router);
   public serviceCarrito = inject(CarritoService);
-  public cantidadProducto = 0;
-  public nuevaCantidad = model<number>(0);
+  public cantidadProducto = model<number>(0);
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
+  public obtenerNombre = signal('');
 
   constructor() {
-    // Verificar si el usuario está autenticado al cargar el componente
-    this.serviceCarrito.obtenerCarrito().subscribe({
-      next: (respuesta) => {
-        this.cantidadProducto = this.serviceCarrito.cantidadProductos();
-        console.log('Carrito obtenido:', this.serviceCarrito.cantidadProductos);
-      },
-      error: (error) => {
-        console.error('Error al obtener el carrito:', error);
-      },
-    });
-    effect(() => {
-      if (this.nuevaCantidad() > 0) {
-        console.log('Cantidad nueva:', this.nuevaCantidad());
-        this.cantidadProducto += this.nuevaCantidad();
-        this.nuevaCantidad.set(0); // Resetea la cantidad después de actualizar
-      }
-    });
+    const tokenDecodificado = decodificarToken();
+    if(tokenDecodificado && tokenDecodificado?.rol !== 'admin') {
+      this.serviceAuth.obtenerPerfil().subscribe({
+        next: ({ cliente }: any) => {
+          this.obtenerNombre.set(cliente.nombre);
+        },
+      });
+    }
+
   }
 
   //metodo para ver modal

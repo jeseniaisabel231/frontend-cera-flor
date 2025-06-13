@@ -24,7 +24,7 @@ import { producto } from '../interfaces/producto.interface';
     Loading,
   ],
   template: `
-    <headers [(nuevaCantidad)]="nuevaCantidad"></headers>
+    <headers [(cantidadProducto)]="cantidadProducto"></headers>
     <main class="flex flex-col">
       <barranav
         rutaSeccionSeleccionada="catalogo"
@@ -151,7 +151,7 @@ export class CatalogPage {
   public titulo = toSignal(
     this.rutaActiva.queryParams.pipe(map((params) => params['categoria'])),
   );
-  public nuevaCantidad = signal(0);
+  public cantidadProducto = signal(0);
   public banners = {
     'jabones-artesanales': 'bannerJA.png',
     'velas-artesanales': 'bannerVA.png',
@@ -189,17 +189,14 @@ export class CatalogPage {
       .obtener(numeroPagina, limit)
       .subscribe({
         next: (respuesta: any) => {
-          console.log('Respuesta del backend:', respuesta);
           this.productos = respuesta.productos.filter(
             (producto: producto) =>
               producto.id_categoria.nombre.replace(' ', '-').toLowerCase() ===
               this.titulo().toLowerCase(),
           );
-          console.log('Productos filtrados:', this.productos);
           this.carga.set(false);
         },
         error: (err) => {
-          console.error('Error al cargar productos', err);
           this.errorCarga.set(true);
           this.carga.set(false);
         },
@@ -209,7 +206,7 @@ export class CatalogPage {
       });
   }
   recibirCantidad(cantidad: number) {
-    this.nuevaCantidad.set(cantidad)
+    this.cantidadProducto.set(cantidad)
   }
 
   filtrarPorTipo(event: Event) {}

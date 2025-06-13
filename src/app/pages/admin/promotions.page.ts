@@ -98,7 +98,7 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
           >
             @for( item of promociones; track $index) {
 
-            <div class="flexflex-col border border-gray-300 rounded-xl h-86">
+            <div class="flexflex-col border border-gray-300 rounded-xl h-90">
               <div
                 class="flex justify-center border-b-1 h-56 w-60 border-gray-300"
               >
@@ -273,7 +273,6 @@ export class PromotionsPage {
         next: (respuesta: any) => {
           this.promociones = respuesta.promociones;
           this.datosBuscados.set(this.promociones);
-          console.log(respuesta.promociones);
         },
       })
       .add(() => {

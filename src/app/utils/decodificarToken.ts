@@ -4,10 +4,14 @@ export function decodificarToken(): any {
 
   try {
     const infoToken = token.split('.')[1];
-    const tokenDecodificado = atob(infoToken);
-    return JSON.parse(tokenDecodificado);
+    const tokenDecodificado = JSON.parse(atob(infoToken))
+    const expirationTime = tokenDecodificado.exp * 1000;
+    if (Date.now() > expirationTime) {
+      return null;
+    }
+
+    return tokenDecodificado;
   } catch (error) {
-    console.error('Error decoding token:', error);
     return null;
   }
 }

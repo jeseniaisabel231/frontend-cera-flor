@@ -8,10 +8,10 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
   imports: [NgClass, RouterLink],
   template: `
     <aside
-      class="w-full md:w-[360px]   flex px-10 flex-col bg-[#efecff]"
+      class="w-full md:w-[360px]   flex px-10 flex-col bg-[#e0daff] h-full"
       [class]="mostrar() ? 'animate-activa' : 'animate-inactiva'"
     >
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center ">
         <div class="flex items-center gap-2 py-6 justify-center">
           <img
             src="logo.png"
@@ -138,6 +138,31 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
                 />
               </svg>
               Productos
+            </a>
+          </li>
+          <li class="flex">
+            <a
+              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              routerLink="/admin/ingredientes"
+              [ngClass]="{
+                'bg-[#806BFF] text-white fill-white':
+                  rutaActiva() === 'ingredientes',
+                'text-[#3C3C3B]': rutaActiva() !== 'ingredientes'
+              }"
+            >
+              <svg
+                class="transition-colors duration-[50]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="21"
+                fill="none"
+              >
+                <path
+                  d="M5.5 0H1.1C.808 0 .528.11.322.308A1.03 1.03 0 0 0 0 1.05v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 5.5 0M3.3 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.746.428.988.773s.371.752.371 1.167c0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45H1.1V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M13.2 0H8.8c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 13.2 0M11 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485A2.25 2.25 0 0 1 11 19.95m2.2-9.45H8.8V1.05h4.4zm-1.1 7.35c0 .208-.064.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M20.9 0h-4.4c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.207.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 20.9 0m-2.2 19.95c-.435 0-.86-.123-1.222-.354a2.13 2.13 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45h-4.4V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743"
+                  fill="currentColor"
+                />
+              </svg>
+              Ingredientes
             </a>
           </li>
           <li class="flex">
@@ -270,13 +295,12 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
   `,
 })
 export class Navegacion {
-  public mostrar = signal<boolean>(false);
+  public mostrar = signal<boolean>(true);
   //para mantener el color de cada opcion del menu
   //servicio de ruta
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
   constructor(private router: Router) {
-    console.log(this.rutaActiva());
   }
   // Método para alternar el estado del menú
   public toggleMenu(): void {

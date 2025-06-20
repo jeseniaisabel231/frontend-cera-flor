@@ -18,6 +18,8 @@ import {
 import { IngredientesService } from '../../../services/admin/ingredients.service';
 import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
+import { categorias } from '../../interfaces/categoria.interface';
+import { CategoryService } from '../../../services/categorias.service';
 
 @Component({
   selector: 'form-ingredients',
@@ -118,7 +120,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               "
               type="text"
               placeholder="Ej: Jabón de avena y miel"
-              class="w-full rounded-lg border p-2 focus:outline-none"
+              class="w-full rounded-lg border p-2 focus:outline-none placeholder-gris-200"
               formControlName="nombre"
               (input)="borrarError('nombre')"
             />
@@ -132,27 +134,24 @@ import { ModalAvisosComponent } from './modalavisos.component';
               </small>
             }
           </div>
-          
-          <select
-            class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
-            formControlName="tipo"
-            [class]=""
-            [value]="formulario.value.tipo"
-          >
-            <option selected value="" disabled hidden>
-              Selecciona un tipo
-            </option>
-            @if (formulario.value.tipo === '6823a6c096655bcbe4971062') {
-              <option value="seca">Moldes</option>
-              <option value="grasa">Esencia</option>
-              <option value="mixta">Aroma</option>
-              <option value="mixta">Color</option>
-            } @else if (formulario.value.tipo === '680fd248f613dc80267ba5d7') {
-              <option value="seca">Piel seca</option>
-              <option value="grasa">Piel grasa</option>
-              <option value="mixta">Piel mixta</option>
-            }
-          </select>
+          <div>
+            <label class="mb-1 block text-sm font-medium">Tipo:</label>
+            <select
+              class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+              formControlName="tipo"
+              [class]=""
+              [value]="formulario.value.tipo"
+            >
+              <option selected value="" disabled hidden>
+                Selecciona un tipo de ingrediente
+              </option>
+
+              <option value="molde">Moldes</option>
+              <option value="esencia">Esencia</option>
+              <option value="aroma">Aroma</option>
+              <option value="color">Color</option>
+            </select>
+          </div>
           <div class="mt-4">
             <label class="mb-1 block text-sm font-medium">Precio</label>
             <div class="flex items-center gap-2">
@@ -160,13 +159,15 @@ import { ModalAvisosComponent } from './modalavisos.component';
               <input
                 type="number"
                 placeholder="Ej: 5.50"
-                class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder-gris-200"
                 formControlName="precio"
                 (input)="borrarError('precio')"
               />
             </div>
           </div>
-          <!-- <select
+          <label class="mb-1 block text-sm font-medium">Categoria:</label>
+
+          <select
             class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 text-gray-600 focus:ring-2 focus:outline-none"
             formControlName="id_categoria"
             [class]=""
@@ -175,51 +176,55 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <option selected value="" disabled hidden>
               Selecciona una categoría
             </option>
-            <option value="680fd248f613dc80267ba5d7">Jabón artesanal</option>
-            <option value="6823a6c096655bcbe4971062">Vela artesanal</option>
-            <option value="6823a6c096655bcbe4971062">Todos</option>
-          </select> -->
+            @for (categoria of categorias; track categoria._id) {
+              <option [value]="categoria._id">
+                {{ categoria.nombre }}
+              </option>
+            }
+            <option value="ambas">Ambas categorías</option>
+            
+          </select>
         </div>
         <div class="col-span-2 mt-4 flex flex-col gap-4">
-            <div class="flex items-center gap-2">
-              <label for="">
-                Stock:
-                <span class="text-red-500">*</span>
-              </label>
-              @let stockInvalido =
-                (formulario.get('stock')?.invalid &&
-                  formulario.get('stock')?.value) ||
-                errores().stock;
+          <div class="flex items-center gap-2">
+            <label for="">
+              Stock:
+              <span class="text-red-500">*</span>
+            </label>
+            @let stockInvalido =
+              (formulario.get('stock')?.invalid &&
+                formulario.get('stock')?.value) ||
+              errores().stock;
 
-              <span>{{ formulario.value.stock }}</span>
-            </div>
-            <input
-              [class]="
-                stockInvalido
-                  ? 'border-red-500 accent-red-500'
-                  : 'border-gray-300'
-              "
-              type="range"
-              min="1"
-              max="100"
-              formControlName="stock"
-              class="accent-indigo-400"
-              (input)="borrarError('stock')"
-            />
-            @if (errores().stock) {
-              <small class="text-red-600">Este campo es obligatorio.</small>
-            } @else if (stockInvalido) {
-              <small class="text-red-600">
-                El stock es requerido y debe ser un número entre 1 y 100.
-              </small>
-            }
+            <span>{{ formulario.value.stock }}</span>
           </div>
+          <input
+            [class]="
+              stockInvalido
+                ? 'border-red-500 accent-red-500'
+                : 'border-gray-300'
+            "
+            type="range"
+            min="1"
+            max="100"
+            formControlName="stock"
+            class="accent-indigo-400"
+            (input)="borrarError('stock')"
+          />
+          @if (errores().stock) {
+            <small class="text-red-600">Este campo es obligatorio.</small>
+          } @else if (stockInvalido) {
+            <small class="text-red-600">
+              El stock es requerido y debe ser un número entre 1 y 100.
+            </small>
+          }
+        </div>
 
         <!-- Botones -->
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           @if (acciones() !== 'Visualizar') {
             <button
-              class="h-10 w-auto rounded-full bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+              class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
             >
               {{ acciones() }} productos
             </button>
@@ -227,7 +232,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
           <button
             type="button"
-            class="rounded-full bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
+            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="close()"
           >
             @if (acciones() === 'Visualizar') {
@@ -265,6 +270,9 @@ export class FormIngredientsComponent {
   public idRegistro = input<string>();
   public cambioEmitir = output<any>();
   public imagePreview: string | ArrayBuffer | null = null;
+  public serviceCategorias = inject(CategoryService)
+    public categorias: categorias[] = []; //almacena las categoria
+  public idsCategorias = signal<string[]>([]); //almacena los ids de las categorias
 
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null, Validators.required),
@@ -281,6 +289,7 @@ export class FormIngredientsComponent {
     ]),
     stock: new FormControl(57, Validators.required),
     tipo: new FormControl('', Validators.required),
+    id_categoria: new FormControl(''),
   });
   public errores = signal<any>({
     nombre: '',
@@ -324,51 +333,67 @@ export class FormIngredientsComponent {
         });
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
-      this.servicioIngredientes
-        .editar(this.idRegistro()!, this.formulario?.value)
-        .subscribe({
-          next: (registroActualizado: any) => {
-            this.cambioEmitir.emit(registroActualizado);
-            this.mostrarModalExito.set(true);
-            this.tipoRespuesta.set('exito');
-            this.respuestaBack.set(registroActualizado.msg);
-            this.formulario?.reset();
-          },
-          error: ({ error }: { error: any }) => {
-            console.error('Error al actualizar el registro:', error);
-            this.tipoRespuesta.set('error');
-            this.mostrarModalExito.set(true);
-            this.respuestaBack.set(error.msg);
-          },
-        });
+      this.servicioIngredientes.editar(this.idRegistro()!, formData).subscribe({
+        next: (registroActualizado: any) => {
+          this.cambioEmitir.emit(registroActualizado);
+          this.mostrarModalExito.set(true);
+          this.tipoRespuesta.set('exito');
+          this.respuestaBack.set(registroActualizado.msg);
+          this.formulario?.reset();
+        },
+        error: ({ error }: { error: any }) => {
+          console.error('Error al actualizar el registro:', error);
+          this.tipoRespuesta.set('error');
+          this.mostrarModalExito.set(true);
+          this.respuestaBack.set(error.msg);
+        },
+      });
     }
   }
   public toFormData(): FormData {
     const formData = new FormData();
+
     Object.entries(this.formulario.value).forEach(([key, value]) => {
-      if (key === 'ingredientes') {
-        this.ingredientesSeleccionados().forEach((item) => {
-          formData.append('ingredientes[]', item);
-        });
-      } else if (key === 'beneficios' && typeof value === 'string') {
-        value.split(',').forEach((item) => {
-          formData.append('beneficios[]', item.trim());
-        });
-      } else if (value !== null && value !== undefined) {
-        formData.append(key, value as any);
+      if (value !== null && value !== undefined) {
+        if (key === 'imagen') {
+          // Solo agregar la imagen si es un File nuevo
+          if (value instanceof File) {
+            formData.append(key, value, value.name);
+          }
+        } else if (key === 'id_categoria') {
+          if (value === 'ambas') {
+            // Si la categoría es "ambas", agregar los IDs de las categorías
+            this.idsCategorias().forEach((id) => {
+              formData.append('id_categoria[]', id);
+            });
+          } else if (typeof value === 'string' && value) {
+            // Si es un string y no está vacío, agregarlo directamente
+            formData.append('id_categoria', value);
+          }
+        } 
+        else {
+          // Convertir números a string
+          const finalValue =
+            typeof value === 'number' ? value.toString() : value;
+          formData.append(key, finalValue as any);
+        }
       }
     });
+    console.log('Valor del formulario:', this.formulario.value);
     return formData;
   }
   public onFileChange(event: any) {
     if (event.target.files && event.target.files.length) {
       const [file] = event.target.files;
       const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+        this.formulario.patchValue({
+          imagen: file,
+        });
+        this.formulario.get('imagen')?.updateValueAndValidity();
+      };
       reader.readAsDataURL(file);
-      reader.onload = () => (this.imagePreview = reader.result);
-      this.formulario.patchValue({
-        imagen: file,
-      });
     }
   }
   constructor() {
@@ -390,23 +415,27 @@ export class FormIngredientsComponent {
       }
     });
     effect(() => {
-      if (this.acciones() !== 'Registrar') {
+      if (this.acciones() !== 'Registrar' && this.mostrarDatos()) {
         const datos = this.mostrarDatos();
+        console.log('Datos recibidos:', datos); // Para depuración
+
         this.formulario.patchValue({
-          imagen: datos.imagen,
           nombre: datos.nombre,
           precio: datos.precio.toString(),
           stock: datos.stock.toString(),
           tipo: datos.tipo,
+          id_categoria: datos.id_categoria?._id || datos.id_categoria,
         });
 
         // Cargar la imagen preview si existe
         if (datos.imagen) {
           this.imagePreview = datos.imagen;
+        } else {
+          this.imagePreview = null;
         }
 
         this.ingredientesSeleccionados.set(
-          datos.ingredientes.map((item: any) => item?._id ?? item), //almacena los ingredientes seleccionados
+          datos.ingredientes?.map((item: any) => item?._id ?? item), //almacena los ingredientes seleccionados
         );
         if (this.acciones() === 'Visualizar') {
           this.formulario.disable();
@@ -420,10 +449,25 @@ export class FormIngredientsComponent {
           stock: 1,
           imagen: null,
           tipo: '',
+          id_categoria: '',
         });
-        this.formulario.enable();
         this.imagePreview = null;
       }
+    });
+  }
+  ngOnInit() {
+    this.cargarCategorias();
+   
+  }
+  cargarCategorias() {
+    this.serviceCategorias.obtener().subscribe({
+      next: (respuesta: any) => {
+        this.categorias = respuesta.categorias;
+        this.idsCategorias.set(
+          this.categorias.map((categoria: categorias) => categoria._id),
+        ); //almacena los ids de las categorias
+      },
+      error: (err) => console.error('Error al cargar categorías', err),
     });
   }
 }

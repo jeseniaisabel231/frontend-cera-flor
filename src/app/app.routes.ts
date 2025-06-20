@@ -22,7 +22,6 @@ import { ProfilePage } from './pages/profile.page';
 import { RecuperarContrasenia } from './pages/recoverpassword.page';
 import { RegisterPage } from './pages/register.page';
 import { ShoppingCardPage } from './pages/shoppingCart.page';
-import { TiposJuegoPage } from './pages/typeGame.page';
 import { WorkshopGamePage } from './pages/workshopGame.page';
 
 export const routes: Routes = [
@@ -53,11 +52,7 @@ export const routes: Routes = [
   //Rutas para el juego
 
   {
-    path: 'tipos-jabon-juego',
-    component: TiposJuegoPage,
-  },
-  {
-    path: 'taller-juego',
+    path: 'taller-juego/:categoria',
     component: WorkshopGamePage,
   },
 

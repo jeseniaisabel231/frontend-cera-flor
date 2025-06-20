@@ -121,7 +121,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               "
               type="text"
               placeholder="Ej: Jabón de avena y miel"
-              class="w-full border rounded-lg p-2 focus:outline-none"
+              class="w-full border rounded-lg p-2 focus:outline-none placeholder-gris-200"
               formControlName="nombre"
               (input)="borrarError('nombre')"
             />
@@ -153,7 +153,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               "
               placeholder="Describe 3 de sus beneficios..."
               rows="4"
-              class="w-full border rounded-lg p-2 focus:outline-none "
+              class="w-full border rounded-lg p-2 focus:outline-none placeholder-gris-200"
               formControlName="beneficios"
               (input)="borrarError('beneficios')"
             ></textarea>
@@ -186,7 +186,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             "
             placeholder="Describe aroma, textura, beneficios o forma artesanal..."
             rows="4"
-            class="w-full border rounded-lg p-2 focus:outline-none "
+            class="w-full border rounded-lg p-2 focus:outline-none placeholder-gris-200"
             formControlName="descripcion"
             (input)="borrarError('descripcion')"
           ></textarea>
@@ -267,7 +267,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <input
               type="number"
               placeholder="Ej: 5.50"
-              class="w-full border border-gray-300  rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              class="w-full border border-gray-300  rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder-gris-200"
               formControlName="precio"
               (input)="borrarError('precio')"
             />
@@ -410,7 +410,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
           @if(acciones() !== 'Visualizar') {
 
           <button
-            class="bg-indigo-400 text-white px-6 h-10 rounded-full hover:bg-indigo-500 w-auto"
+            class="bg-indigo-400 text-white px-6 h-10 rounded-[15px] hover:bg-indigo-500 w-auto"
           >
             {{ acciones() }} productos
           </button>
@@ -418,7 +418,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
           <button
             type="button"
-            class="bg-gray-300 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-400 transition"
+            class="bg-gray-300 text-gray-700 px-6 py-2 rounded-[15px] hover:bg-gray-400 transition"
             (click)="close()"
           >
             @if(acciones() === 'Visualizar') { Cerrar } @else { Cancelar }

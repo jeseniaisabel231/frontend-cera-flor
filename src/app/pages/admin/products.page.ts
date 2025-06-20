@@ -145,12 +145,12 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
                 class="flex flex-col border border-gray-300 rounded-xl h-auto min-h-[400px] max-w-[300px] mx-auto w-full"
               >
                 <figure
-                  class="relative pt-[75%] overflow-hidden border-b border-gray-300"
+                  class="relative pt-[75%] overflow-hidden border-b border-gray-300 aspect-square"
                 >
                   <img
                     [src]="item?.imagen"
                     alt="{{ item?.nombre }}"
-                    class="absolute top-0 left-0 w-full h-full object-cover rounded-t-md"
+                    class="absolute top-0 left-0 w-full h-full object-contain rounded-t-md"
                   />
                 </figure>
                 <div class="flex flex-col justify-between p-4">

@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { promocion } from '../../app/interfaces/promocion.interface';
+import { tap } from 'rxjs';
 import { producto } from '../../app/interfaces/producto.interface';
 import { environment } from '../../environments/environment';
-import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +10,7 @@ import { tap } from 'rxjs';
 export class ProductosService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  public productos = signal<producto[]>([]); 
+  public productos = signal<producto[]>([]);
 
   obtener(page: number, limit: number = 4) {
     return this.http
@@ -21,7 +20,7 @@ export class ProductosService {
       .pipe(
         tap((respuesta: any) => {
           this.productos.set(respuesta.productos);
-        })
+        }),
       );
   }
   registrar(datos: producto) {
@@ -35,7 +34,7 @@ export class ProductosService {
             productosAnteriores.push(respuesta.producto);
             return productosAnteriores;
           });
-        })
+        }),
       );
   }
   eliminar(id: string) {
@@ -47,14 +46,14 @@ export class ProductosService {
         tap(() => {
           this.productos.update((productosAnteriores) => {
             const index = productosAnteriores.findIndex(
-              (producto) => producto._id === id
+              (producto) => producto._id === id,
             );
             if (index !== -1) {
               productosAnteriores.splice(index, 1);
             }
             return productosAnteriores;
           });
-        })
+        }),
       );
   }
   editar(id: string, datos: producto) {
@@ -68,18 +67,18 @@ export class ProductosService {
           // Almacena la respuesta del backend en la variable respuesta
           this.productos.update(
             (
-              productosAnteriores // La variable de productos se tiene que actualizar
+              productosAnteriores, // La variable de productos se tiene que actualizar
             ) => {
               const index = productosAnteriores.findIndex(
-                (producto) => producto._id === id
+                (producto) => producto._id === id,
               );
               if (index !== -1) {
                 productosAnteriores[index] = respuesta.producto;
               }
               return productosAnteriores;
-            }
+            },
           );
-        })
+        }),
       );
   }
 }

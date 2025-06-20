@@ -99,7 +99,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <input
               type="text"
               id="titulo"
-              class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+              class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none placeholder-gris-200"
               placeholder="Ej: 20% de descuento en jabones"
               formControlName="nombre"
             />
@@ -112,13 +112,13 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <!-- Botón -->
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           <button
-            class="h-10 w-auto rounded-full bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+            class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
           >
             {{ acciones() }} promoción
           </button>
           <button
             type="button"
-            class="rounded-full bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
+            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="close()"
           >
             Cancelar

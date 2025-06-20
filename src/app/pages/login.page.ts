@@ -63,12 +63,13 @@ import { decodificarToken } from '../utils/decodificarToken';
                   d="M19 20.75a1 1 0 0 0 1-1v-1.246c.004-2.806-3.974-5.004-8-5.004s-8 2.198-8 5.004v1.246a1 1 0 0 0 1 1zM15.604 6.854a3.604 3.604 0 1 1-7.208 0a3.604 3.604 0 0 1 7.208 0"
                 />
               </svg>
+
               <input
-                class="h-[46px] w-full rounded-[15px] border bg-white p-1.5 pl-12"
+                class="text-gris-300 h-[46px] w-full rounded-[15px] border bg-white p-1.5 pl-12 placeholder-gris-300"
                 [class]="
                   emailInvalido
                     ? 'border-red-600 text-red-600 outline-red-600'
-                    : 'border-[#878787] outline-[#3C3C3B]'
+                    : 'outline-gris-300 border-[#878787]'
                 "
                 type="email"
                 placeholder="ejemplo@gmail.com"
@@ -116,12 +117,12 @@ import { decodificarToken } from '../utils/decodificarToken';
                 </g>
               </svg>
               <input
-                class="h-[46px] w-full rounded-[15px] border bg-white p-1.5 pl-12"
+                class="placeholder-gris-300 h-[46px] w-full rounded-[15px] border bg-white p-1.5 pl-12"
                 [type]="passwordVisible() ? 'text' : 'password'"
                 [class]="
                   passwordInvalido
                     ? 'border-red-600 text-red-600 outline-red-600'
-                    : 'border-[#878787] outline-[#3C3C3B]'
+                    : 'outline-gris-300 border-[#878787]'
                 "
                 placeholder="Contraseña"
                 id="password"
@@ -129,6 +130,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                 formControlName="password"
                 (input)="borrarError()"
               />
+              
 
               <div
                 class="absolute inset-y-0 right-3 flex items-center justify-center"
@@ -199,7 +201,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               </svg>
             } @else {
               <span
-                class="hover:bg-morado-600 inline-flex h-full w-full cursor-pointer items-center justify-center rounded-[15px] bg-[#9F93E7] px-3 py-1 font-medium text-white backdrop-blur-3xl transition-colors duration-500"
+                class="hover:bg-morado-600 inline-flex h-full w-full cursor-pointer items-center justify-center rounded-[15px] bg-[#9F93E7] px-3 py-1 font-bold text-white backdrop-blur-3xl transition-colors duration-500"
               >
                 Iniciar sesion
               </span>
@@ -229,7 +231,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
             ></span>
             <span
-              class="text-gris-500 hover:bg-morado-200 inline-flex h-full w-full cursor-pointer items-center justify-center rounded-[15px] bg-white px-3 py-1 font-medium backdrop-blur-3xl transition-colors duration-500"
+              class="text-gris-500 hover:bg-morado-300 inline-flex h-full w-full cursor-pointer items-center justify-center rounded-[15px] px-3 py-1 font-bold backdrop-blur-3xl transition-colors duration-500 bg-morado-200 "
             >
               Registrarse
             </span>
@@ -241,7 +243,7 @@ import { decodificarToken } from '../utils/decodificarToken';
         [titulo]="titulo()"
         [mensaje]="mensaje()"
         [tipo]="tipoRespuesta()"
-        (closed)="redirigirSegunRol()"
+        [reload]="true"
       ></app-modal>
     </main>
     <footeer></footeer>
@@ -256,7 +258,6 @@ export class LoginPage {
   public mensaje = signal('');
   //variable para el formulario de recuperar contrasena cuando este sea exitoso
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
-
 
   //variable del ojito
   public passwordVisible = signal<boolean>(false);
@@ -327,10 +328,5 @@ export class LoginPage {
       });
       this.carga.set(false);
     }
-  }
-  //metodo que se ejecuta cuando se cierra el modal
-  redirigirSegunRol(){
-    window.location.reload();
-    this.mostrarModal.set(false);
   }
 }

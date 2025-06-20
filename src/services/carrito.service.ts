@@ -17,8 +17,8 @@ export class CarritoService {
     total: 0,
   };
   private http = inject(HttpClient);
-  public serviceAuth = inject(AuthService);
   private urlBackend = environment.urlApi;
+  public serviceAuth = inject(AuthService);
   public cantidadProductos = 0;
 
   constructor() {

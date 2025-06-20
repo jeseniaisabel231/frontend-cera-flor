@@ -98,14 +98,14 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
           >
             @for( item of promociones; track $index) {
 
-            <div class="flexflex-col border border-gray-300 rounded-xl h-90">
+            <div class="flex flex-col border border-gray-300 rounded-xl h-90">
               <div
-                class="flex justify-center border-b-1 h-56 w-60 border-gray-300"
+                class="flex justify-center border-b-1 h-56  border-gray-300 aspect-video"
               >
                 <img
                   [src]="item?.imagen"
                   alt=""
-                  class="object-cover h-full w-full rounded-t-xl"
+                  class="object-contain rounded-t-xl"
                 />
               </div>
               <div class="flex flex-col justify-between p-4">

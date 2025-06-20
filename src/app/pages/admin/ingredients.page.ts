@@ -14,6 +14,8 @@ import { IngredientesService } from '../../../services/admin/ingredients.service
 import { FormIngredientsComponent } from '../../components/admin/formIngredients.component';
 import { ModalAvisosComponent } from '../../components/admin/modalavisos.component';
 import { ingrediente } from '../../interfaces/ingrediente.interface';
+import { CategoryService } from '../../../services/categorias.service';
+import { categorias } from '../../interfaces/categoria.interface';
 
 @Component({
   imports: [
@@ -118,22 +120,18 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 class="flex flex-col border border-gray-300 rounded-xl h-auto min-h-[400px] max-w-[300px] mx-auto w-full"
               >
                 <figure
-                  class="relative pt-[75%] overflow-hidden border-b border-gray-300"
+                  class="relative aspect-square pt-[75%] overflow-hidden border-b border-gray-300"
                 >
                   <img
                     [src]="item?.imagen"
                     alt="{{ item?.nombre }}"
-                    class="absolute top-0 left-0 w-full h-full object-cover rounded-t-md"
+                    class="absolute top-0 left-0 w-full h-full object-contain rounded-t-md"
                   />
                 </figure>
                 <div class="flex flex-col justify-between p-4">
-                  <!-- <p class="text-sm text-gray-400">
-                    {{
-                      item?.id_categoria?._id === '680fd248f613dc80267ba5d7'
-                        ? 'Jabones Artesanales'
-                        : 'Velas Artesanales'
-                    }}
-                  </p> -->
+                  <p class="text-sm text-gray-400">
+                    {{ getCategorias(item?.id_categoria) }}
+                  </p>
                   <small>{{item?.tipo}}</small>
                   <h3 class="text-lg font-semibold ">{{ item?.nombre }}</h3>
                   <p class="text-md font-bold mt-2">$ {{ item?.precio }}</p>
@@ -237,12 +235,15 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
 })
 export class IngredientsPage {
   public idRegistro = signal<string>(''); //almacena el id del ingrediente a editar
-  
+  public id_categoria = signal<string>(''); //almacena el id de la categoria del ingrediente
   public mostrarModal = signal<boolean>(false);
   public carga = signal<boolean>(true); //variable para mostrar el loading
   public servicioIngredientes = inject(IngredientesService);
   public busqueda = signal<string>('');
   public numeroPagina = signal<number>(1); //almacena el numero de pagina
+  public serviceCategorias = inject(CategoryService)
+  public categorias: categorias[] = []; //almacena las categorias
+  public categoriasObject: Record<string, string> = {}; //almacena las categorias como un objeto
 
   //variable para setear los datos en el formulario
   public enviarDatos = signal<ingrediente | null>(null);
@@ -263,9 +264,12 @@ export class IngredientsPage {
   //variable que almacena lo que traera del backend
   public ingredientes: ingrediente[] = [];
   public datosIngredientes = new FormGroup({
+    tipo: new FormControl('', [Validators.required]),
     nombre: new FormControl('', [Validators.required]),
-    apellido: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    imagen: new FormControl('', [Validators.required]),
+    precio: new FormControl('', [Validators.required]),
+    stock: new FormControl('', [Validators.required]),
+    id_categoria: new FormControl('', [Validators.required]),
   });
 
   //funcion para abrir el formulario con los datos visualizar o editar
@@ -278,7 +282,7 @@ export class IngredientsPage {
   // Agrega estos métodos en tu ProductsPage
   public editarIngrediente(datos: ingrediente) {
     this.enviarDatos.set(datos);
-    this.idRegistro.set(datos._id); // Establece el ID del ingrediente a editar
+    this.idRegistro.set(datos._id); 
     this.mostrarModal.set(true);
     this.accionAsignada.set('Actualizar'); // Cambia a modo edición
   }
@@ -321,6 +325,7 @@ export class IngredientsPage {
     }
   }
   private obtenerIngredientes(numeroPagina: number) {
+    this.carga.set(true); // Cambia el estado de carga a true antes de obtener los ingredientes
     this.servicioIngredientes
       .obtener(numeroPagina)
       .subscribe({
@@ -353,5 +358,25 @@ export class IngredientsPage {
   //metodo para pasar a la anterior pagina
   public paginaAnterior() {
     this.numeroPagina.update((estadoPagina) => estadoPagina - 1);
+  }
+  ngOnInit() {
+    this.cargarCategorias();
+   
+  }
+  cargarCategorias() {
+    this.serviceCategorias.obtener().subscribe({
+      next: (respuesta: any) => {
+        this.categorias = respuesta.categorias;
+
+        this.categorias.forEach(({ _id, nombre }) => {
+          this.categoriasObject[_id] = nombre;
+        });
+      },
+      error: (err) => console.error('Error al cargar categorías', err),
+    });
+  }
+
+  public getCategorias(id: any): string {
+    return this.categoriasObject[id] || 'Ambas Categorías';
   }
 }

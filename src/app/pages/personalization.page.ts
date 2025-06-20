@@ -1,64 +1,48 @@
-import { Component } from '@angular/core';
-import { BarranavComponent } from '../components/barranav.component';
-import { Headers } from '../components/header.component';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CategoryService } from '../../services/categorias.service';
+import { Headers } from '../components/header.component';
 
 @Component({
   imports: [Headers, RouterLink],
   template: `
     <headers></headers>
     <main class="flex flex-col text-center">
-      <div class="flex justify-center bg-gradient-to-b py-20">
-      <div class="mx-auto w-full max-w-4xl text-center">
-        <h2 class="mb-6 text-3xl font-bold text-rose-600 md:text-4xl">
-          ¿Qué producto quieres crear?
-        </h2>
-
-        <p class="mb-10 text-lg text-gray-700">
-          Elige entre una vela aromática o un jabón personalizado.
-        </p>
-
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-          <div>
-            <img
-              src="velaJP.png"
-              alt="Jabón artesanal"
-              class="mx-auto h-50 w-50 transform cursor-pointer object-contain drop-shadow-lg transition-all duration-300 hover:scale-105 hover:drop-shadow-2xl"
-            />
-            <h3 class="mb-2 text-xl font-semibold text-rose-500">🕯️ Vela</h3>
-            <p class="mb-4 text-sm text-gray-600">
-              Ideal para crear ambientes relajantes y decorar tu hogar.
-            </p>
-            <button
-              class="rounded-full bg-rose-500 px-4 py-2 font-medium text-white transition hover:bg-rose-600"
-            >
-              Seleccionar Vela
-            </button>
-          </div>
-
-          <!-- Tarjeta JABÓN -->
-          <div>
-            <img
-              src="jabonJP.png"
-              alt="Jabón artesanal"
-              class="mx-auto h-50 w-50 transform cursor-pointer object-contain drop-shadow-lg transition-all duration-300 hover:scale-105 hover:drop-shadow-2xl"
-            />
-            <h3 class="mb-2 text-xl font-semibold text-teal-600">🧼 Jabón</h3>
-            <p class="mb-4 text-sm text-gray-600">
-              Personaliza tu jabón con ingredientes naturales para el cuidado de
-              tu piel.
-            </p>
-            <button
-              routerLink="/tipos-jabon-juego"
-              class="rounded-full bg-teal-500 px-4 py-2 font-medium text-white transition hover:bg-teal-600"
-            >
-              Seleccionar Jabón
-            </button>
-          </div>
-        </div>
+      <div
+        class="from-celeste-400 to-morado-400 relative flex h-[82vh] justify-center bg-gradient-to-r"
+      >
+        <img src="bannerJuego.png" alt="" class="object-contain" />
+        <a
+          class="absolute inset-y-0 left-0 my-auto flex items-center"
+          [routerLink]="['/taller-juego', almacenarCategoria['Velas artesanales']]"
+        >
+          <img
+            src="velaJuego.png"
+            alt=""
+            class="h-80 w-80 transform transition-transform duration-200 hover:scale-110"
+          />
+          <button
+            class="absolute top-130 left-20 rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+          >
+            ✨ Seleccionar Vela
+          </button>
+        </a>
+        <a
+          class="absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden"
+          [routerLink]="['/taller-juego', almacenarCategoria['Jabones artesanales']]"
+        >
+          <img
+            src="jabonJuego.png"
+            alt=""
+            class="h-80 w-80 transform transition-transform duration-200 hover:scale-110"
+          />
+          <button
+            class="absolute top-100 left-10 rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+          >
+            🧼 Seleccionar Jabón
+          </button>
+        </a>
       </div>
-    </div>
-      
     </main>
   `,
 })
@@ -66,5 +50,16 @@ export class PersonalizationPage {
   public escogerOpcion = false;
   mostrarJuego() {
     this.escogerOpcion = true;
+  }
+  public serviceCategorias = inject(CategoryService);
+  public almacenarCategoria = {} as any;
+
+  constructor() {
+    this.serviceCategorias.obtener().subscribe((respuesta: any) => {
+      respuesta.categorias.map((categoria: any) => {
+        this.almacenarCategoria[categoria.nombre] = categoria._id;
+      });
+      console.log(respuesta.categorias);
+    });
   }
 }

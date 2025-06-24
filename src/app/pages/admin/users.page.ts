@@ -1,36 +1,34 @@
 import { Component, inject, linkedSignal, signal } from '@angular/core';
-import { Navegacion } from '../../components/navegacion.component';
-import { Presentation } from '../../components/admin/presentation.component';
-import { TablaComponent } from '../../components/admin/tabla.component';
-import { UsuariosService } from '../../../services/admin/usuarios.service';
 import {
   FormControl,
   FormGroup,
-  Validators,
   FormsModule,
+  Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { UsuariosService } from '../../../services/admin/usuarios.service';
+import { Presentation } from '../../components/admin/presentation.component';
+import { TablaComponent } from '../../components/admin/tabla.component';
 import { Loading } from '../../components/loading.component';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Navegacion } from '../../components/navegacion.component';
 import { usuario } from '../../interfaces/usuario.interface';
 
 @Component({
   imports: [Navegacion, Presentation, TablaComponent, Loading, FormsModule],
   template: `
-    <div class="bg-[#efecff] w-full flex min-h-dvh">
+    <div class="flex min-h-dvh w-full bg-[#efecff]">
       <navegacion></navegacion>
       <!-- Contenido principal -->
 
       <div
-        class="grid grid-cols-5 grid-rows-4 gap-4 p-6 w-full border-l border-[#d0c9fe]"
+        class="grid w-full grid-cols-5 grid-rows-4 gap-4 border-l border-[#d0c9fe] p-6"
       >
         <presentation titulo="Usuarios" class="col-span-5"></presentation>
 
-        <div
-          class="overflow-auto w-full col-span-5 row-span-3 col-start-1 row-start-2 bg-white rounded-[18px]  py-6 px-10 shadow-md "
+        <section
+          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
         >
           <div
-            class="flex sm:flex-row sm:items-center w-full sm:w-80 bg-[#F3F5F7] border border-[#eaeaea] rounded-[18px] p-2"
+            class="flex w-full rounded-[15px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
           >
             <svg
               class="text-[#3B3D3E]"
@@ -47,28 +45,118 @@ import { usuario } from '../../interfaces/usuario.interface';
             </svg>
             <input
               [(ngModel)]="busqueda"
-              class="flex-1 bg-transparent text-[14px] font-normal text-[#3B3D3E] outline-none pl-2"
+              class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
               type="search"
               placeholder="Buscar usuario"
               id="search"
               name="search"
             />
           </div>
-          <div class="overflow-auto w-full mt-4">
-            @if (carga()){
-            <loading></loading>
-            } @else {
+          <div class="mt-4 flex items-center gap-2">
+            <span class="flex items-center gap-2 font-semibold text-[#3B3D3E]">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-6"
+              >
+                <path
+                  d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
+                />
+              </svg>
+              Filtrar por:
+            </span>
+            <button
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              [class]="
+                filtro() === ''
+                  ? 'bg-[#806bff] font-semibold text-white'
+                  : 'text-gray-700'
+              "
+              (click)="filtrarUsuarios('estado', '')"
+            >
+              <span class="mr-2">Todos</span>
+            </button>
+            <button
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              [class]="
+                filtro() === 'activo'
+                  ? 'bg-[#806bff] font-semibold text-white'
+                  : 'text-gray-700'
+              "
+              (click)="filtrarUsuarios('estado', 'activo')"
+            >
+              <span class="mr-2">Activo</span>
+            </button>
+            <button
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              [class]="
+                filtro() === 'inactivo'
+                  ? 'bg-[#806bff] font-semibold text-white'
+                  : 'text-gray-700'
+              "
+              (click)="filtrarUsuarios('estado', 'inactivo')"
+            >
+              <span class="mr-2">Inactivo</span>
+            </button>
+            <button
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              [class]="
+                filtro() === 'femenino'
+                  ? 'bg-[#806bff] font-semibold text-white'
+                  : 'text-gray-700'
+              "
+              (click)="filtrarUsuarios('genero', 'femenino')"
+            >
+              <span class="mr-2">Femenino</span>
+            </button>
+            <button
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              [class]="
+                filtro() === 'masculino'
+                  ? 'bg-[#806bff] font-semibold text-white'
+                  : 'text-gray-700'
+              "
+              (click)="filtrarUsuarios('genero', 'masculino')"
+            >
+              <span class="mr-2">Masculino</span>
+            </button>
+          </div>
 
-            <tabla
-              [datosTabla]="datosBuscados()"
-              [servicio]="serviceUsuarios"
-              titulo="usuario"
-              acciones="Visualizar"
-              [columnasMostrar]="[]"
-            ></tabla>
+          <div class="w-full overflow-auto">
+            @if (carga()) {
+              <loading></loading>
+            } @else if (datosBuscados().length > 0) {
+              <tabla
+                [datosTabla]="datosBuscados()"
+                [servicio]="serviceUsuarios"
+                titulo="usuario"
+                acciones="Visualizar"
+              ></tabla>
+            } @else {
+              <div class="flex gap-2 justify-center  items-center mt-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                >
+                  <g fill="#292929">
+                    <path
+                      d="M8 9a1 1 0 0 0 0 2h1a1 1 0 1 0 0-2zm7 0a1 1 0 1 0 0 2h1a1 1 0 1 0 0-2zm-6 6a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10m0-2a8 8 0 1 0 0-16a8 8 0 0 0 0 16"
+                      clip-rule="evenodd"
+                    />
+                  </g>
+                </svg>
+                <p class=" text-center">No se encontraron registros</p>
+              </div>
             }
           </div>
-        </div>
+        </section>
       </div>
     </div>
   `,
@@ -76,20 +164,24 @@ import { usuario } from '../../interfaces/usuario.interface';
 export class UsersPage {
   //estado de carga
   public usuarios: usuario[] = [];
-  
+
   public carga = signal<boolean>(true);
 
   public serviceUsuarios = inject(UsuariosService);
 
   public busqueda = signal<string>('');
+  public filtro = signal<string>('');
+  public datosFiltrados = signal<usuario[]>([]);
+
+
 
   //variable que almacena datos filtrados de barra de busqueda
   public datosBuscados = linkedSignal<usuario[]>(() =>
-    this.usuarios.filter((registro) =>
+    this.datosFiltrados().filter((registro) =>
       Object.values(registro).some((valor: any) =>
-        valor.toString().toLowerCase().includes(this.busqueda().toLowerCase())
-      )
-    )
+        valor.toString().toLowerCase().includes(this.busqueda().toLowerCase()),
+      ),
+    ),
   );
 
   //variable que almacena lo que traera del backend
@@ -108,11 +200,26 @@ export class UsersPage {
       .subscribe({
         next: (respuesta: any) => {
           this.usuarios = respuesta.clientes;
-          this.datosBuscados.set(this.usuarios);
+          this.datosFiltrados.set(this.usuarios);
         },
       })
       .add(() => {
         this.carga.set(false);
       }); //cambia estado de carga;
+  }
+
+  //metodo para filtar usuario
+  public filtrarUsuarios(clave: keyof usuario, valor: string) {
+    this.filtro.set(valor);
+    if (valor) {
+      this.datosFiltrados.set(
+        this.usuarios.filter(
+          (usuario) =>
+            usuario[clave]?.toString().toLowerCase() === valor.toLowerCase(),
+        ),
+      );
+    } else {
+      this.datosFiltrados.set(this.usuarios);
+    }
   }
 }

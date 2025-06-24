@@ -65,7 +65,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               </svg>
 
               <input
-                class="text-gris-300 h-[46px] w-full rounded-[15px] border bg-white p-1.5 pl-12 placeholder-gris-300"
+                class="h-[46px] w-full rounded-[15px] border bg-white p-1.5 pl-12 placeholder-gris-300"
                 [class]="
                   emailInvalido
                     ? 'border-red-600 text-red-600 outline-red-600'

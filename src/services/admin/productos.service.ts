@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { tap } from 'rxjs';
 import { producto } from '../../app/interfaces/producto.interface';
 import { environment } from '../../environments/environment';
@@ -10,16 +10,16 @@ import { environment } from '../../environments/environment';
 export class ProductosService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  public productos = signal<producto[]>([]);
+  public productos: producto[] = [];
 
-  obtener(page: number, limit: number = 4) {
+  obtener(page: number, limit: number = 100) {
     return this.http
       .get(`${this.urlBackend}/api/productos?page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
         tap((respuesta: any) => {
-          this.productos.set(respuesta.productos);
+          this.productos = respuesta.productos;
         }),
       );
   }
@@ -30,10 +30,7 @@ export class ProductosService {
       })
       .pipe(
         tap((respuesta: any) => {
-          this.productos.update((productosAnteriores) => {
-            productosAnteriores.push(respuesta.producto);
-            return productosAnteriores;
-          });
+          this.productos.push(respuesta.producto);
         }),
       );
   }
@@ -44,15 +41,11 @@ export class ProductosService {
       })
       .pipe(
         tap(() => {
-          this.productos.update((productosAnteriores) => {
-            const index = productosAnteriores.findIndex(
-              (producto) => producto._id === id,
-            );
-            if (index !== -1) {
-              productosAnteriores.splice(index, 1);
-            }
-            return productosAnteriores;
-          });
+          const index = this.productos.findIndex((producto) => producto._id === id);
+
+          if (index !== -1) {
+            this.productos.splice(index, 1);
+          }
         }),
       );
   }
@@ -65,19 +58,13 @@ export class ProductosService {
         // Intercepta en la peticion
         tap((respuesta: any) => {
           // Almacena la respuesta del backend en la variable respuesta
-          this.productos.update(
-            (
-              productosAnteriores, // La variable de productos se tiene que actualizar
-            ) => {
-              const index = productosAnteriores.findIndex(
-                (producto) => producto._id === id,
-              );
-              if (index !== -1) {
-                productosAnteriores[index] = respuesta.producto;
-              }
-              return productosAnteriores;
-            },
+
+          const index = this.productos.findIndex(
+            (producto) => producto._id === id,
           );
+          if (index !== -1) {
+            this.productos[index] = respuesta.producto;
+          }
         }),
       );
   }

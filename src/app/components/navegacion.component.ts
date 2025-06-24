@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 //import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
@@ -8,17 +8,17 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
   imports: [NgClass, RouterLink],
   template: `
     <aside
-      class="w-full md:w-[360px]   flex px-10 flex-col bg-[#e0daff] h-full"
+      class="flex h-full w-full flex-col bg-[#e0daff] px-10 md:w-[360px]"
       [class]="mostrar() ? 'animate-activa' : 'animate-inactiva'"
     >
-      <div class="flex justify-between items-center ">
-        <div class="flex items-center gap-2 py-6 justify-center">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center justify-center gap-2 py-6">
           <img
             src="logo.png"
             alt="Logo de Flor y Cera"
             class="w-[43px] object-cover"
           />
-          <h1 class="font-playfair font-extrabold text-[17px] hidden lg:block ">
+          <h1 class="font-playfair hidden text-[17px] font-extrabold lg:block">
             Flor & Cera
           </h1>
         </div>
@@ -42,14 +42,14 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
           </svg>
         </div>
       </div>
-      <div class="flex flex-col items-center gap-4 text-center mb-6">
+      <div class="mb-6 flex flex-col items-center gap-4 text-center">
         <img
           src="/administrador/fotoadmin.jpg"
           class="h-[80px] w-[80px] rounded-full"
         />
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
-            <p class="font-bold text-[18px]">Estefanía Sánchez</p>
+            <p class="text-[18px] font-bold">Estefanía Sánchez</p>
             <span class="text-gris-300 text-[14px]">Administradora</span>
           </div>
         </div>
@@ -57,14 +57,14 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 
       <nav class="">
         <ul class="flex flex-col gap-2">
-          <li class="flex ">
+          <li class="flex">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/dashboard"
               [ngClass]="{
-                'bg-[#806BFF] text-white fill-white':
+                'bg-[#806BFF] fill-white text-white':
                   rutaActiva() === 'dashboard',
-                'text-[#3C3C3B]': rutaActiva() !== 'dashboard'
+                'text-[#3C3C3B]': rutaActiva() !== 'dashboard',
               }"
             >
               <svg
@@ -87,16 +87,16 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
           </li>
           <li class="flex">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/usuarios"
               [ngClass]="{
-                'bg-[#806BFF] text-white fill-white':
+                'bg-[#806BFF] fill-white text-white':
                   rutaActiva() === 'usuarios',
-                'text-[#3C3C3B]': rutaActiva() !== 'usuarios'
+                'text-[#3C3C3B]': rutaActiva() !== 'usuarios',
               }"
             >
               <svg
-                class="transition-colors duration-[50] "
+                class="transition-colors duration-[50]"
                 xmlns="http://www.w3.org/2000/svg"
                 width="22"
                 height="22"
@@ -117,110 +117,90 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
           </li>
           <li class="flex">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/productos"
               [ngClass]="{
-                'bg-[#806BFF] text-white fill-white':
+                'bg-[#806BFF] fill-white text-white':
                   rutaActiva() === 'productos',
-                'text-[#3C3C3B]': rutaActiva() !== 'productos'
+                'text-[#3C3C3B]': rutaActiva() !== 'productos',
               }"
             >
               <svg
                 class="transition-colors duration-[50]"
                 xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="21"
-                fill="none"
+                width="26"
+                height="25"
+                viewBox="0 0 24 24"
               >
                 <path
-                  d="M5.5 0H1.1C.808 0 .528.11.322.308A1.03 1.03 0 0 0 0 1.05v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 5.5 0M3.3 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.746.428.988.773s.371.752.371 1.167c0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45H1.1V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M13.2 0H8.8c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 13.2 0M11 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485A2.25 2.25 0 0 1 11 19.95m2.2-9.45H8.8V1.05h4.4zm-1.1 7.35c0 .208-.064.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M20.9 0h-4.4c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.207.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 20.9 0m-2.2 19.95c-.435 0-.86-.123-1.222-.354a2.13 2.13 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45h-4.4V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743"
                   fill="currentColor"
+                  d="M12 8q-1.2 0-2-.837t-.75-2.038q.05-1.3.913-2.287T12 1q.975.85 1.838 1.838t.912 2.287q.05 1.2-.75 2.038T12 8m8.25 9q.325 0 .538-.213T21 16.25t-.213-.537-.537-.213-.537.213-.213.537.213.538.537.212M18 22H6q-1.25 0-2.125-.875T3 19v-2h6V9h6v8h2.6q-.05-.2-.075-.375t-.025-.375q0-1.15.8-1.95t1.95-.8 1.95.8.8 1.95q0 .95-.562 1.675T21 18.9v.1q0 1.25-.875 2.125T18 22"
                 />
               </svg>
+
               Productos
             </a>
           </li>
           <li class="flex">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/ingredientes"
               [ngClass]="{
-                'bg-[#806BFF] text-white fill-white':
+                'bg-[#806BFF] fill-white text-white':
                   rutaActiva() === 'ingredientes',
-                'text-[#3C3C3B]': rutaActiva() !== 'ingredientes'
+                'text-[#3C3C3B]': rutaActiva() !== 'ingredientes',
               }"
             >
               <svg
                 class="transition-colors duration-[50]"
                 xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="21"
-                fill="none"
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
               >
                 <path
-                  d="M5.5 0H1.1C.808 0 .528.11.322.308A1.03 1.03 0 0 0 0 1.05v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 5.5 0M3.3 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.746.428.988.773s.371.752.371 1.167c0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45H1.1V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M13.2 0H8.8c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.206.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 13.2 0M11 19.95c-.435 0-.86-.123-1.222-.354a2.1 2.1 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485A2.25 2.25 0 0 1 11 19.95m2.2-9.45H8.8V1.05h4.4zm-1.1 7.35c0 .208-.064.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743M20.9 0h-4.4c-.292 0-.572.11-.778.308a1.03 1.03 0 0 0-.322.742v18.9c0 .279.116.546.322.742.207.197.486.308.778.308h4.4c.292 0 .572-.11.778-.308.206-.197.322-.463.322-.742V1.05c0-.278-.116-.546-.322-.742A1.13 1.13 0 0 0 20.9 0m-2.2 19.95c-.435 0-.86-.123-1.222-.354a2.13 2.13 0 0 1-.81-.942 2 2 0 0 1-.126-1.214 2.1 2.1 0 0 1 .602-1.075c.308-.294.7-.494 1.127-.575s.869-.04 1.27.12c.403.159.747.428.988.773.242.346.371.752.371 1.167 0 .557-.232 1.091-.644 1.485a2.25 2.25 0 0 1-1.556.615m2.2-9.45h-4.4V1.05h4.4zm-1.1 7.35c0 .208-.065.41-.185.583a1.1 1.1 0 0 1-.494.387c-.201.08-.422.1-.636.06a1.1 1.1 0 0 1-.563-.287 1.04 1.04 0 0 1-.3-.538 1 1 0 0 1 .062-.607c.083-.192.224-.356.405-.471a1.14 1.14 0 0 1 1.389.13c.206.197.322.465.322.743"
+                  fill="#292929"
+                  d="M4.088 3.25a.75.75 0 0 0-.75.643a9 9 0 0 0-.088 1.24c0 4.548 3.524 8.27 8 8.647V20a.75.75 0 0 0 1.5 0v-6.22c4.476-.377 8-4.1 8-8.648q0-.63-.089-1.24a.75.75 0 0 0-.75-.642A8.76 8.76 0 0 0 12 8.407A8.76 8.76 0 0 0 4.088 3.25"
                   fill="currentColor"
                 />
               </svg>
+
               Ingredientes
             </a>
           </li>
           <li class="flex">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/ventas"
               [ngClass]="{
-                'bg-[#806BFF] text-white fill-white': rutaActiva() === 'ventas',
-                'text-[#3C3C3B]': rutaActiva() !== 'ventas'
+                'bg-[#806BFF] fill-white text-white': rutaActiva() === 'ventas',
+                'text-[#3C3C3B]': rutaActiva() !== 'ventas',
               }"
             >
               <svg
                 class="transition-colors duration-[50]"
                 xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="23"
-                viewBox="0 0 22 23"
-                fill="none"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-6"
               >
-                <mask
-                  id="a"
-                  style="mask-type:luminance"
-                  maskUnits="userSpaceOnUse"
-                  x="0"
-                  y="0"
-                  width="22"
-                  height="23"
-                >
-                  <path
-                    d="M20 6.75 11 2 2 6.75v9.5L11 21l9-4.75z"
-                    fill="#fff"
-                    stroke="#fff"
-                    stroke-width="2.167"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M11 10.55v3.8m4.235-5.7v5.7m-8.47-1.9v1.9"
-                    stroke="#000"
-                    stroke-width="2.167"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </mask>
-                <g mask="url(#a)">
-                  <path d="M-1.706.1h25.412v22.8H-1.706z" fill="currentColor" />
-                </g>
+                <path
+                  d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z"
+                  fill="currentColor"
+                />
               </svg>
+
               Ventas
             </a>
           </li>
           <li class="flex">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/promociones"
               [ngClass]="{
-                'bg-[#806BFF] text-white fill-white':
+                'bg-[#806BFF] fill-white text-white':
                   rutaActiva() === 'promociones',
-                'text-[#3C3C3B]': rutaActiva() !== 'promociones'
+                'text-[#3C3C3B]': rutaActiva() !== 'promociones',
               }"
             >
               <svg
@@ -242,7 +222,7 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
           </li>
           <li class="flex cursor-pointer" (click)="salir()">
             <a
-              class="flex items-center  pl-6 py-3 rounded-3xl gap-6 w-full hover:text-[#3C3C3B] font-normal transition-colors duration-initial  hover:bg-[#C6BCFF]"
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
             >
               <svg
                 class="transition-colors duration-[50]"
@@ -263,15 +243,17 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
         </ul>
       </nav>
     </aside>
-    @if(!mostrar()) {
-    <div class=" flex flex-col bg-[#e0daff] px-4 pt-8 gap-4 items-center h-full">
+    @if (!mostrar()) {
+      <div
+        class="flex h-full flex-col items-center gap-4 bg-[#e0daff] px-4 pt-8"
+      >
         <img
           src="logo.png"
           alt="Logo de Flor y Cera"
           class="w-[44px] object-cover"
         />
 
-        <div (click)="mostrar.set(!mostrar())" class="cursor-pointer ">
+        <div (click)="mostrar.set(!mostrar())" class="cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -290,7 +272,7 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
             </g>
           </svg>
         </div>
-    </div>
+      </div>
     }
   `,
 })
@@ -300,8 +282,7 @@ export class Navegacion {
   //servicio de ruta
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
   // Método para alternar el estado del menú
   public toggleMenu(): void {
     this.mostrar.set(!this.mostrar());

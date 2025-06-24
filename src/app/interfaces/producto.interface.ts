@@ -10,6 +10,6 @@ export interface producto{
     imagen: string,
     categoria: string,
     ingrediente: string,
-    tipo: string,
+    tipo: 'piel seca' | 'piel grasa' | 'piel mixta' | 'decorativa' | 'aromatizante' | 'humidificación',
     aroma: string,
 }

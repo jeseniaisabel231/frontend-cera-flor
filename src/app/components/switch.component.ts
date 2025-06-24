@@ -1,22 +1,14 @@
-import { Component, effect, input, model, output } from '@angular/core';
+import { Component, input } from '@angular/core';
 //import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'switch',
   template: `
-    <div
-      class="flex items-center"
-      [title]="
-        verificarTipo() === 'venta'
-          ? 'Pendiente o finalizado'
-          : 'Activo o inactivo'
-      "
-      (click)="emitirCambioEvento()"
-    >
+    <div class="flex items-center">
       <label
         class="pointer-events-none relative inline-flex cursor-pointer items-center"
       >
-        <input type="checkbox" [checked]="estado()" class="peer sr-only" />
+        <input type="checkbox" [checked]="estado()" class="peer sr-only" disabled/>
         <div
           class="bg-gris-200 peer peer-checked:bg-morado-600 h-6 w-11 rounded-full"
         ></div>
@@ -29,62 +21,5 @@ import { Component, effect, input, model, output } from '@angular/core';
   styles: [],
 })
 export class SwitchComponent {
-  public estado = model();
-  public servicio = input<any>();
-  public id = input<any>();
-  public verificarTipo = input<string>();
-  public emitirCambio = output<string>();
-  public decision = model<boolean>();
-  public idPorCambiar = input<string>('');
-
-  constructor() {
-    effect(() => {
-      if (this.decision()) {
-        this.cambiarEstado(this.idPorCambiar());
-        this.decision.set(false);
-      }
-    });
-  }
-
-  public eliminarUsuario(id: string) {
-    this.servicio()
-      .eliminarEstado(id)
-      .subscribe({
-        next: () => {
-          this.estado.set(!this.estado());
-        },
-        error: (error: any) => {
-          console.error('Error al eliminar el usuario:', error);
-        },
-      });
-  }
-  activarUsuario(id: string) {
-    this.servicio()
-      .activarEstado(id)
-      .subscribe({
-        next: () => {
-          this.estado.set(!this.estado());
-        },
-        error: (error: any) => {
-          console.error('Error al activar el usuario:', error);
-        },
-      });
-  }
-
-  cambiarEstado(id: string) {
-    if (this.verificarTipo() === 'venta') {
-      this.servicio().editar(id, this.estado() ? 'pendiente' : 'finalizado').subscribe({});
-      return;
-    }
-
-    if (this.estado()) {
-      this.eliminarUsuario(id);
-    } else {
-      this.activarUsuario(id);
-    }
-  }
-
-  emitirCambioEvento() {
-    this.emitirCambio.emit(this.id());
-  }
+  public estado = input();
 }

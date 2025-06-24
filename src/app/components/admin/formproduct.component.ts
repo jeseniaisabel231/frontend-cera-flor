@@ -1,3 +1,4 @@
+import { httpResource } from '@angular/common/http';
 import {
   Component,
   effect,
@@ -15,9 +16,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Actions } from './modal.component';
-import { ToastComponent } from '../toast.component';
+import { environment } from '../../../environments/environment';
 import { IngredientesService } from '../../../services/admin/ingredients.service';
+import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
 
 @Component({
@@ -26,10 +27,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
   template: `
     <dialog
       #modal
-      class="m-auto bg-white backdrop:bg-gris-600/25 backdrop:backdrop-blur-[2px] rounded-[10px] text-[#3C3C3B]"
+      class="backdrop:bg-gris-600/25 m-auto rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px]"
     >
-      <div class="flex items-center py-5 justify-between px-7">
-        <h1 class="text-lg text-[#3C3C3B] font-medium">
+      <div class="flex items-center justify-between px-7 py-5">
+        <h1 class="text-lg font-medium text-[#3C3C3B]">
           {{
             acciones() === 'Visualizar'
               ? 'Detalles del producto'
@@ -52,7 +53,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
       </div>
 
       <form
-        class="grid grid-cols-1 md:grid-cols-2 gap-x-4 py-2 px-7"
+        class="grid grid-cols-1 gap-x-4 px-7 py-2 md:grid-cols-2"
         (ngSubmit)="onSubmit()"
         [formGroup]="formulario"
       >
@@ -63,32 +64,30 @@ import { ModalAvisosComponent } from './modalavisos.component';
             Imagen del producto
 
             <div
-              class="flex flex-col items-center border border-gray-300  rounded-xl h-47 justify-center"
+              class="flex h-47 flex-col items-center justify-center rounded-xl border border-gray-300"
             >
-              @if(imagePreview !== null) {
-
-              <img
-                [src]="imagePreview"
-                alt=""
-                class="w-full h-full rounded-xl object-cover"
-              />
-              }@else {
-
-              <div class="flex flex-col items-center gap-2 cursor-pointer">
-                <svg
-                  class=""
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="#3C3C3B"
-                    d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
-                  />
-                </svg>
-                <span>Subir una imagen</span>
-              </div>
+              @if (imagePreview !== null) {
+                <img
+                  [src]="imagePreview"
+                  alt=""
+                  class="h-full w-full rounded-xl object-cover"
+                />
+              } @else {
+                <div class="flex cursor-pointer flex-col items-center gap-2">
+                  <svg
+                    class=""
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#3C3C3B"
+                      d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
+                    />
+                  </svg>
+                  <span>Subir una imagen</span>
+                </div>
               }
 
               <input
@@ -106,96 +105,101 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <!-- Nombre y descripción -->
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-1">
+            <label class="mb-1 block text-sm font-medium">
               Nombre del producto:
               <span class="text-red-500">*</span>
             </label>
-            @let nombreInvalido = formulario.get('nombre')?.invalid &&
-            formulario.get('nombre')?.value || errores().nombre;
+            @let nombreInvalido =
+              (formulario.get('nombre')?.invalid &&
+                formulario.get('nombre')?.value) ||
+              errores().nombre;
 
             <input
               [class]="
                 nombreInvalido
-                  ? 'border-red-500 focus:outline-none focus:ring-0'
-                  : 'border-gray-300  focus:ring-morado-400 focus:ring-1 '
+                  ? 'border-red-500 focus:ring-0 focus:outline-none'
+                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
               "
               type="text"
               placeholder="Ej: Jabón de avena y miel"
-              class="w-full border rounded-lg p-2 focus:outline-none placeholder-gris-200"
+              class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="nombre"
               (input)="borrarError('nombre')"
             />
-            @if(errores().nombre) {
-
-            <small class="text-red-600">Este campo es obligatorio.</small>
-            }@else if (nombreInvalido) {
-            <small class="text-red-600">
-              <div class="w-[215px]">
-                El nombre es requerido y debe tener al menos 3 caracteres.
-              </div>
-            </small>
+            @if (errores().nombre) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+            } @else if (nombreInvalido) {
+              <small class="text-red-600">
+                <div class="w-[215px]">
+                  El nombre es requerido y debe tener al menos 3 caracteres.
+                </div>
+              </small>
             }
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">
+            <label class="mb-1 block text-sm font-medium">
               Beneficios
               <span class="text-red-500">*</span>
             </label>
 
-            @let beneficiosInvalido = formulario.get('beneficios')?.invalid &&
-            formulario.get('beneficios')?.value || errores().beneficios;
+            @let beneficiosInvalido =
+              (formulario.get('beneficios')?.invalid &&
+                formulario.get('beneficios')?.value) ||
+              errores().beneficios;
 
             <textarea
               [class]="
                 beneficiosInvalido
-                  ? 'border-red-500 focus:outline-none focus:ring-0'
-                  : 'border-gray-300  focus:ring-morado-400 focus:ring-1 '
+                  ? 'border-red-500 focus:ring-0 focus:outline-none'
+                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
               "
-              placeholder="Describe 3 de sus beneficios..."
+              placeholder="Describe 3 de sus beneficios (separados por coma)..."
               rows="4"
-              class="w-full border rounded-lg p-2 focus:outline-none placeholder-gris-200"
+              class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="beneficios"
               (input)="borrarError('beneficios')"
             ></textarea>
-            @if(errores().beneficios) {
-            <small class="text-red-600">Este campo es obligatorio.</small>
-            }@else if (beneficiosInvalido) {
-            <small class="text-red-600">
-              <div class="w-[215px]">
-                El campo beneficios es requerido y debe contener solo letras,
-                números y caracteres especiales como: . , ; : ! ? ( ) -
-              </div>
-            </small>
+            @if (errores().beneficios) {
+              <small class="text-red-600">Este campo es obligatorio.</small>
+            } @else if (beneficiosInvalido) {
+              <small class="text-red-600">
+                <div class="w-[215px]">
+                  El campo beneficios es requerido y debe contener solo letras,
+                  números y caracteres especiales como: . , ; : ! ? ( ) -
+                </div>
+              </small>
             }
           </div>
         </div>
 
-        <div class="mt-4 col-span-2">
-          <label class="block text-sm font-medium mb-1">
+        <div class="col-span-2 mt-4">
+          <label class="mb-1 block text-sm font-medium">
             Descripción
             <span class="text-red-500">*</span>
           </label>
-          @let descripcionInvalido = formulario.get('descripcion')?.invalid &&
-          formulario.get('descripcion')?.value || errores().descripcion;
+          @let descripcionInvalido =
+            (formulario.get('descripcion')?.invalid &&
+              formulario.get('descripcion')?.value) ||
+            errores().descripcion;
 
           <textarea
             [class]="
               descripcionInvalido
-                ? 'border-red-500 focus outline-none focus:ring-0'
-                : 'border-gray-300  focus:ring-morado-400 focus:ring-1 '
+                ? 'focus border-red-500 outline-none focus:ring-0'
+                : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
             "
             placeholder="Describe aroma, textura, beneficios o forma artesanal..."
             rows="4"
-            class="w-full border rounded-lg p-2 focus:outline-none placeholder-gris-200"
+            class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
             formControlName="descripcion"
             (input)="borrarError('descripcion')"
           ></textarea>
-          @if(errores().descripcion) {
-          <small class="text-red-600">Este campo es obligatorio.</small>
-          }@else if(descripcionInvalido) {
-          <small class="text-red-600">
-            La descripción es requerida y debe tener al menos 3 caracteres.
-          </small>
+          @if (errores().descripcion) {
+            <small class="text-red-600">Este campo es obligatorio.</small>
+          } @else if (descripcionInvalido) {
+            <small class="text-red-600">
+              La descripción es requerida y debe tener al menos 3 caracteres.
+            </small>
           }
         </div>
 
@@ -205,8 +209,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
               Stock:
               <span class="text-red-500">*</span>
             </label>
-            @let stockInvalido = formulario.get('stock')?.invalid &&
-            formulario.get('stock')?.value || errores().stock;
+            @let stockInvalido =
+              (formulario.get('stock')?.invalid &&
+                formulario.get('stock')?.value) ||
+              errores().stock;
 
             <span>{{ formulario.value.stock }}</span>
           </div>
@@ -223,215 +229,227 @@ import { ModalAvisosComponent } from './modalavisos.component';
             class="accent-indigo-400"
             (input)="borrarError('stock')"
           />
-          @if( errores().stock) {
-          <small class="text-red-600">Este campo es obligatorio.</small>
-
-          }@else if(stockInvalido) {
-          <small class="text-red-600">
-            El stock es requerido y debe ser un número entre 1 y 100.
-          </small>
+          @if (errores().stock) {
+            <small class="text-red-600">Este campo es obligatorio.</small>
+          } @else if (stockInvalido) {
+            <small class="text-red-600">
+              El stock es requerido y debe ser un número entre 1 y 100.
+            </small>
           }
         </div>
 
         <!-- Categoría y precio -->
         <div class="mt-4">
-          <label class="block text-sm font-medium mb-1">
+          <label class="mb-1 block text-sm font-medium">
             Categoría
             <span class="text-red-500">*</span>
           </label>
-          @let categoriaInvalido = formulario.get('id_categoria')?.invalid &&
-          formulario.get('id_categoria')?.value || errores().id_categoria;
+          @let categoriaInvalido =
+            (formulario.get('id_categoria')?.invalid &&
+              formulario.get('id_categoria')?.value) ||
+            errores().id_categoria;
 
           <select
-            class="text-gray-600 w-full border border-gray-300  rounded-lg p-2 focus:outline-none  focus:ring-2  focus:ring-morado-400"
+            class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
             formControlName="id_categoria"
             [class]="
               categoriaInvalido
-                ? 'border-red-500 focus:outline-none focus:ring-0'
-                : 'border-gray-300  focus:ring-morado-400 focus:ring-1 '
+                ? 'border-red-500 focus:ring-0 focus:outline-none'
+                : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
             "
             [value]="formulario.value.id_categoria"
           >
             <option selected value="" disabled hidden>
               Selecciona una categoría
             </option>
-            <option value="680fd248f613dc80267ba5d7">Jabón artesanal</option>
-            <option value="6823a6c096655bcbe4971062">Vela artesanal</option>
+            @for (
+              categoria of categoriasResource.value().categorias;
+              track categoria
+            ) {
+              <option [value]="categoria._id">{{ categoria.nombre }}</option>
+            }
           </select>
-          <small class="text-red-700 font-medium"></small>
         </div>
+
+        @let precioInvalido =
+          (formulario.get('precio')?.invalid &&
+            formulario.get('precio')?.value) ||
+          errores().precio;
+
         <div class="mt-4">
-          <label class="block text-sm font-medium mb-1">Precio</label>
+          <label class="mb-1 block text-sm font-medium">Precio</label>
           <div class="flex items-center gap-2">
             <span class="text-gray-600">$</span>
             <input
               type="number"
               placeholder="Ej: 5.50"
-              class="w-full border border-gray-300  rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder-gris-200"
+              class="placeholder-gris-200 w-full [appearance:textfield] rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               formControlName="precio"
               (input)="borrarError('precio')"
             />
           </div>
+          @if (errores().precio) {
+            <small class="text-red-600">Este campo es obligatorio.</small>
+          } @else if (precioInvalido) {
+            <small class="text-red-600">
+              El precio es requerido y debe ser un número válido (Ejm: 2.34).
+            </small>
+          }
         </div>
-        @if(errores().id_categoria) {
-        <small class="text-red-600">Este campo es obligatorio.</small>
-        }@else if( categoriaInvalido) {
-        <small class="text-red-600">
-          El campo categoría es requerido y debe ser un número entre 1 y 100.
-        </small>
-        }
 
         <!-- Ingredientes -->
-        @if(formulario.get('id_categoria')?.value !== '') {
+        @if (formulario.get('id_categoria')?.value !== '') {
+          <div class="mt-6 md:col-span-2">
+            <p class="mb-3 text-lg font-medium">
+              Características del producto
+              <span class="text-red-500">*</span>
+            </p>
 
-        <div class="md:col-span-2 mt-6">
-          <p class="text-lg font-medium mb-3">
-            Características del producto
-            <span class="text-red-500">*</span>
-          </p>
-
-          <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-            <fieldset>
-              <label class="block text-sm font-medium mb-1">
-                Selecciona dos ingredientes
-                <span class="text-red-500">*</span>
-              </label>
-              @let ingredientesInvalido =
-              formulario.get('ingredientes')?.invalid &&
-              formulario.get('ingredientes')?.value || errores().ingredientes;
-
-              <div class="grid grid-cols-1 gap-2 text-sm pl-2">
-                @for(ingrediente of ingredientes(); track ingrediente) {
-
-                <label>
-                  <input
-                    type="checkbox"
-                    class="mr-1 accent-morado-600"
-                    (change)="seleccionarIngrediente(ingrediente._id, $event)"
-                    [checked]="
-                      ingredientesSeleccionados().includes(ingrediente._id)
-                    "
-                    (input)="borrarError('ingredientes')"
-                  />
-                  {{ ingrediente?.nombre }}
+            <div class="mb-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+              <fieldset>
+                <label class="mb-1 block text-sm font-medium">
+                  Selecciona
+                  <strong class="text-bold">dos</strong>
+                  ingredientes
+                  <span class="text-red-500">*</span>
                 </label>
+
+                <div class="grid grid-cols-1 gap-2 pl-2 text-sm">
+                  @for (ingrediente of ingredientes(); track ingrediente) {
+                    <label>
+                      <input
+                        type="checkbox"
+                        class="accent-morado-600 mr-1"
+                        (change)="
+                          seleccionarIngrediente(ingrediente._id, $event)
+                        "
+                        [checked]="
+                          ingredientesSeleccionados().includes(ingrediente._id)
+                        "
+                        (input)="borrarError('ingredientes')"
+                      />
+                      {{ ingrediente?.nombre }}
+                    </label>
+                  }
+                </div>
+              </fieldset>
+
+              <!-- Aroma y tipo de piel -->
+              <div class="grid grid-cols-1 gap-4">
+                <fieldset>
+                  <label class="mb-1 block font-medium">
+                    Aroma
+                    <span class="text-red-500">*</span>
+                  </label>
+                  @let aromaInvalido =
+                    (formulario.get('aroma')?.invalid &&
+                      formulario.get('aroma')?.value) ||
+                    errores().aroma;
+                  <input
+                    class="focus:ring-morado-400 placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+                    formControlName="aroma"
+                    placeholder="Ej: Vainilla"
+                    [class]="
+                      aromaInvalido
+                        ? 'border-red-500 focus:ring-0 focus:outline-none'
+                        : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+                    "
+                  />
+                </fieldset>
+                @if (errores().aroma) {
+                  <small class="text-red-600">Este campo es obligatorio.</small>
+                } @else if (aromaInvalido) {
+                  <small class="text-red-600">
+                    El campo aroma es requerido y debes escoger un aroma.
+                  </small>
+                }
+                <fieldset>
+                  <label class="mb-1 block font-medium">
+                    Tipo
+                    <span class="text-red-500">*</span>
+                  </label>
+                  @let tipoInvalido =
+                    (formulario.get('tipo')?.invalid &&
+                      formulario.get('tipo')?.value) ||
+                    errores().tipo;
+                  <select
+                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+                    formControlName="tipo"
+                    [class]="
+                      tipoInvalido
+                        ? 'border-red-500 focus:ring-0 focus:outline-none'
+                        : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+                    "
+                    [value]="formulario.value.tipo"
+                  >
+                    <option
+                      class="text-gris-200"
+                      selected
+                      value=""
+                      disabled
+                      hidden
+                    >
+                      Selecciona un tipo
+                    </option>
+                    @if (
+                      formulario.value.id_categoria ===
+                      '6823a6c096655bcbe4971062'
+                    ) {
+                      <option value="decorativa">Decorativa</option>
+                      <option value="aromatizante">Aromatizante</option>
+                      <option value="humidifacación">Humidifacación</option>
+                    } @else if (
+                      formulario.value.id_categoria ===
+                      '680fd248f613dc80267ba5d7'
+                    ) {
+                      <option value="piel seca">Piel seca</option>
+                      <option value="piel grasa">Piel grasa</option>
+                      <option value="piel mixta">Piel mixta</option>
+                    }
+                  </select>
+                  <small class="font-medium text-red-700"></small>
+                </fieldset>
+                @if (errores().tipo) {
+                  <small class="text-red-600">Este campo es obligatorio.</small>
+                } @else if (tipoInvalido) {
+                  <small class="text-red-600">
+                    El campo tipo es requerido y debes escoger un tipo de piel
+                  </small>
                 }
               </div>
-            </fieldset>
-            @if(ingredientesSeleccionados().length > 2) {
-            <small class="text-red-600">
-              Solo puedes seleccionar hasta 2 ingredientes.
-            </small>
-            }@else if(ingredientesInvalido) {
-            <small class="text-red-600">
-              <div class="w-[215px]">
-                El campo ingredientes es requerido y debes seleccionar al menos
-                1 ingrediente.
-              </div>
-            </small>
-            }
-
-            <!-- Aroma y tipo de piel -->
-            <div class="grid grid-cols-1 gap-4">
-              <fieldset>
-                <label class="block  font-medium mb-1">
-                  Aroma
-                  <span class="text-red-500">*</span>
-                </label>
-                @let aromaInvalido = formulario.get('aroma')?.invalid &&
-                formulario.get('aroma')?.value || errores().aroma;
-                <input
-                  class="w-full border rounded-lg p-2 border-gray-300   focus:outline-none focus:ring-2  focus:ring-morado-400"
-                  formControlName="aroma"
-                  placeholder="Ej: Vainilla"
-                  [class]="
-                    aromaInvalido
-                      ? 'border-red-500 focus:outline-none focus:ring-0'
-                      : 'border-gray-300  focus:ring-morado-400 focus:ring-1 '
-                  "
-                />
-              </fieldset>
-              @if(errores().aroma) {
-              <small class="text-red-600">Este campo es obligatorio.</small>
-              }@else if(aromaInvalido){
-              <small class="text-red-600">
-                El campo aroma es requerido y debes escoger un aroma.
-              </small>
-              }
-              <fieldset>
-                <label class="block font-medium mb-1">
-                  Tipo
-                  <span class="text-red-500">*</span>
-                </label>
-                @let tipoInvalido = formulario.get('tipo')?.invalid &&
-                formulario.get('tipo')?.value || errores().tipo;
-                <select
-                  class="w-full border rounded-lg p-2 border-gray-300   focus:outline-none focus:ring-2  focus:ring-morado-400"
-                  formControlName="tipo"
-                  [class]="
-                    tipoInvalido
-                      ? 'border-red-500 focus:outline-none focus:ring-0'
-                      : 'border-gray-300  focus:ring-morado-400 focus:ring-1 '
-                  "
-                  [value]="formulario.value.tipo"
-                >
-                  <option selected value="" disabled hidden>
-                    Selecciona un tipo
-                  </option>
-                  @if(formulario.value.id_categoria
-                  ==='6823a6c096655bcbe4971062') {
-                  <option value="seca">Relajante</option>
-                  <option value="grasa">Decorativa</option>
-                  <option value="mixta">Aromatica</option>
-                  }@else if(formulario.value.id_categoria
-                  ==='680fd248f613dc80267ba5d7') {
-
-                  <option value="seca">Piel seca</option>
-                  <option value="grasa">Piel grasa</option>
-                  <option value="mixta">Piel mixta</option>
-                  }
-                </select>
-                <small class="text-red-700 font-medium"></small>
-              </fieldset>
-              @if(errores().tipo) {
-              <small class="text-red-600">Este campo es obligatorio.</small>
-              }@else if(tipoInvalido){
-              <small class="text-red-600">
-                El campo tipo es requerido y debes escoger un tipo de piel
-              </small>
-              }
             </div>
           </div>
-        </div>
         }
 
         <!-- Botones -->
-        <div class="md:col-span-2 flex justify-end gap-4 mt-6 pb-4">
-          @if(acciones() !== 'Visualizar') {
-
-          <button
-            class="bg-indigo-400 text-white px-6 h-10 rounded-[15px] hover:bg-indigo-500 w-auto"
-          >
-            {{ acciones() }} productos
-          </button>
+        <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
+          @if (acciones() !== 'Visualizar') {
+            <button
+              class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+            >
+              {{ acciones() }} productos
+            </button>
           }
 
           <button
             type="button"
-            class="bg-gray-300 text-gray-700 px-6 py-2 rounded-[15px] hover:bg-gray-400 transition"
+            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="close()"
           >
-            @if(acciones() === 'Visualizar') { Cerrar } @else { Cancelar }
+            @if (acciones() === 'Visualizar') {
+              Cerrar
+            } @else {
+              Cancelar
+            }
           </button>
         </div>
       </form>
       <!-- Al final de tu template, después del cierre del </dialog> principal -->
       <app-modal
-        [mostrarModal]="mostrarModalExito()"
+        [(mostrarModal)]="mostrarModalExito"
         [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
         [mensaje]="respuestaBack()"
         [tipo]="tipoRespuesta()"
-        (closed)="cerraTodo()"
       ></app-modal>
     </dialog>
   `,
@@ -443,7 +461,7 @@ export class FormProducto {
   //crear una variable para almacenar todos los ingredientes
   public ingredientes = signal<any[]>([]);
   public ingredientesSeleccionados = signal<string[]>([]);
-  public mostrarModalExito = signal(false); 
+  public mostrarModalExito = signal(false);
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarModal = model<boolean>(false);
@@ -456,6 +474,13 @@ export class FormProducto {
   //variable para almacenar los valores que mostrar en formulario en product.page
   public mostrarDatos = input<any>();
 
+  public categoriasResource = httpResource<any>(
+    () => environment.urlApi + '/api/categorias',
+    {
+      defaultValue: { categorias: [] },
+    },
+  );
+
   //almacena los datos del formulario, para enviar al body del backend
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null, Validators.required),
@@ -464,13 +489,18 @@ export class FormProducto {
       Validators.minLength(3),
       Validators.pattern('^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$'),
     ]),
-    descripcion: new FormControl('', Validators.required),
-    beneficios: new FormControl('', Validators.required),
+    descripcion: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+    ]),
+    beneficios: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\s*[^,]+?\s*,\s*[^,]+?\s*,\s*[^,]+?\s*$/),
+    ]),
+    // Expresión regular para permitir letras, números y caracteres especiales
     precio: new FormControl('', [
       Validators.required,
-      Validators.min(0),
-      Validators.max(100),
-      Validators.pattern(/^\d+(\.\d{1,2})?$/),
+      Validators.pattern(/^\d{1,2}(\.\d{1,2})?$/)
     ]),
     stock: new FormControl(57, Validators.required),
     id_categoria: new FormControl('', Validators.required),
@@ -515,17 +545,26 @@ export class FormProducto {
 
   public close() {
     this.mostrarModal.set(false);
-    this.alerta()?.nativeElement.close(); //cierra el modal de alerta
   }
   constructor() {
     //llama al servicio de ingredientes
     this.ingredientesServicio.obtener().subscribe({
       next: (ingredientes: any) => {
-        this.ingredientes.set(ingredientes.ingredientes);
+        this.ingredientes.set(
+          ingredientes.ingredientes.filter(
+            (ingrediente: any) => ingrediente.tipo === 'esencia',
+          ),
+        );
       },
       error: (error: any) => {
         console.error('Error al obtener los ingredientes:', error);
       },
+    });
+
+    effect(() => {
+      if (!this.mostrarModalExito() && this.tipoRespuesta() === 'exito') {
+        this.mostrarModal.set(false);
+      }
     });
 
     effect(() => {
@@ -549,7 +588,7 @@ export class FormProducto {
           aroma: datos.aroma,
           tipo: datos.tipo,
           ingredientes: datos.ingredientes.map(
-            (item: any) => item?._id ?? item
+            (item: any) => item?._id ?? item,
           ),
         });
 
@@ -559,7 +598,7 @@ export class FormProducto {
         }
 
         this.ingredientesSeleccionados.set(
-          datos.ingredientes.map((item: any) => item?._id ?? item) //almacena los ingredientes seleccionados
+          datos.ingredientes.map((item: any) => item?._id ?? item), //almacena los ingredientes seleccionados
         );
         if (this.acciones() === 'Visualizar') {
           this.formulario.disable();
@@ -595,7 +634,6 @@ export class FormProducto {
   onSubmit() {
     const formData = this.toFormData(); //convierte el formulario a FormData
     //vaciat lo errores
-
     //fun cion para crear un registro
     if (this.acciones() === 'Registrar') {
       this.servicioProductos()
@@ -619,7 +657,7 @@ export class FormProducto {
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
       this.servicioProductos()
-        .editar(this.idRegistro(), this.formulario?.value)
+        .editar(this.idRegistro(), formData)
         .subscribe({
           next: (registroActualizado: any) => {
             this.cambioEmitir.emit(registroActualizado);
@@ -643,7 +681,7 @@ export class FormProducto {
     if (this.ingredientesSeleccionados().includes(ingredienteId)) {
       // verifica si el ingrediente ya fue seleccionado
       this.ingredientesSeleccionados.update(
-        (ingredientes) => ingredientes.filter((id) => id !== ingredienteId) // si fue seleccionado lo elimina
+        (ingredientes) => ingredientes.filter((id) => id !== ingredienteId), // si fue seleccionado lo elimina
       );
     } else if (this.ingredientesSeleccionados().length < 2) {
       // verifica si hay menos de 2 ingredientes seleccionados

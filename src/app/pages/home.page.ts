@@ -13,7 +13,7 @@ import { PromocionesService } from '../../services/admin/promociones.service';
   imports: [Headers, Footeer, Card, RouterLink],
 
   template: `
-    <headers [(cantidadProducto)]="cantidadProducto"></headers>
+    <headers ></headers>
     <main class="flex flex-col">
       <!--Seccion banner -->
       <section class="relative w-full">

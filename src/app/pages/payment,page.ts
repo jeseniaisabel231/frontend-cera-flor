@@ -43,12 +43,12 @@ import { Headers } from '../components/header.component';
                   [formGroup]="direccion"
                 >
                   <div>
-                    <label class="mb-1 block text-sm font-medium ">
+                    <label class="mb-1 block text-sm font-medium  ">
                       Calle y número
                     </label>
                     <input
                       type="text"
-                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none "
+                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none placeholder-gris-300"
                       placeholder="Calle Principal 123"
                       formControlName="calle"
                     />
@@ -59,7 +59,7 @@ import { Headers } from '../components/header.component';
                     </label>
                     <input
                       type="text"
-                      class="ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      class="ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 placeholder-gris-300 focus:outline-none"
                       placeholder="Provincia"
                       formControlName="provincia"
                     />
@@ -68,7 +68,7 @@ import { Headers } from '../components/header.component';
                     <label class="mb-1 block text-sm font-medium">Ciudad</label>
                     <input
                       type="text"
-                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      class="focus:ring-morado-400 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none placeholder-gris-300"
                       placeholder="Ciudad"
                       formControlName="ciudad"
                     />

@@ -1,11 +1,11 @@
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
 import type { producto } from '../interfaces/producto.interface';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
 
 @Component({
-  imports: [RouterLink, DecimalPipe,TitleCasePipe],
+  imports: [RouterLink, DecimalPipe, TitleCasePipe],
   selector: 'card',
   standalone: true,
   template: `
@@ -26,18 +26,24 @@ import { DecimalPipe, TitleCasePipe } from '@angular/common';
                 : 'Velas Artesanales'
             }}
           </div>
-          <div class="font-bold text-[17px] text-gray-800">{{ producto().nombre | titlecase }}</div>
-          <div class=" flex flex-wrap items-center gap-2">
-            <small class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold">
+          <div class="text-[17px] font-bold text-gray-800">
+            {{ producto().nombre | titlecase }}
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <small
+              class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold"
+            >
               {{ producto().aroma | titlecase }}
             </small>
-            <small class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs font-bold">
+            <small
+              class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs font-bold"
+            >
               {{ producto().tipo | titlecase }}
             </small>
           </div>
-          <div class="mt-3 font-bold text-[20px] text-purple-600">
+          <div class="mt-3 text-[20px] font-bold text-purple-600">
             $
-            {{ producto().precio | number:'1.2-2'  }}
+            {{ producto().precio | number: '1.2-2' }}
           </div>
         </div>
       </div>
@@ -67,6 +73,13 @@ import { DecimalPipe, TitleCasePipe } from '@angular/common';
         </button>
       </div>
     </article>
+    @if (mostrarMensajeExito()) {
+      <div
+        class="fixed right-0 bottom-0 left-0 z-50 bg-[#9f93e7] p-4 text-center text-white"
+      >
+        <p>Producto agregado exitosamente.</p>
+      </div>
+    }
   `,
 })
 export class Card {
@@ -74,6 +87,7 @@ export class Card {
   public serviceCarrito = inject(CarritoService);
   public cantidad = signal(1);
   public emitirCantidad = output<number>();
+  public mostrarMensajeExito = signal(false);
 
   //metodo para incrementar
   incrementarCantidad() {
@@ -93,8 +107,11 @@ export class Card {
     this.serviceCarrito
       .agregarCarrito(this.producto(), this.cantidad())
       .subscribe({
-        next: ({carrito}:any) => {
-          this.emitirCantidad.emit(carrito.productos.length);
+        next: ({ carrito }: any) => {
+          this.mostrarMensajeExito.set(true);
+          setTimeout(() => {
+            this.mostrarMensajeExito.set(false);
+          }, 2000);
         },
       });
   }

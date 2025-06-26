@@ -3,7 +3,7 @@ import { Headers } from '../components/header.component';
 
 @Component({
   template: `
-    <headers [(cantidadProducto)]="cantidadProducto"></headers>
+    <headers></headers>
     <main class="flex-grow bg-[#f9fafb] mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" >
       <div class="flex flex-col gap-8 md:flex-row">
         <aside class="sticky top-8 w-full flex-shrink-0 rounded-lg bg-white p-4 shadow-sm md:w-64" >

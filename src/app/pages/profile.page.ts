@@ -70,8 +70,8 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
         <article
           class="flex-grow overflow-hidden rounded-lg bg-white shadow-sm"
         >
-          <header class="bg-indigo-600 px-6 py-4">
-            <h2 class="text-xl font-semibold text-white">Mi perfil</h2>
+          <header class=" px-6 py-4">
+            <h2 class="text-xl font-semibold text-black">Mi perfil</h2>
           </header>
 
           <form class="p-6" [formGroup]="perfil">
@@ -188,7 +188,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
               </div>
             </fieldset>
 
-            <section>
+            <!-- <section>
               <h3 class="mb-4 text-lg font-medium text-gray-900">
                 Cambiar contraseña
               </h3>
@@ -228,18 +228,18 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
                   />
                 </div>
               </div>
-            </section>
+            </section> -->
 
             <div class="mt-8 flex justify-end">
               <button
                 type="button"
-                class="focus:ring-morado-400 mr-4 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                class="focus:ring-morado-400 mr-4 rounded-[15px] border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                class="focus:ring-morado-400 rounded-md border border-transparent bg-[#9810fa] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#7a0dc7] focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                class="focus:ring-morado-400 rounded-[15px] border border-transparent bg-[#806bff] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#806bff] focus:ring-2 focus:ring-offset-2 focus:outline-none"
               >
                 Guardar cambios
               </button>

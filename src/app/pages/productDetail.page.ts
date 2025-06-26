@@ -21,7 +21,7 @@ import { httpResource } from '@angular/common/http';
   imports: [Headers, Footeer, Card, BarranavComponent, ProductDetailsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <headers [(cantidadProducto)]="cantidadProducto"></headers>
+    <headers ></headers>
     <main class="flex flex-col">
       <barranav rutaSeccionSeleccionada="catalogo"
         [rutaCategoriaSeleccionada]="productoResource.value()?.producto?.id_categoria.nombre"

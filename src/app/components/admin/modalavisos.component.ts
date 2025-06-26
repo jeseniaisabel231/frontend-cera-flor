@@ -103,7 +103,7 @@ import {
 
             <button
               (click)="realizarDecision(true)"
-              class="rounded-[10px] bg-gray-400 px-5 py-2 font-bold text-white transition-colors hover:bg-gray-500"
+              class="rounded-[10px] bg-green-400 px-5 py-2 font-bold text-white transition-colors hover:bg-green-500"
             >
               Aceptar
             </button>

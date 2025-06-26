@@ -12,10 +12,8 @@ import { Component, input, output } from '@angular/core';
       <div
         class="animate-pop-up mx-4 w-full max-w-md rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-8 text-center shadow-2xl"
       >
-        <h2>Aviso del juego</h2>
-        <p class="mb-4 text-gray-600">
-          {{ text() }}
-        </p>
+        <h2 class="text-xl font-bold text-purple-700 mb-3">Aviso del juego</h2>
+        <p class="mb-4 text-gray-600" [innerHTML]="text()"></p>
         @if (imagen()) {
           <img [src]="imagen()" alt="" />
         }
@@ -36,7 +34,7 @@ import { Component, input, output } from '@angular/core';
           } @else {
             <button
               (click)="confirm.emit()"
-              class="rounded-full bg-gray-100 px-6 py-2.5 font-medium text-gray-800 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none"
+              class="rounded-full bg-[#806bff] px-6 py-2.5 font-medium  transition-all duration-200 hover:scale-[1.02] hover:bg-[#816bffc6] focus:ring-2 focus:ring-gray-300 focus:outline-none text-white"
             >
               Aceptar
             </button>

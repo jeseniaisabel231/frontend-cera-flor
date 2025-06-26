@@ -1,20 +1,21 @@
-import { Component, signal } from '@angular/core';
-import { Navegacion } from '../../components/navegacion.component';
-import { Presentation } from '../../components/admin/presentation.component';
+import { Component, inject, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
+import { DashboardService } from '../../../services/admin/graficas.service';
+import { Presentation } from '../../components/admin/presentation.component';
+import { Navegacion } from '../../components/navegacion.component';
 @Component({
   imports: [Navegacion, Presentation, BaseChartDirective],
   template: `
-    <div class="bg-[#efecff] w-full flex min-h-dvh">
+    <div class="flex min-h-dvh w-full bg-[#efecff]">
       <navegacion></navegacion>
       <!-- Contenido principal -->
 
-      <div class="grid grid-cols-3 gap-4 p-6 w-full border-l border-[#d0c9fe]">
+      <div class="grid w-full grid-cols-3 gap-4 border-l border-[#d0c9fe] p-6">
         <presentation titulo="Dashboard" class="col-span-3"></presentation>
 
-        <div class="col-span-1 row-start-2 rounded-[18px] py-4 px-10  bg-white">
-          <h3 class="text-[17px] font-semibold mb-2 text-center">Clientes</h3>
-          <div class="flex  gap-3 justify-center mt-8">
+        <div class="col-span-1 row-start-2 rounded-[18px] bg-white px-10 py-4">
+          <h3 class="mb-2 text-center text-[17px] font-semibold">Clientes</h3>
+          <div class="mt-8 flex justify-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="48"
@@ -32,15 +33,15 @@ import { BaseChartDirective } from 'ng2-charts';
               />
             </svg>
             <p class="text-4xl font-bold">
-              2
-              
+              {{ numeroUsuarios() }}
+              <span class="ml-1 text-base font-normal">clientes</span>
             </p>
           </div>
         </div>
 
-        <div class="col-span-1 row-start-2  rounded-[18px] py-4 px-10 bg-white">
-          <h3 class="text-[17px] font-semibold mb-2 text-center">Ventas</h3>
-          <div class="flex  gap-3 justify-center mt-8">
+        <div class="col-span-1 row-start-2 rounded-[18px] bg-white px-10 py-4">
+          <h3 class="mb-2 text-center text-[17px] font-semibold">Ventas</h3>
+          <div class="mt-8 flex justify-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="38"
@@ -54,14 +55,14 @@ import { BaseChartDirective } from 'ng2-charts';
               />
             </svg>
             <p class="text-4xl font-bold">
-              2
-              <span class="text-base font-normal ml-1">productos</span>
+              {{ numeroVentas() }}
+              <span class="ml-1 text-base font-normal">productos</span>
             </p>
           </div>
         </div>
-        <div class="col-span-1 row-start-2 rounded-[18px] py-6 px-10  bg-white">
-          <h3 class="text-[17px] font-semibold mb-2 text-center">Productos</h3>
-          <div class="flex  gap-3 justify-center mt-8">
+        <div class="col-span-1 row-start-2 rounded-[18px] bg-white px-10 py-6">
+          <h3 class="mb-2 text-center text-[17px] font-semibold">Productos</h3>
+          <div class="mt-8 flex justify-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="41"
@@ -75,15 +76,15 @@ import { BaseChartDirective } from 'ng2-charts';
               />
             </svg>
             <p class="text-4xl font-bold">
-              70
-              <span class="text-base font-normal ">productos activos</span>
+              {{ productosVendidos() }}
+              <span class="text-base font-normal">productos activos</span>
             </p>
           </div>
         </div>
         <div class="col-span-3 row-span-4">
-          <div class="grid grid-cols-5  gap-4">
+          <div class="grid grid-cols-5 gap-4">
             <div
-              class="col-span-3 h-[340px] w-full flex justify-center bg-white rounded-[18px]  p-4"
+              class="col-span-3 flex h-[340px] w-full justify-center rounded-[18px] bg-white p-4"
             >
               <canvas
                 baseChart
@@ -93,7 +94,7 @@ import { BaseChartDirective } from 'ng2-charts';
               ></canvas>
             </div>
             <div
-              class="col-span-2 h-[340px] w-full flex justify-center bg-white rounded-[18px] "
+              class="col-span-2 flex h-[340px] w-full justify-center rounded-[18px] bg-white"
             >
               <div class="p-4">
                 <canvas
@@ -111,10 +112,15 @@ import { BaseChartDirective } from 'ng2-charts';
   `,
 })
 export class DashboardPage {
-  //1.false: menu de navegacion oculto
-  //Variable que hara que la barra de navegacion se muestre o no se muestre
+  public dashboardServicio = inject(DashboardService);
   public mostrar = signal<boolean>(true);
-  //variables para la grafica
+
+  // Datos para las gráficas
+  public datosVentas = signal<any>({});
+  public numeroUsuarios = signal<number>(0);
+  public productosVendidos = signal<number>(0);
+  public numeroVentas = signal<number>(0);
+
   public datos = signal<any>({
     labels: [
       'Lunes',
@@ -125,49 +131,21 @@ export class DashboardPage {
       'Sabado',
       'Domingo',
     ],
-    datasets: [
-      {
-        label: 'Semana Pasada',
-        data: [
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-        ],
-        fill: true,
-        borderColor: '#626260',
-        backgroundColor: 'rgba(98, 98, 96, 0.2)',
-        tension: 0.18,
-        borderDash: [5, 5],
-      },
-      {
-        label: 'Semana Actual',
-        data: [
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-        ],
-        fill: true,
-        borderColor: '#3c3c3b',
-        backgroundColor: 'rgba(60, 60, 59, 0.2)',
-        tension: 0.18,
-        borderDash: [5, 5],
-      },
-    ],
   });
   public opciones = signal<any>({
     responsive: true,
     plugins: {
       title: {
         display: true,
-        text: 'VENTAS SEMANALES',
+        text: 'INGRESOS SEMANALES',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            // context.formattedValue es el valor mostrado
+            return 'Ingresos de $' + context.formattedValue;
+          }
+        }
       },
     },
     scales: {
@@ -180,7 +158,13 @@ export class DashboardPage {
       },
       y: {
         grid: {
-          borderDash: [5, 5], // Línea punteada en eje Y
+          borderDash: [5, 5],
+        },
+        ticks: {
+          // Aquí agregas el prefijo de dólar
+          callback: function (value: number | string) {
+            return '$' + value;
+          },
         },
       },
     },
@@ -205,4 +189,83 @@ export class DashboardPage {
       },
     },
   });
+
+  constructor() {
+    this.dashboardServicio.obtenerVentas().subscribe({
+      next: (data) => {
+        const ventaSemanaPasada: number[] = [];
+        const ventaSemanaActual: number[] = [];
+        const productosVendidos: number[] = [];
+        const categorias: string[] = [];
+        const dias: string[] = [];
+
+        data.ventasDiarias.forEach((element, index: number) => {
+          const fechaFormateada = element.fecha.split('/').reverse().join('-');
+          const dia = new Date(fechaFormateada).toLocaleDateString('es-ES', {
+            weekday: 'long',
+          });
+          if (index < 7) {
+            dias.push(dia.charAt(0).toUpperCase() + dia.slice(1));
+            ventaSemanaPasada.push(element.totalVentas);
+          } else {
+            ventaSemanaActual.push(element.totalVentas);
+          }
+        });
+        this.datos.set({
+          labels: dias,
+          datasets: [
+            {
+              label: 'Semana Pasada',
+              data: ventaSemanaPasada,
+              fill: true,
+              borderColor: '#626260',
+              backgroundColor: 'rgba(255, 187, 120, 0.2)',
+              tension: 0.18,
+              borderDash: [5, 5],
+            },
+            {
+              label: 'Semana Actual',
+              data: ventaSemanaActual,
+              fill: true,
+              borderColor: '#3c3c3b',
+              backgroundColor: 'rgba(44, 160, 44, 0.2)',
+              tension: 0.18,
+              borderDash: [5, 5],
+            },
+          ],
+        });
+        console.log(data);
+        data.ventasPorCategoria.forEach((element) => {
+          productosVendidos.push(element.vendidos);
+          categorias.push(element.categoría);
+        });
+        this.datosProductos.set({
+          labels: categorias,
+          datasets: [
+            {
+              label: 'Productos Vendidos',
+              data: productosVendidos,
+              backgroundColor: ['#9F93E7', '#9fd6cf'],
+            },
+          ],
+        });
+      },
+    });
+
+    this.dashboardServicio.obtenerProductos().subscribe({
+      next: (data) => {
+        this.productosVendidos.set(data.totalProductos);
+      },
+    });
+    this.dashboardServicio.obtenerUsuarios().subscribe({
+      next: (data) => {
+        this.numeroUsuarios.set(data.totalClientes);
+      },
+    });
+    this.dashboardServicio.obtenerTodasLasVentas().subscribe({
+      next: (data) => {
+        this.numeroVentas.set(data.totalVentas);
+      },
+    });
+  }
 }

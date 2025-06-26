@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  model,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, model, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
@@ -154,10 +147,12 @@ import { decodificarToken } from '../utils/decodificarToken';
                 class="hidden whitespace-nowrap text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
               >
                 @if (serviceAuth.estadoAutenticacion) {
-                  Hola,
-                  <span>{{ obtenerNombre() }}</span>
+                  <span>Hola,</span>
+                  <span class="font-bold">
+                    {{ obtenerNombre() }}
+                  </span>
                 } @else {
-                  Iniciar sesión/Registrarse
+                  <div class="font-semibold">Iniciar sesión/Registrarse</div>
                 }
               </span>
             </button>
@@ -184,7 +179,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               <span
                 class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors duration-300 ease-in-out group-hover:bg-red-600"
               >
-                {{ cantidadProducto() }}
+                {{ this.serviceCarrito.cantidadProductos }}
               </span>
             </div>
           </div>
@@ -253,21 +248,22 @@ export class Headers {
   public menuVisible = signal(false);
   public router = inject(Router);
   public serviceCarrito = inject(CarritoService);
-  public cantidadProducto = model<number>(0);
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
   public obtenerNombre = signal('');
 
   constructor() {
     const tokenDecodificado = decodificarToken();
-    if(tokenDecodificado && tokenDecodificado?.rol !== 'admin') {
+    this.serviceCarrito.obtenerCarrito().subscribe()
+    
+
+    if (tokenDecodificado && tokenDecodificado?.rol !== 'admin') {
       this.serviceAuth.obtenerPerfil().subscribe({
         next: ({ cliente }: any) => {
           this.obtenerNombre.set(cliente.nombre);
         },
       });
     }
-
   }
 
   //metodo para ver modal

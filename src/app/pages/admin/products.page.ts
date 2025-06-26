@@ -1,11 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../../../services/admin/productos.service';
 import { CategoryService } from '../../../services/categorias.service';
 import { FormProducto } from '../../components/admin/formproduct.component';
@@ -14,6 +9,7 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
 import { Presentation } from '../../components/admin/presentation.component';
 import { Loading } from '../../components/loading.component';
 import { Navegacion } from '../../components/navegacion.component';
+import { categorias } from '../../interfaces/categoria.interface';
 import { producto } from '../../interfaces/producto.interface';
 
 @Component({
@@ -62,7 +58,7 @@ import { producto } from '../../interfaces/producto.interface';
                 <input
                   class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
                   type="search"
-                  placeholder="Buscar por nombre"
+                  placeholder="Buscar producto"
                   id="search"
                   name="search"
                   [(ngModel)]="busqueda"
@@ -87,33 +83,33 @@ import { producto } from '../../interfaces/producto.interface';
                 <button
                   class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                   [class]="
-                    filtro() === ''
+                    filtro === ''
                       ? 'bg-[#806bff] font-semibold text-white'
                       : 'text-gray-700'
                   "
-                  (click)="filtrarCategorias('')"
+                  (click)="filtrarPorCategoria('')"
                 >
-                  <span class="mr-2">Todos</span>
+                  <span>Todos</span>
                 </button>
 
-                @for (categoria of categorias; track $index) {
+                @for (categoria of categorias(); track $index) {
                   <button
                     class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                     [class]="
-                      filtro() === categoria._id
+                      filtro === categoria._id
                         ? 'bg-[#806bff] font-semibold text-white'
                         : 'text-gray-700'
                     "
-                    (click)="filtrarCategorias(categoria._id)"
+                    (click)="filtrarPorCategoria(categoria._id)"
                   >
-                    <span class="mr-2">{{ categoria.nombre }}</span>
+                    <span>{{ categoria.nombre }}</span>
                   </button>
                 }
               </div>
             </div>
             <button
               class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
-              (click)="verFormulario()"
+              (click)="abrirFormRegistrar()"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -133,10 +129,10 @@ import { producto } from '../../interfaces/producto.interface';
           <formulario
             [(mostrarModal)]="mostrarModal"
             [acciones]="accionAsignada()"
-            [servicioProductos]="serviceProductos"
-            [mostrarDatos]="enviarDatos()"
-            [idRegistro]="idRegistro()"
-          ></formulario>
+            [servicioProductos]="productosService"
+            [mostrarDatos]="datosFormulario()"
+            [idRegistro]="idParaEditar()"
+          />
 
           <!--Lista de productos en cartas -->
 
@@ -186,7 +182,7 @@ import { producto } from '../../interfaces/producto.interface';
                   <div class="flex items-center justify-center gap-2 px-4 pb-4">
                     <button
                       class="h-10 rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500"
-                      (click)="abrirFormulario(item)"
+                      (click)="abrirFormVisualizar(item)"
                       title="Visualizar producto"
                     >
                       <svg
@@ -204,7 +200,7 @@ import { producto } from '../../interfaces/producto.interface';
                     </button>
                     <button
                       class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
-                      (click)="editarProducto(item)"
+                      (click)="abrirFormEditar(item)"
                       title="Editar producto"
                     >
                       <svg
@@ -223,7 +219,7 @@ import { producto } from '../../interfaces/producto.interface';
                     </button>
                     <button
                       class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500"
-                      (click)="eliminarProducto(item._id)"
+                      (click)="abrirModalEliminacion(item._id)"
                       title="Eliminar producto"
                     >
                       <svg
@@ -278,50 +274,62 @@ import { producto } from '../../interfaces/producto.interface';
   `,
 })
 export class ProductsPage {
-  public idRegistro = signal<string>(''); //almacena el id del producto a editar
-  public mostrarModal = signal<boolean>(false);
-  public carga = signal<boolean>(true); //variable para mostrar el loading
-  public serviceProductos = inject(ProductosService);
-  public busqueda: string = '';
+  // Variables y servicios necesarios para la página de productos
+  public productosService = inject(ProductosService);
   public categoriaService = inject(CategoryService);
-  public enviarDatos = signal<producto | null>(null);
-  public categorias: any[] = [];
-  public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
+  public carga = signal<boolean>(true); // Al iniciar la página, se establece en true para indicar que los datos están cargando
+  public categorias = signal<categorias[]>([]);
+  public busqueda = signal<string>('');
+  public filtro: string = '';
+  public productos: producto[] = [];
+  public datosFiltrados: producto[] = [];
+
+  // Variables para el modal del formulario
+  public mostrarModal = signal<boolean>(false);
+  public idParaEditar = signal<string>('');
+  public accionAsignada = signal<Actions>('Registrar');
+  public datosFormulario = signal<producto | null>(null);
+
+  // Variables para el modal de confirmación de eliminación
   public mostrarModalConfirmacion = signal<boolean>(false);
   public productoEliminar = signal<string | null>(null);
-  public filtro = signal<string>('');
-  public datosFiltrados: producto[] = [];
-  public productos: producto[] = [];
-  public datosProductos = new FormGroup({
-    nombre: new FormControl('', [Validators.required]),
-    apellido: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-  });
 
-  //funcion para abrir el formulario con los datos visualizar o editar
-  public abrirFormulario(datos: producto) {
-    this.enviarDatos.set(datos);
-    this.mostrarModal.set(true);
-    this.accionAsignada.set('Visualizar'); //cambia el valor de la accion asignada al formulario
+  constructor() {
+    this.categoriaService
+      .obtener()
+      .subscribe(({ categorias }) => this.categorias.set(categorias));
+
+    this.productosService
+      .obtener(1)
+      .subscribe(({ productos }: any) => {
+        this.productos = productos;
+        this.datosFiltrados = productos;
+      })
+      .add(() => this.carga.set(false));
   }
 
-  // Agrega estos métodos en tu ProductsPage
-  public editarProducto(datos: producto) {
-    this.enviarDatos.set(datos);
-    this.idRegistro.set(datos._id); // Establece el ID del producto a editar
+  // Funciones para las diferentes acciones que tiene el formulario
+  public abrirFormVisualizar(datos: producto) {
+    this.accionAsignada.set('Visualizar');
+    this.datosFormulario.set(datos);
     this.mostrarModal.set(true);
-    this.accionAsignada.set('Actualizar'); // Cambia a modo edición
-  }
-  //metodo para ver el formulario de registro
-  public verFormulario() {
-    this.enviarDatos.set(null);
-    this.mostrarModal.set(true);
-    this.accionAsignada.set('Registrar'); //cambia el valor de la accion asignada al formulario
   }
 
-  //metodo para eliminar un producto cuando doy click al boton
-  public eliminarProducto(id: string) {
-    //this.serviceProductos.eliminar(id).subscribe();
+  public abrirFormEditar(datos: producto) {
+    this.accionAsignada.set('Actualizar');
+    this.idParaEditar.set(datos._id);
+    this.datosFormulario.set(datos);
+    this.mostrarModal.set(true);
+  }
+
+  public abrirFormRegistrar() {
+    this.accionAsignada.set('Registrar');
+    this.datosFormulario.set(null);
+    this.mostrarModal.set(true);
+  }
+
+  // Funciones para manejar la eliminación de productos
+  public abrirModalEliminacion(id: string) {
     this.productoEliminar.set(id);
     this.mostrarModalConfirmacion.set(true);
   }
@@ -329,62 +337,37 @@ export class ProductsPage {
   public confirmarEliminacion() {
     const id = this.productoEliminar();
     if (id) {
-      this.serviceProductos.eliminar(id).subscribe();
+      this.productosService.eliminar(id).subscribe();
     }
   }
 
-  //consumo de endpoint de usuarios
-  constructor() {
-    this.categoriaService.obtener().subscribe({
-      next: ({ categorias }) => {
-        this.categorias = categorias;
-      },
-      error: (error) => {
-        console.error('Error al obtener las categorías:', error);
-      },
-    });
-
-    this.serviceProductos
-      .obtener(1)
-      .subscribe({
-        next: ({ productos }: any) => {
-          this.productos = productos;
-          this.datosFiltrados = productos; // Inicializa datosFiltrados con todos los productos
-        },
-      })
-      .add(() => {
-        this.carga.set(false); // Cambia el estado de carga a false después de obtener los productos
-      });
-  }
-
-  //metodo para filtrar por categoria
-  public filtrarCategorias(id_categoria: string) {
-    this.filtro.set(id_categoria);
-    if (id_categoria) {
+  // Funciones para filtrar y buscar productos por categoría y nombre
+  public filtrarPorCategoria(categoria: string) {
+    this.filtro = categoria;
+    if (categoria) {
       this.datosFiltrados = this.productos.filter((producto) => {
         if (typeof producto.id_categoria === 'string') {
-          return producto.id_categoria === id_categoria; // Si id_categoria es un string, compara directamente
+          return producto.id_categoria === categoria; // Si id_categoria es un string, compara directamente
         }
-        return producto.id_categoria._id === id_categoria; // Si id_categoria es un objeto,
+        return producto.id_categoria._id === categoria; // Si id_categoria es un objeto, compara su _id
       });
     } else {
-      this.datosFiltrados = this.productos; // Si no hay filtro, muestra todos los productos
+      this.datosFiltrados = this.productos;
     }
   }
 
   public encontrarCategoria(categoria: any): string {
     if (categoria?._id) return categoria.nombre;
 
-    const categoriaEncontrada = this.categorias.find(
+    const categoriaEncontrada = this.categorias().find(
       (cat) => cat._id === categoria,
     );
-    return categoriaEncontrada.nombre;
+
+    return categoriaEncontrada!.nombre;
   }
 
-  public datosBuscados() {
-    const busqueda = this.busqueda.toLowerCase().trim();
-
-    console.log('Stock primer producto:', this.datosFiltrados[0].stock);
+  public datosBuscados(): producto[] {
+    const busqueda = this.busqueda().toLowerCase().trim();
 
     if (busqueda) {
       return this.datosFiltrados.filter(({ nombre }) =>
@@ -392,6 +375,6 @@ export class ProductsPage {
       );
     }
 
-    return this.datosFiltrados; // Retorna todos los productos si no hay búsqueda
+    return this.datosFiltrados;
   }
 }

@@ -24,7 +24,7 @@ import { producto } from '../interfaces/producto.interface';
     Loading,
   ],
   template: `
-    <headers [(cantidadProducto)]="cantidadProducto"></headers>
+    <headers ></headers>
     <main class="flex flex-col">
       <barranav
         rutaSeccionSeleccionada="catalogo"

@@ -5,7 +5,6 @@ import {
   inject,
   input,
   model,
-  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -16,10 +15,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { IngredientesService } from '../../../services/admin/ingredients.service';
+import { CategoryService } from '../../../services/categorias.service';
+import { categorias } from '../../interfaces/categoria.interface';
 import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
-import { categorias } from '../../interfaces/categoria.interface';
-import { CategoryService } from '../../../services/categorias.service';
 
 @Component({
   selector: 'form-ingredients',
@@ -120,7 +119,7 @@ import { CategoryService } from '../../../services/categorias.service';
               "
               type="text"
               placeholder="Ej: Jabón de avena y miel"
-              class="w-full rounded-lg border p-2 focus:outline-none placeholder-gris-200"
+              class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="nombre"
               (input)="borrarError('nombre')"
             />
@@ -159,7 +158,7 @@ import { CategoryService } from '../../../services/categorias.service';
               <input
                 type="number"
                 placeholder="Ej: 5.50"
-                class="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none placeholder-gris-200"
+                class="placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
                 formControlName="precio"
                 (input)="borrarError('precio')"
               />
@@ -170,8 +169,6 @@ import { CategoryService } from '../../../services/categorias.service';
           <select
             class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 text-gray-600 focus:ring-2 focus:outline-none"
             formControlName="id_categoria"
-            [class]=""
-            [value]="formulario.value.tipo"
           >
             <option selected value="" disabled hidden>
               Selecciona una categoría
@@ -182,7 +179,6 @@ import { CategoryService } from '../../../services/categorias.service';
               </option>
             }
             <option value="ambas">Ambas categorías</option>
-            
           </select>
         </div>
         <div class="col-span-2 mt-4 flex flex-col gap-4">
@@ -245,11 +241,10 @@ import { CategoryService } from '../../../services/categorias.service';
       </form>
       <!-- Al final de tu template, después del cierre del </dialog> principal -->
       <app-modal
-        [mostrarModal]="mostrarModalExito()"
+        [(mostrarModal)]="mostrarModalExito"
         [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
         [mensaje]="respuestaBack()"
         [tipo]="tipoRespuesta()"
-        (closed)="cerraTodo()"
       ></app-modal>
     </dialog>
   `,
@@ -268,10 +263,9 @@ export class FormIngredientsComponent {
   public mostrarDatos = input<any>();
   public acciones = input.required<Actions>();
   public idRegistro = input<string>();
-  public cambioEmitir = output<any>();
   public imagePreview: string | ArrayBuffer | null = null;
-  public serviceCategorias = inject(CategoryService)
-    public categorias: categorias[] = []; //almacena las categoria
+  public serviceCategorias = inject(CategoryService);
+  public categorias: categorias[] = []; //almacena las categoria
   public idsCategorias = signal<string[]>([]); //almacena los ids de las categorias
 
   public formulario = new FormGroup({
@@ -304,12 +298,7 @@ export class FormIngredientsComponent {
     this.mostrarModal.set(false);
     this.alerta()?.nativeElement.close(); //cierra el modal de alerta
   }
-  cerraTodo() {
-    this.mostrarModalExito.set(false);
-    if (this.tipoRespuesta() === 'exito') {
-      this.close(); // Solo cerramos el formulario si fue éxito
-    }
-  }
+
   onSubmit() {
     const formData = this.toFormData(); //convierte el
     if (this.acciones() === 'Registrar') {
@@ -320,12 +309,10 @@ export class FormIngredientsComponent {
             this.tipoRespuesta.set('exito');
             this.mostrarModalExito.set(true);
             this.respuestaBack.set(msg);
-            this.formulario?.reset();
+            this.resetearFormulario(); //resetea el formulario
+            
           },
-          //funcion para manejar errores
-          //si el backend devuelve un error, se setea en el objeto errores
           error: ({ error }: { error: any }) => {
-            console.error('Error al crear el registro:', error);
             this.tipoRespuesta.set('error');
             this.mostrarModalExito.set(true);
             this.respuestaBack.set(error.msg);
@@ -334,15 +321,13 @@ export class FormIngredientsComponent {
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
       this.servicioIngredientes.editar(this.idRegistro()!, formData).subscribe({
-        next: (registroActualizado: any) => {
-          this.cambioEmitir.emit(registroActualizado);
+        next: ({ msg }: any) => {
           this.mostrarModalExito.set(true);
           this.tipoRespuesta.set('exito');
-          this.respuestaBack.set(registroActualizado.msg);
-          this.formulario?.reset();
+          this.respuestaBack.set(msg);
+          this.resetearFormulario(); //resetea el formulario
         },
         error: ({ error }: { error: any }) => {
-          console.error('Error al actualizar el registro:', error);
           this.tipoRespuesta.set('error');
           this.mostrarModalExito.set(true);
           this.respuestaBack.set(error.msg);
@@ -370,8 +355,7 @@ export class FormIngredientsComponent {
             // Si es un string y no está vacío, agregarlo directamente
             formData.append('id_categoria', value);
           }
-        } 
-        else {
+        } else {
           // Convertir números a string
           const finalValue =
             typeof value === 'number' ? value.toString() : value;
@@ -408,6 +392,12 @@ export class FormIngredientsComponent {
     });
 
     effect(() => {
+      if (!this.mostrarModalExito() && this.tipoRespuesta() === 'exito') {
+        this.mostrarModal.set(false);
+      }
+    });
+
+    effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();
       } else {
@@ -417,14 +407,15 @@ export class FormIngredientsComponent {
     effect(() => {
       if (this.acciones() !== 'Registrar' && this.mostrarDatos()) {
         const datos = this.mostrarDatos();
-        console.log('Datos recibidos:', datos); // Para depuración
+
+        const categorias = datos.id_categoria;
 
         this.formulario.patchValue({
           nombre: datos.nombre,
           precio: datos.precio.toString(),
           stock: datos.stock.toString(),
           tipo: datos.tipo,
-          id_categoria: datos.id_categoria?._id || datos.id_categoria,
+          id_categoria: categorias.length === 1 ? categorias[0] : 'ambas',
         });
 
         // Cargar la imagen preview si existe
@@ -443,21 +434,13 @@ export class FormIngredientsComponent {
           this.formulario.enable();
         }
       } else if (this.acciones() === 'Registrar') {
-        this.formulario.setValue({
-          nombre: '',
-          precio: '',
-          stock: 1,
-          imagen: null,
-          tipo: '',
-          id_categoria: '',
-        });
-        this.imagePreview = null;
+        this.resetearFormulario();
+        this.formulario.enable();
       }
     });
   }
   ngOnInit() {
     this.cargarCategorias();
-   
   }
   cargarCategorias() {
     this.serviceCategorias.obtener().subscribe({
@@ -465,9 +448,21 @@ export class FormIngredientsComponent {
         this.categorias = respuesta.categorias;
         this.idsCategorias.set(
           this.categorias.map((categoria: categorias) => categoria._id),
+
         ); //almacena los ids de las categorias
       },
       error: (err) => console.error('Error al cargar categorías', err),
     });
+  }
+  public resetearFormulario() {
+    this.formulario.setValue({
+      nombre: '',
+      precio: '',
+      stock: 1,
+      imagen: null,
+      tipo: '',
+      id_categoria: '',
+    });
+    this.imagePreview = null;
   }
 }

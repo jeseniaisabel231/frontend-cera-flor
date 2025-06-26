@@ -118,6 +118,7 @@ export type DatosTabla = usuario | venta | promocion; //representacion de la cla
     </table>
 
     <app-modal
+      titulo="Confirmación de acción"
       [(mostrarModal)]="mostrarModalDesicion"
       (decision)="almacenarDesicion($event)"
       tipo="decidir"
@@ -247,14 +248,15 @@ export class TablaComponent {
     const esVenta = this.verificarTipo(item) === 'venta';
     if (esVenta) {
       this.mensajeEstado.set(
-        estado ? '¿Desea finalizar la venta?' : '¿Desea reactivar la venta?',
+        estado ? '¿Está seguro de que desea finalizar la venta?' : '¿Está seguro de que desea reactivar la venta?',
       );
     } else {
       this.mensajeEstado.set(
         estado
-          ? `¿Desea inactivar al cliente ${item.nombre} ${item.apellido}?`
-          : `¿Desea activar al cliente ${item.nombre} ${item.apellido}?`,
+          ? `¿Está seguro de que desea inactivar al cliente ${item.nombre} ${item.apellido}?`
+          : `¿Está seguro de que desea activar al cliente ${item.nombre} ${item.apellido}?`,
       );
+      
     }
     this.mostrarModalDesicion.set(true);
     this.itemPorCambiar.set(item);

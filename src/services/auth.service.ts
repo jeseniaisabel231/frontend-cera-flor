@@ -62,12 +62,11 @@ export class AuthService {
   restablecerContrasenia(
     email: string,
     nuevaPassword: string,
-    codigoRecuperacion: number,
+    codigoRecuperacion: string,
   ) {
-    return this.http.post<any>(`${this.urlBackend}/api/cambiar-contrasenia`, {
+    return this.http.post<any>(`${this.urlBackend}/api/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`, {
       email,
       nuevaPassword,
-      codigoRecuperacion,
     });
   }
   obtenerPerfil() {

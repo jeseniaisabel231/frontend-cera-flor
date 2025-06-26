@@ -5,7 +5,7 @@ export interface ingrediente {
   nombre: string;
   imagen: string;
   stock: number;
-  id_categoria: categorias;
+  id_categoria: categorias | string | string[];
   precio: number;
   tipo: string;
   createdAt?: string;

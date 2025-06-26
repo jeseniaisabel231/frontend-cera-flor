@@ -1,4 +1,4 @@
-import { Component, effect, inject, linkedSignal, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -40,7 +40,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
         <article
           class="relative col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
         >
-          <div class="flex flex-col gap-4 mb-4">
+          <div class="mb-4 flex flex-col gap-4">
             <div class="flex w-full justify-between">
               <div
                 class="flex w-full rounded-[18px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
@@ -61,7 +61,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 <input
                   class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
                   type="search"
-                  placeholder="Buscar por nombre"
+                  placeholder="Buscar ingrediente"
                   id="search"
                   name="search"
                   [(ngModel)]="busqueda"
@@ -104,34 +104,70 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
               </span>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                [class]="
+                  filtro === ''
+                    ? 'bg-[#806bff] font-semibold text-white'
+                    : 'text-gray-700'
+                "
+                (click)="filtrarIngredientes('tipo', '')"
               >
-                <span class="mr-2">Todos</span>
+                <span>Todos</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                [class]="
+                  filtro === 'molde'
+                    ? 'bg-[#806bff] font-semibold text-white'
+                    : 'text-gray-700'
+                "
+                (click)="filtrarIngredientes('tipo', 'molde')"
               >
-                <span class="mr-2">Moldes</span>
+                <span>Moldes</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                [class]="
+                  filtro === 'color'
+                    ? 'bg-[#806bff] font-semibold text-white'
+                    : 'text-gray-700'
+                "
+                (click)="filtrarIngredientes('tipo', 'color')"
               >
-                <span class="mr-2">Colores</span>
+                <span>Colores</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                [class]="
+                  filtro === 'esencia'
+                    ? 'bg-[#806bff] font-semibold text-white'
+                    : 'text-gray-700'
+                "
+                (click)="filtrarIngredientes('tipo', 'esencia')"
               >
-                <span class="mr-2">Esencias</span>
+                <span>Esencias</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                [class]="
+                  filtro === 'aroma'
+                    ? 'bg-[#806bff] font-semibold text-white'
+                    : 'text-gray-700'
+                "
+                (click)="filtrarIngredientes('tipo', 'aroma')"
               >
-                <span class="mr-2">Aromas</span>
+                <span>Aromas</span>
               </button>
               @for (categoria of categorias; track $index) {
                 <button
                   class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                  [class]="
+                    filtro === categoria._id
+                      ? 'bg-[#806bff] font-semibold text-white'
+                      : 'text-gray-700'
+                  "
+                  (click)="filtrarIngredientes('id_categoria', categoria._id)"
                 >
-                  <span class="mr-2">{{ categoria.nombre }}</span>
+                  <span>{{ categoria.nombre }}</span>
                 </button>
               }
             </div>
@@ -149,7 +185,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
             <section
               class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (item of ingredientes; track $index) {
+              @for (item of datosBuscados(); track $index) {
                 <div
                   class="mx-auto flex h-90 min-h-[400px] w-full max-w-[300px] flex-col rounded-xl border border-gray-300"
                 >
@@ -163,14 +199,14 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     />
                   </figure>
                   <div class="flex flex-col justify-between p-4">
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-1">
                       <small
-                        class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold"
+                        class="rounded-full bg-[#9ffedb] px-2 py-1 text-[11px] font-bold"
                       >
                         {{ getCategorias(item?.id_categoria) }}
                       </small>
                       <small
-                        class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs font-bold"
+                        class="rounded-full bg-[#ccc3fb] px-2 py-1 text-[11px] font-bold"
                       >
                         {{ item?.tipo | titlecase }}
                       </small>
@@ -246,6 +282,27 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     </button>
                   </div>
                 </div>
+              } @empty {
+                <div class="col-span-4 mt-6 flex justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                  >
+                    <g fill="#292929">
+                      <path
+                        d="M8 9a1 1 0 0 0 0 2h1a1 1 0 1 0 0-2zm7 0a1 1 0 1 0 0 2h1a1 1 0 1 0 0-2zm-6 6a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10m0-2a8 8 0 1 0 0-16a8 8 0 0 0 0 16"
+                        clip-rule="evenodd"
+                      />
+                    </g>
+                  </svg>
+                  <p class="text-center">No se encontraron registros</p>
+                </div>
               }
             </section>
           }
@@ -272,25 +329,15 @@ export class IngredientsPage {
   public serviceCategorias = inject(CategoryService);
   public categorias: categorias[] = []; //almacena las categorias
   public categoriasObject: Record<string, string> = {}; //almacena las categorias como un objeto
-
-  //variable para setear los datos en el formulario
   public enviarDatos = signal<ingrediente | null>(null);
-
-  //creacion de variable que almacenara la accion del formulario
   public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
-
-  //variables para el modal avisos
   public mostrarModalConfirmacion = signal<boolean>(false);
   public ingredienteEliminar = signal<string | null>(null);
+  public filtro = '';
 
-  //variable que almacena datos filtrados de barra de busqueda
-  public datosBuscados = linkedSignal<ingrediente[]>(() =>
-    this.ingredientes.filter((registro) =>
-      registro.nombre.toLowerCase().includes(this.busqueda().toLowerCase()),
-    ),
-  );
   //variable que almacena lo que traera del backend
   public ingredientes: ingrediente[] = [];
+  public datosFiltrados: ingrediente[] = []; //almacena los datos filtrados de la barra de busqueda
   public datosIngredientes = new FormGroup({
     tipo: new FormControl('', [Validators.required]),
     nombre: new FormControl('', [Validators.required]),
@@ -299,14 +346,12 @@ export class IngredientsPage {
     stock: new FormControl('', [Validators.required]),
     id_categoria: new FormControl('', [Validators.required]),
   });
-
   //funcion para abrir el formulario con los datos visualizar o editar
   public abrirFormulario(datos: ingrediente) {
     this.enviarDatos.set(datos);
     this.mostrarModal.set(true);
     this.accionAsignada.set('Visualizar'); //cambia el valor de la accion asignada al formulario
   }
-
   // Agrega estos métodos en tu ProductsPage
   public editarIngrediente(datos: ingrediente) {
     this.enviarDatos.set(datos);
@@ -330,67 +375,23 @@ export class IngredientsPage {
 
   public confirmarEliminacion() {
     const id = this.ingredienteEliminar();
-    if (id) {
-      this.servicioIngredientes.eliminar(id).subscribe({
-        next: () => {
-          // Actualiza la lista después de eliminar
-          this.obtenerIngredientes(this.numeroPagina());
-          // Muestra mensaje de éxito
-          this.mostrarMensaje(
-            'Éxito',
-            'Ingrediente eliminado correctamente',
-            'exito',
-          );
-        },
-        error: () => {
-          this.mostrarMensaje(
-            'Error',
-            'No se pudo eliminar este ingrediente',
-            'error',
-          );
-        },
-      });
-    }
+    this.servicioIngredientes.eliminar(id!).subscribe();
   }
-  private obtenerIngredientes(numeroPagina: number) {
+
+  constructor() {
     this.carga.set(true); // Cambia el estado de carga a true antes de obtener los ingredientes
     this.servicioIngredientes
-      .obtener(numeroPagina)
+      .obtener(1)
       .subscribe({
         next: (respuesta: any) => {
           this.ingredientes = respuesta.ingredientes;
-          this.datosBuscados.set(this.ingredientes);
+          this.datosFiltrados = respuesta.ingredientes; // Actualiza los datos filtrados
         },
       })
       .add(() => {
         this.carga.set(false); // Cambia el estado de carga a false después de obtener los ingredientes
       });
-  }
-  private mostrarMensaje(
-    titulo: string,
-    mensaje: string,
-    tipo: 'exito' | 'error' | 'confirmacion',
-  ) {}
-  //consumo de endpoint de usuarios
-  constructor() {
-    effect(() => {
-      const pagina = this.numeroPagina();
-      this.obtenerIngredientes(pagina);
-    });
-  }
 
-  //metodo para pasar a la siguiente pagina
-  public siguientePagina() {
-    this.numeroPagina.update((estadoPagina) => estadoPagina + 1);
-  }
-  //metodo para pasar a la anterior pagina
-  public paginaAnterior() {
-    this.numeroPagina.update((estadoPagina) => estadoPagina - 1);
-  }
-  ngOnInit() {
-    this.cargarCategorias();
-  }
-  cargarCategorias() {
     this.serviceCategorias.obtener().subscribe({
       next: (respuesta: any) => {
         this.categorias = respuesta.categorias;
@@ -399,11 +400,36 @@ export class IngredientsPage {
           this.categoriasObject[_id] = nombre;
         });
       },
-      error: (err) => console.error('Error al cargar categorías', err),
     });
   }
 
   public getCategorias(id: any): string {
     return this.categoriasObject[id] || 'Ambas Categorías';
+  }
+  public filtrarIngredientes(clave: keyof ingrediente, valor: string) {
+    this.filtro = valor; // Actualiza el filtro
+    console.log('Filtrando por:', clave, valor);
+    if (valor) {
+      this.datosFiltrados = this.ingredientes.filter((ingrediente) => {
+        if (clave === 'id_categoria') {
+          return (ingrediente.id_categoria as string[]).includes(valor);
+        }
+        return ingrediente[clave] === valor;
+      });
+    } else {
+      this.datosFiltrados = this.ingredientes;
+    }
+  }
+
+  public datosBuscados() {
+    const busqueda = this.busqueda().toLowerCase().trim();
+
+    if (busqueda) {
+      return this.datosFiltrados.filter(({ nombre }) =>
+        nombre.toLowerCase().includes(busqueda),
+      );
+    }
+
+    return this.datosFiltrados; // Retorna todos los productos si no hay búsqueda
   }
 }

@@ -2,15 +2,23 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 import { Loading } from '../components/loading.component';
 import { carrito } from '../interfaces/carrito.interface';
 
 @Component({
-  imports: [Headers, BarranavComponent, CurrencyPipe, RouterLink, Loading],
+  imports: [
+    Headers,
+    BarranavComponent,
+    CurrencyPipe,
+    RouterLink,
+    Loading,
+    ModalAvisosComponent,
+  ],
   template: `
-    <headers [(cantidadProducto)]="cantidadProducto"></headers>
+    <headers></headers>
     <main class="flex min-h-screen flex-col bg-gray-50">
       <barranav rutaSeccionSeleccionada="carrito"></barranav>
 
@@ -27,40 +35,40 @@ import { carrito } from '../interfaces/carrito.interface';
             @if (carga()) {
               <loading />
             } @else {
-              @for (producto of carrito.productos; track $index) {
+              @for (producto of serviceCarrito.carrito.productos; track $index) {
                 <article
                   class="flex items-center justify-between border-b border-gray-100 p-4 last:border-b-0 hover:bg-gray-50"
                 >
                   <div class="flex items-center gap-4">
                     <img
-                      [src]="producto.producto_id.imagen"
-                      [alt]="producto.producto_id.nombre"
+                      [src]="producto.producto.imagen"
+                      [alt]="producto.producto.nombre"
                       class="h-24 w-24 rounded-lg object-cover sm:h-28 sm:w-28"
                     />
                     <div class="flex h-28 flex-col justify-center">
                       <small class="text-xs font-medium text-gray-500">
                         {{
-                          producto.producto_id.id_categoria._id ===
+                          producto.producto.id_categoria._id ===
                           '680fd248f613dc80267ba5d7'
                             ? 'Jabones Artesanales'
                             : 'Velas Artesanales'
                         }}
                       </small>
                       <h2 class="text-lg font-bold text-gray-800">
-                        {{ producto.producto_id.nombre }}
+                        {{ producto.producto.nombre }}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small
                           class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs"
                         >
                           <strong>Aroma:</strong>
-                          {{ producto.producto_id.aroma }}
+                          {{ producto.producto.aroma }}
                         </small>
                         <small
                           class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs"
                         >
                           <strong>Tipo:</strong>
-                          {{ producto.producto_id.tipo }}
+                          {{ producto.producto.tipo }}
                         </small>
                       </div>
                     </div>
@@ -94,16 +102,13 @@ import { carrito } from '../interfaces/carrito.interface';
                       </div>
 
                       <p class="text-xl font-bold text-[#9810fa]">
-                        {{
-                          producto.producto_id.precio * producto.cantidad
-                            | currency
-                        }}
+                        $ {{ producto.precio_unitario }}
                       </p>
                     </div>
 
                     <button
                       class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
-                      (click)="eliminarProducto(producto.producto_id._id)"
+                      (click)="mostrarModalEliminar(producto.producto_id)"
                       title="Eliminar producto"
                     >
                       <svg
@@ -148,7 +153,7 @@ import { carrito } from '../interfaces/carrito.interface';
             <ul class="space-y-3 text-gray-700">
               <li class="flex justify-between">
                 <span>
-                  Subtotal ({{ carrito.productos.length }}
+                  Subtotal ({{ serviceCarrito.carrito.productos.length }}
                   productos)
                 </span>
                 <span class="font-medium">
@@ -166,7 +171,7 @@ import { carrito } from '../interfaces/carrito.interface';
               >
                 <span>Total a pagar:</span>
                 <span class="text-[#9810fa]">
-                  {{ carrito.total | currency }}
+                  {{ serviceCarrito.carrito.total | currency }}
                 </span>
               </li>
             </ul>
@@ -181,6 +186,13 @@ import { carrito } from '../interfaces/carrito.interface';
           </div>
         </aside>
       </div>
+      <app-modal
+        tipo="decidir"
+        [titulo]="'Eliminar producto'"
+        [mensaje]="'¿Está seguro/a de eliminar este producto del carrito?'"
+        [(mostrarModal)]="mostrarModal"
+        (decision)="desicionModal($event)"
+      ></app-modal>
     </main>
   `,
 })
@@ -188,13 +200,18 @@ export class ShoppingCardPage {
   public serviceCarrito = inject(CarritoService);
   public cantidad = signal(1);
   public cantidadProducto = signal(0);
+  public mostrarModal = signal(false);
+  public desicionProducto = signal(false);
+
+  public idEliminar = signal('');
+
   public carrito: carrito = {
     _id: '',
     cliente_id: '',
     estado: '',
     productos: [],
     total: 0,
-  }
+  };
   public carga = signal(false);
 
   constructor() {
@@ -203,6 +220,7 @@ export class ShoppingCardPage {
       .obtenerCarrito()
       .subscribe({
         next: ({ carrito }: any) => {
+          console.log('Carrito obtenido:', carrito);
           this.carrito = carrito;
           this.cantidadProducto.set(carrito.productos.length ?? 0);
         },
@@ -248,5 +266,21 @@ export class ShoppingCardPage {
     if (producto.cantidad > 1) {
       this.actualizarCantidadEnCarrito(producto, -1);
     }
+  }
+  desicionModal(decision: boolean) {
+    this.desicionProducto.set(decision);
+    this.mostrarModal.set(false);
+    if (decision ) {
+      this.serviceCarrito.eliminarCarrito(this.idEliminar()).subscribe({
+        next: () => {},
+        error: (error) => {
+          console.error('Error al eliminar producto:', error);
+        },
+      });
+    }
+  }
+  mostrarModalEliminar(producto_id: string) {
+    this.idEliminar.set(producto_id);
+    this.mostrarModal.set(true);
   }
 }

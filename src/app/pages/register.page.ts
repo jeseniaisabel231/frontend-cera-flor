@@ -9,28 +9,29 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { Footeer } from '../components/footer.component';
 import { Headers } from '../components/header.component';
 
 @Component({
-  imports: [Footeer, Headers, ReactiveFormsModule],
+  imports: [Footeer, Headers, ReactiveFormsModule, ModalAvisosComponent],
 
   template: `
     <headers></headers>
     <main class="flex flex-col text-[#3C3C3B] md:h-[81dvh]">
       <section class="flex h-full">
         <form
-          class="flex w-full flex-col items-center bg-[#eff9ff] pt-9 "
+          class="flex w-full flex-col items-center bg-[#eff9ff] pt-9"
           (ngSubmit)="onSubmit()"
           [formGroup]="formRegistro"
         >
           <h2 class="font-playfair mb-8 text-[25px] font-bold">
             Regístrate en Flor & Cera
           </h2>
-          <div class="container px-6 2xl:px-90 lg:px-40">
-            <div class="grid grid-cols-1 grid-rows-3 gap-x-4 sm:grid-cols-2">
-              <div class="relative flex flex-col mb-4">
-                <span class="pl-2 font-medium mb-2">
+          <div class="container px-6 lg:px-40 2xl:px-90">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div class="relative flex flex-col">
+                <span class="mb-2 pl-2 font-medium">
                   Nombre
                   <span class="text-red-500">*</span>
                 </span>
@@ -80,8 +81,8 @@ import { Headers } from '../components/header.component';
                 }
               </div>
 
-              <div class="relative flex w-full flex-col ">
-                <span class="pl-2 font-medium mb-2">
+              <div class="relative flex w-full flex-col">
+                <span class="mb-2 pl-2 font-medium">
                   Apellido
                   <span class="text-red-500">*</span>
                 </span>
@@ -129,8 +130,8 @@ import { Headers } from '../components/header.component';
                 }
               </div>
 
-              <div class="relative  flex w-full flex-col ">
-                <span class="pl-2 font-medium mb-2">
+              <div class="relative flex w-full flex-col">
+                <span class="mb-2 pl-2 font-medium">
                   Correo electrónico
                   <span class="text-red-500">*</span>
                 </span>
@@ -180,8 +181,8 @@ import { Headers } from '../components/header.component';
                   </small>
                 }
               </div>
-              <div class=" mb-2 flex w-full flex-col">
-                <span class="pl-2 font-medium mb-2">
+              <div class="mb-2 flex w-full flex-col">
+                <span class="mb-2 pl-2 font-medium">
                   Género
                   <span class="text-red-500">*</span>
                 </span>
@@ -228,7 +229,7 @@ import { Headers } from '../components/header.component';
                 }
               </div>
 
-              <div class="relative  flex w-full flex-col gap-2">
+              <div class="relative flex w-full flex-col gap-2">
                 <span class="pl-2 font-medium">
                   Contraseña
                   <span class="text-red-500">*</span>
@@ -376,17 +377,17 @@ import { Headers } from '../components/header.component';
               </div>
 
               @if (formRegistro.hasError('mismatch')) {
-                <small class="text-red-500">Las contraseñas no coinciden</small>
+                <small class="text-red-600 text-center col-span-2">Las contraseñas no coinciden</small>
               }
               @if (validacion()) {
-                <small class="mt-2 block text-red-500">
+                <small class="mt-2 block text-red-600">
                   {{ validacion() }}
                 </small>
               }
             </div>
           </div>
           <button
-            class="relative mt-4 inline-flex h-12  overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none w-[300px] md:w-1/3"
+            class="relative mt-4 inline-flex h-12 w-[300px] overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none md:w-1/3"
           >
             <span
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
@@ -425,6 +426,12 @@ import { Headers } from '../components/header.component';
           </p>
         </form>
         <!-- Modal -->
+        <app-modal
+          [(mostrarModal)]="mostrarModal"
+          [mensaje]="modalMessage()"
+          [tipo]="'exito'"
+          titulo="¡Registro exitoso! "
+        ></app-modal>
       </section>
     </main>
     <footeer></footeer>
@@ -441,7 +448,7 @@ export class RegisterPage {
   public validacion = signal<string>('');
 
   // Señales para el modal
-  public showModal = signal<boolean>(false);
+  public mostrarModal = signal<boolean>(false);
   public modalMessage = signal('');
 
   //variable para los errores de los campos
@@ -516,19 +523,19 @@ export class RegisterPage {
         )
         .subscribe({
           next: (response: any) => {
-            //this.serviceRouter.navigate(['/inicio']); //me redireccion a la pantalla de materias, si la peticion fue exitosa
             this.carga.set(false);
-            this.modalMessage.set(response.msg); //mensaje de respuesta del backend
+            this.modalMessage.set(response.msg);
+            this.mostrarModal.set(true);
+            this.formRegistro.reset(); //resetea el formulario
 
-            //this.showModal.set(true);
           },
           error: ({ error }: { error: any }) => {
             const { details = [] } = error;
             details.forEach((detail: any) => {
               const { path, msg } = detail;
-              this.errores.update((prev) => ({ ...prev, [path]: msg })); //setea los errores
+              this.errores.update((prev) => ({ ...prev, [path]: msg }));
             });
-            this.validacion.set(error.msg); //error.response y este contiene el mensaje
+            this.validacion.set(error.msg);
             this.carga.set(false);
           },
         });

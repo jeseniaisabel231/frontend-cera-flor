@@ -30,7 +30,7 @@ export class CarritoService {
       error: (error) => {
         console.error('Error al obtener el carrito:', error);
       },
-    })
+    });
   }
 
   get obtenerCantidadProductos() {
@@ -40,13 +40,11 @@ export class CarritoService {
   obtenerCarrito() {
     if (!this.serviceAuth.estadoAutenticacion) {
       const carritoLocalString = localStorage.getItem('carrito');
-
       if (carritoLocalString) {
         const carritoLocal = JSON.parse(carritoLocalString) as carrito;
         this.carrito = carritoLocal;
         this.cantidadProductos = carritoLocal.productos.length ?? 0;
       }
-
       return of({
         carrito: this.carrito,
         msg: 'Carrito obtenido del almacenamiento local',
@@ -64,13 +62,17 @@ export class CarritoService {
         tap(({ carrito }) => {
           this.carrito = carrito;
           this.cantidadProductos = carrito?.productos?.length ?? 0; // Actualiza la cantidad de productos
+          localStorage.setItem(
+            'cantidadProductos',
+            this.cantidadProductos.toString(),
+          );
         }),
       );
   }
   agregarCarrito(producto: any, cantidad: number = 1) {
     if (!this.serviceAuth.estadoAutenticacion) {
       const productoExistente = this.carrito.productos.find(
-        (item: any) => item.producto_id?._id === producto._id,
+        (item: any) => item.producto_id === producto._id,
       );
 
       if (productoExistente) {
@@ -78,8 +80,9 @@ export class CarritoService {
         productoExistente.cantidad += cantidad;
       } else {
         this.carrito.productos.push({
-          producto_id: producto,
+          producto: producto,
           cantidad,
+          precio_unitario: producto.precio,
         } as carritoProducto); // TODO: Revisar el funcionamiento luego
         this.cantidadProductos += 1; // Incrementa la cantidad de productos en el carrito
       }
@@ -110,6 +113,10 @@ export class CarritoService {
         tap(({ carrito }) => {
           this.carrito = carrito; // Actualiza el carrito con la respuesta del backend
           this.cantidadProductos = carrito?.productos?.length ?? 0; // Actualiza la cantidad de productos
+          localStorage.setItem(
+            'cantidadProductos',
+            this.cantidadProductos.toString(),
+          );
         }),
       );
   }
@@ -148,20 +155,24 @@ export class CarritoService {
             total: 0,
           }; // Resetea el carrito
           this.cantidadProductos = 0; // Resetea la cantidad de productos en el carrito
+          localStorage.setItem(
+            'cantidadProductos',
+            this.cantidadProductos.toString(),
+          );
         }),
       );
   }
-  eliminarCarrito(producto_id: string) {
+  eliminarCarrito(producto_id: string, tipo_producto: string = 'normal') {
     if (!this.serviceAuth.estadoAutenticacion) {
       const productoIndice = this.carrito.productos.findIndex(
-        (producto: any) => producto.producto_id._id === producto_id,
+        (producto: any) => producto.producto_id === producto_id,
       );
       const productoEliminado = this.carrito.productos[productoIndice];
 
       this.carrito.productos.splice(productoIndice, 1); // Elimina el producto del carrito
 
       this.carrito.total -=
-        productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
+        productoEliminado.precio_unitario * productoEliminado.cantidad; // Actualiza el total del carrito
 
       localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Actualiza el carrito en el almacenamiento local
 
@@ -174,7 +185,7 @@ export class CarritoService {
     return this.http
       .put<any>(
         `${this.urlBackend}/api/carritos/eliminar`,
-        { producto_id },
+        { producto_id, tipo_producto },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -186,14 +197,18 @@ export class CarritoService {
         tap((respuesta) => {
           this.cantidadProductos -= 1; // Decrementa la cantidad de productos en el carrito
           const productoIndice = this.carrito.productos.findIndex(
-            (producto: any) => producto.producto_id._id === producto_id,
+            (producto: any) => producto.producto_id === producto_id,
           );
           if (productoIndice !== -1) {
             const productoEliminado = this.carrito.productos[productoIndice];
             this.carrito.total -=
-              productoEliminado.producto_id.precio * productoEliminado.cantidad; // Actualiza el total del carrito
+              productoEliminado.precio_unitario * productoEliminado.cantidad; // Actualiza el total del carrito
             this.carrito.productos.splice(productoIndice, 1); // Elimina el producto del carrito
           }
+          localStorage.setItem(
+            'cantidadProductos',
+            this.cantidadProductos.toString(),
+          );
         }),
       );
   }
@@ -201,14 +216,14 @@ export class CarritoService {
   modificarCantidadCarrito(producto_id: string, cantidad: number) {
     if (!this.serviceAuth.estadoAutenticacion) {
       const productoIndice = this.carrito.productos.findIndex(
-        (producto: any) => producto.producto_id._id === producto_id,
+        (producto: any) => producto.producto_id === producto_id,
       );
 
       if (productoIndice !== -1) {
         const productoExistente = this.carrito.productos[productoIndice];
 
         this.carrito.productos[productoIndice].cantidad += cantidad;
-        this.carrito.total += productoExistente.producto_id.precio * cantidad; // Actualiza el total del carrito
+        this.carrito.total += productoExistente.precio_unitario * cantidad; // Actualiza el total del carrito
       }
 
       localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Actualiza el carrito en el almacenamiento local
@@ -232,14 +247,13 @@ export class CarritoService {
       .pipe(
         tap(() => {
           const indiceProducto = this.carrito.productos.findIndex(
-            (producto: any) => producto.producto_id._id === producto_id,
+            (producto: any) => producto.producto_id === producto_id,
           );
           if (indiceProducto !== -1) {
             const productoExistente = this.carrito.productos[indiceProducto];
 
             this.carrito.productos[indiceProducto].cantidad += cantidad;
-            this.carrito.total +=
-              productoExistente.producto_id.precio * cantidad; // Actualiza el total del carrito
+            this.carrito.total += productoExistente.precio_unitario * cantidad; // Actualiza el total del carrito
           }
         }),
       );

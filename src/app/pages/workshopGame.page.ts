@@ -11,11 +11,11 @@ import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import * as htmlToImage from 'html-to-image';
 import { IngredientesService } from '../../services/admin/ingredients.service';
+import { InteligenciaArtificialService } from '../../services/inteligenciaArtificial.service';
 import { PersonalizationService } from '../../services/personalization.service';
 import { RecolorImageComponent } from '../components/coloredIcon.component';
 import { Headers } from '../components/header.component';
 import { ModalJuegoComponent } from '../components/modalJuego.component';
-import { InteligenciaArtificialService } from '../../services/inteligenciaArtificial.service';
 
 @Component({
   template: `
@@ -28,16 +28,55 @@ import { InteligenciaArtificialService } from '../../services/inteligenciaArtifi
           class="group absolute top-0 left-4 z-10"
           routerLink="/personalizacion-producto"
         >
-          <div
-            class="relative transition-all duration-300 hover:scale-110 active:scale-95"
+          <button
+            class="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
           >
-            <img
-              src="botonRegreso.png"
-              alt="Volver atrás"
-              class="h-16 w-16 drop-shadow-md transition-all duration-300 group-hover:drop-shadow-lg"
-              title="Volver atrás"
-            />
-          </div>
+            <span class="relative z-10 flex items-center gap-2">
+              <svg
+                class="h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                ></path>
+              </svg>
+              Volver
+            </span>
+            <span
+              class="absolute inset-0 z-0 h-full w-full bg-gradient-to-r from-pink-500 to-purple-700 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            ></span>
+          </button>
+        </a>
+        <a class="group absolute top-0 right-10 z-10">
+          <button
+            (click)="mostrarInstrucciones()"
+            class="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-400 to-teal-600 px-6 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
+          >
+            <span class="relative z-10 flex items-center gap-2">
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                ></path>
+              </svg>
+              Ayuda Rápida
+            </span>
+            <span
+              class="absolute inset-0 z-0 h-full w-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.8),transparent)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            ></span>
+          </button>
         </a>
 
         <div
@@ -109,6 +148,12 @@ import { InteligenciaArtificialService } from '../../services/inteligenciaArtifi
               [text]="instruccionesJuego"
             />
           }
+          @if (mostrarAyuda()) {
+            <app-confirmation-dialog
+              (confirm)="mostrarAyuda.set(false)"
+              [text]="instruccionesJuego"
+            />
+          }
 
           <div class="bg-opacity-70 relative col-span-3 row-span-3">
             <p
@@ -126,10 +171,10 @@ import { InteligenciaArtificialService } from '../../services/inteligenciaArtifi
             >
               Coloca aqui tus esencias
             </p>
-            <div class="mx-auto h-40 flex justify-center">
+            <div class="mx-auto flex h-40 justify-center">
               <section
                 id="mesa-trabajo"
-                class="grid grid-cols-4 grid-rows-3 border-gray-300 w-100"
+                class="grid w-100 grid-cols-4 grid-rows-3 border-gray-300"
               >
                 <div
                   class="relative col-span-3 row-span-3"
@@ -187,9 +232,9 @@ import { InteligenciaArtificialService } from '../../services/inteligenciaArtifi
               </section>
             </div>
             <div class="mt-10 flex justify-center gap-4">
-              <button class="bg-red-200" (click)="capturarSeccion()">
+              <!-- <button class="bg-red-200" (click)="capturarSeccion()">
                 Descargar Imagen
-              </button>
+              </button> -->
 
               <button
                 (click)="OnsubmitProductoPersonalizado()"
@@ -313,8 +358,28 @@ export class WorkshopGamePage {
   public mostrarDialogoConfirmacion = signal(false);
   public servicePersonalizacion = inject(PersonalizationService);
   public categoria = input.required();
-  public instruccionesJuego =
-    '1. Colocar el molde en el sitio de trabajo\n\n2. Despues no se olvide de colocar el color de su gusto\n\n3. Coloca el aroma de tu preferencia\n\n4. Debes colocar dos esencias';
+  public mostrarAyuda = signal(false);
+  public instruccionesJuego = `
+  
+  <ol class="list-decimal list-inside space-y-2 text-left">
+    <li class="font-semibold text-gray-800">
+      <span class="text-purple-600">Selecciona un molde:</span> Arrástralo al área de trabajo central
+    </li>
+    <li class="font-semibold text-gray-800">
+      <span class="text-blue-600">Elige un color:</span> Arrastra tu color favorito sobre el molde
+    </li>
+    <li class="font-semibold text-gray-800">
+      <span class="text-amber-600">Añade un aroma:</span> Colócalo en el círculo amarillo
+    </li>
+    <li class="font-semibold text-gray-800">
+      <span class="text-blue-400">Selecciona esencias:</span> Puedes añadir hasta 2 en el área azul
+    </li>
+    <li class="font-semibold text-gray-800">
+      <span class="text-teal-600">Finaliza tu creación:</span> Guarda tu diseño o pide recomendaciones de la IA
+    </li>
+  </ol>
+  
+`;
   public mensajeProductoPersonalizado = signal('');
   public imagenPersonalizada = signal('');
   public serviceInteligencia = inject(InteligenciaArtificialService);
@@ -352,12 +417,14 @@ export class WorkshopGamePage {
   };
 
   // Método para obtener recomendaciones de IA
-  obtenerRecomendacionesIA(){
+  obtenerRecomendacionesIA() {
     this.serviceInteligencia
       .obtenerRecomendacion('decorativa', this.categoria() as string)
       .subscribe({
         next: (respuesta: any) => {
-          const { recomendacion: { producto_personalizado } } = respuesta;
+          const {
+            recomendacion: { producto_personalizado },
+          } = respuesta;
 
           console.log('Recomendaciones de IA:', producto_personalizado);
 
@@ -543,5 +610,8 @@ export class WorkshopGamePage {
 
       this.imagenPersonalizada.set(captura);
     }
+  }
+  mostrarInstrucciones() {
+    this.mostrarAyuda.set(true);
   }
 }

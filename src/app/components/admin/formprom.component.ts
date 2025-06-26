@@ -99,7 +99,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <input
               type="text"
               id="titulo"
-              class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none placeholder-gris-200"
+              class="focus:ring-morado-400 placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
               placeholder="Ej: 20% de descuento en jabones"
               formControlName="nombre"
             />
@@ -126,7 +126,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         </div>
       </form>
       <app-modal
-        [mostrarModal]="mostrarModalExito()"
+        [(mostrarModal)]="mostrarModalExito"
         [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
         [mensaje]="respuestaBack()"
         [tipo]="tipoRespuesta()"
@@ -168,18 +168,25 @@ export class FormProm {
 
   public close() {
     this.mostrarModal.set(false);
-    this.alerta()?.nativeElement.close();
   }
   constructor() {
+    effect(() => {
+      if (!this.mostrarModalExito() && this.tipoRespuesta() === 'exito') {
+        this.mostrarModal.set(false);
+      }
+    });
+
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();
       } else {
         this.modal()?.nativeElement.close();
       }
+    });
 
+    effect(() => {
       // Aquí manejamos la carga de datos cuando es para visualizar/editar
-      if (this.mostrarDatos() && this.acciones() !== 'Registrar') {
+      if (this.acciones() !== 'Registrar') {
         const datos = this.mostrarDatos();
         this.formulario.patchValue({
           nombre: datos.nombre,
@@ -199,16 +206,9 @@ export class FormProm {
           this.formulario.enable();
         }
       } else if (this.acciones() === 'Registrar') {
-        if (this.mostrarDatos()) {
-          this.formulario.setValue({
-            nombre: '',
-            imagen: null,
-            createdAt: '',
-          });
-        }
-        this.formulario.reset();
+        console.log('Registrar nueva promoción');
+        this.resetearFormulario();
         this.formulario.enable();
-        this.imagePreview = null; // Reiniciar la vista previa de la imagen
       }
     });
   }
@@ -231,8 +231,10 @@ export class FormProm {
         .registrar(formData) //envia el formulario al backend
         .subscribe({
           next: () => {
-            this.alerta()?.nativeElement.showModal(); //muestra el modal de alerta
-            this.formulario?.reset(); //borra los datos almacenad en registrar formulario
+            this.mostrarModalExito.set(true); //muestra el modal de exito
+            this.tipoRespuesta.set('exito'); //setea el tipo de respuesta
+            this.respuestaBack.set('Promoción registrada correctamente'); //mensaje de exito
+            this.resetearFormulario(); //resetea el formulario
           },
           //funcion para manejar errores
           //si el backend devuelve un error, se setea en el objeto errores
@@ -254,7 +256,7 @@ export class FormProm {
             this.mostrarModalExito.set(true); //muestra el modal de exito
             this.tipoRespuesta.set('exito'); //setea el tipo de respuesta
             this.respuestaBack.set(registroActualizado.msg);
-            this.formulario?.reset();
+            this.resetearFormulario(); //resetea el formulario
           },
           error: ({ error }: { error: any }) => {
             this.tipoRespuesta.set('error');
@@ -277,6 +279,14 @@ export class FormProm {
         imagen: file,
       });
     }
+  }
+  public resetearFormulario() {
+    this.formulario.setValue({
+      nombre: '',
+      imagen: null,
+      createdAt: '',
+    });
+    this.imagePreview = null;
   }
   cerraTodo() {
     this.mostrarModalExito.set(false);

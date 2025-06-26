@@ -8,9 +8,10 @@ export interface carrito {
   total: number;
 }
 export interface carritoProducto {
-  producto_id: producto;
+  producto: producto;
   cantidad: number;
   precio_unitario: number;
   subtotal: number;
   disponible: number;
+  producto_id: string;
 }

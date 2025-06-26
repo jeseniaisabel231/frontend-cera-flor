@@ -1,4 +1,4 @@
-import { httpResource } from '@angular/common/http';
+import { TitleCasePipe } from '@angular/common';
 import {
   Component,
   effect,
@@ -6,7 +6,6 @@ import {
   inject,
   input,
   model,
-  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -16,14 +15,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { environment } from '../../../environments/environment';
 import { IngredientesService } from '../../../services/admin/ingredients.service';
+import { CategoryService } from '../../../services/categorias.service';
 import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
 
 @Component({
   selector: 'formulario',
-  imports: [ReactiveFormsModule, ModalAvisosComponent],
+  imports: [ReactiveFormsModule, ModalAvisosComponent, TitleCasePipe],
   template: `
     <dialog
       #modal
@@ -246,27 +245,30 @@ import { ModalAvisosComponent } from './modalavisos.component';
           </label>
           @let categoriaInvalido =
             (formulario.get('id_categoria')?.invalid &&
-              formulario.get('id_categoria')?.value) ||
+              categoriaSeleccionada()) ||
             errores().id_categoria;
 
           <select
             class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
             formControlName="id_categoria"
+            (change)="
+              categoriaSeleccionada.set(
+                formulario.get('id_categoria')?.value ?? ''
+              )
+            "
             [class]="
               categoriaInvalido
                 ? 'border-red-500 focus:ring-0 focus:outline-none'
                 : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
             "
-            [value]="formulario.value.id_categoria"
           >
             <option selected value="" disabled hidden>
               Selecciona una categoría
             </option>
-            @for (
-              categoria of categoriasResource.value().categorias;
-              track categoria
-            ) {
-              <option [value]="categoria._id">{{ categoria.nombre }}</option>
+            @for (categoria of categorias(); track categoria) {
+              <option [value]="categoria._id">
+                {{ categoria.nombre }}
+              </option>
             }
           </select>
         </div>
@@ -298,7 +300,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         </div>
 
         <!-- Ingredientes -->
-        @if (formulario.get('id_categoria')?.value !== '') {
+        @if (categoriaSeleccionada()) {
           <div class="mt-6 md:col-span-2">
             <p class="mb-3 text-lg font-medium">
               Características del producto
@@ -380,7 +382,6 @@ import { ModalAvisosComponent } from './modalavisos.component';
                         ? 'border-red-500 focus:ring-0 focus:outline-none'
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
-                    [value]="formulario.value.tipo"
                   >
                     <option
                       class="text-gris-200"
@@ -391,20 +392,16 @@ import { ModalAvisosComponent } from './modalavisos.component';
                     >
                       Selecciona un tipo
                     </option>
-                    @if (
-                      formulario.value.id_categoria ===
-                      '6823a6c096655bcbe4971062'
-                    ) {
-                      <option value="decorativa">Decorativa</option>
-                      <option value="aromatizante">Aromatizante</option>
-                      <option value="humidifacación">Humidifacación</option>
-                    } @else if (
-                      formulario.value.id_categoria ===
-                      '680fd248f613dc80267ba5d7'
-                    ) {
-                      <option value="piel seca">Piel seca</option>
-                      <option value="piel grasa">Piel grasa</option>
-                      <option value="piel mixta">Piel mixta</option>
+
+                    @let tipos =
+                      categoriaYTipos()[categoriaSeleccionada()] || [];
+
+                    @for (tipo of tipos; track tipo) {
+                      <option [value]="tipo">{{ tipo | titlecase }}</option>
+                    } @empty {
+                      <option value="" disabled>
+                        No hay tipos disponibles para esta categoría
+                      </option>
                     }
                   </select>
                   <small class="font-medium text-red-700"></small>
@@ -458,7 +455,10 @@ export class FormProducto {
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public respuestaBack = signal('');
   public ingredientesServicio = inject(IngredientesService);
-  //crear una variable para almacenar todos los ingredientes
+  public categoriasServicio = inject(CategoryService);
+  public categorias = signal<any[]>([]); //se inicializa como un arreglo vacio
+  public categoriaSeleccionada = signal<string>('');
+
   public ingredientes = signal<any[]>([]);
   public ingredientesSeleccionados = signal<string[]>([]);
   public mostrarModalExito = signal(false);
@@ -468,18 +468,11 @@ export class FormProducto {
   public servicioProductos = input<any>();
   public acciones = input.required<Actions>();
   //variable para emitir el cambio
-  public cambioEmitir = output<any>();
   public idRegistro = input<string>();
+  public categoriaYTipos = signal<Record<string, string[]>>({});
 
   //variable para almacenar los valores que mostrar en formulario en product.page
   public mostrarDatos = input<any>();
-
-  public categoriasResource = httpResource<any>(
-    () => environment.urlApi + '/api/categorias',
-    {
-      defaultValue: { categorias: [] },
-    },
-  );
 
   //almacena los datos del formulario, para enviar al body del backend
   public formulario = new FormGroup({
@@ -500,7 +493,7 @@ export class FormProducto {
     // Expresión regular para permitir letras, números y caracteres especiales
     precio: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\d{1,2}(\.\d{1,2})?$/)
+      Validators.pattern(/^\d{1,2}(\.\d{1,2})?$/),
     ]),
     stock: new FormControl(57, Validators.required),
     id_categoria: new FormControl('', Validators.required),
@@ -520,6 +513,7 @@ export class FormProducto {
     aroma: '',
     tipo: '',
   });
+
   //metodo para borrar errores del cuando se escribe un nuevo valor
   borrarError(campo: string) {
     this.errores.update((prev) => ({ ...prev, [campo]: '' })); //setea los errores
@@ -548,17 +542,52 @@ export class FormProducto {
   }
   constructor() {
     //llama al servicio de ingredientes
-    this.ingredientesServicio.obtener().subscribe({
-      next: (ingredientes: any) => {
-        this.ingredientes.set(
-          ingredientes.ingredientes.filter(
-            (ingrediente: any) => ingrediente.tipo === 'esencia',
-          ),
+    this.ingredientesServicio.obtener().subscribe(({ ingredientes }: any) => {
+      const esencias = ingredientes.filter(
+        (ingrediente: any) => ingrediente.tipo === 'esencia',
+      );
+
+      this.ingredientes.set(esencias);
+    });
+    this.categoriasServicio.obtener().subscribe({
+      next: ({ categorias }: any) => {
+        this.categorias.set(categorias); //almacena las categorias en la variable categorias
+        const categoriasYTipos: Record<string, string[]> = {};
+
+        categorias.forEach((categoria: any) => {
+          const nombre = categoria.nombre.toLowerCase();
+
+          if (nombre === 'jabones artesanales') {
+            categoriasYTipos[categoria._id] = [
+              'piel seca',
+              'piel grasa',
+              'piel mixta',
+            ];
+          } else if (nombre === 'velas artesanales') {
+            categoriasYTipos[categoria._id] = [
+              'decorativa',
+              'aromatizante',
+              'humidificación',
+            ];
+          }
+        });
+
+        this.categoriaYTipos.set(categoriasYTipos);
+      },
+    });
+
+    effect(() => {
+      if (this.categoriaSeleccionada()) {
+        const tipos = this.categoriaYTipos()[this.categoriaSeleccionada()];
+
+        const tipoPertenecienteACategoria = tipos.includes(
+          this.formulario.value.tipo ?? '',
         );
-      },
-      error: (error: any) => {
-        console.error('Error al obtener los ingredientes:', error);
-      },
+
+        if (!tipoPertenecienteACategoria) {
+          this.formulario.patchValue({ tipo: '' });
+        }
+      }
     });
 
     effect(() => {
@@ -574,6 +603,8 @@ export class FormProducto {
         this.modal()?.nativeElement.close();
       }
     });
+
+    // Los efectos se ejecutan cuando cambian las señales, cuando no hay cambios, no se ejecutan
     effect(() => {
       if (this.acciones() !== 'Registrar') {
         const datos = this.mostrarDatos();
@@ -600,26 +631,19 @@ export class FormProducto {
         this.ingredientesSeleccionados.set(
           datos.ingredientes.map((item: any) => item?._id ?? item), //almacena los ingredientes seleccionados
         );
+
+        this.categoriaSeleccionada.set(
+          datos.id_categoria?._id ?? datos.id_categoria,
+        ); //almacena la categoria seleccionada
+
         if (this.acciones() === 'Visualizar') {
           this.formulario.disable();
         } else {
           this.formulario.enable();
         }
       } else if (this.acciones() === 'Registrar') {
-        this.formulario.setValue({
-          nombre: '',
-          descripcion: '',
-          beneficios: '',
-          precio: '',
-          stock: 1,
-          imagen: null,
-          id_categoria: '',
-          ingredientes: [''],
-          aroma: '',
-          tipo: '',
-        });
+        this.resetearFormulario();
         this.formulario.enable();
-        this.imagePreview = null;
       }
     });
   }
@@ -628,6 +652,21 @@ export class FormProducto {
     if (this.tipoRespuesta() === 'exito') {
       this.close(); // Solo cerramos el formulario si fue éxito
     }
+  }
+  public resetearFormulario() {
+    this.formulario.setValue({
+      nombre: '',
+      descripcion: '',
+      beneficios: '',
+      precio: '',
+      stock: 1,
+      imagen: null,
+      id_categoria: '',
+      ingredientes: [''],
+      aroma: '',
+      tipo: '',
+    });
+    this.imagePreview = null;
   }
 
   //funcion que verifica que haciion hace el boton
@@ -643,7 +682,7 @@ export class FormProducto {
             this.tipoRespuesta.set('exito');
             this.mostrarModalExito.set(true);
             this.respuestaBack.set(msg);
-            this.formulario?.reset();
+            this.resetearFormulario(); //resetea el formulario
           },
           //funcion para manejar errores
           //si el backend devuelve un error, se setea en el objeto errores
@@ -659,19 +698,18 @@ export class FormProducto {
       this.servicioProductos()
         .editar(this.idRegistro(), formData)
         .subscribe({
-          next: (registroActualizado: any) => {
-            this.cambioEmitir.emit(registroActualizado);
-            this.mostrarModalExito.set(true);
+          next: ({ msg }: any) => {
             this.tipoRespuesta.set('exito');
-            this.respuestaBack.set(registroActualizado.msg);
-            this.formulario?.reset();
+            this.respuestaBack.set(msg);
+            this.resetearFormulario(); //resetea el formulario
           },
-          error: ({ error }: { error: any }) => {
-            console.error('Error al actualizar el registro:', error);
+          error: ({ error: { msg } }: any) => {
             this.tipoRespuesta.set('error');
-            this.mostrarModalExito.set(true);
-            this.respuestaBack.set(error.msg);
+            this.respuestaBack.set(msg);
           },
+        })
+        .add(() => {
+          this.mostrarModalExito.set(true);
         });
     }
   }

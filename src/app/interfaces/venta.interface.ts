@@ -1,4 +1,7 @@
+import { usuario } from "./usuario.interface";
+
 export interface venta{
+    cliente_id: usuario,
     _id: string,
     id_usuario: string,
     estado: string,

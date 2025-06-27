@@ -105,6 +105,10 @@ export class AuthService {
       );
   }
 
+  confirmarEmail(tokenConfirmar:string): Observable<any> {
+    return this.http.get<any>(`${this.urlBackend}/api/confirmarCliente/${tokenConfirmar}`);
+  }
+
   get estadoAutenticacion(): boolean {
     const token = localStorage.getItem('token');
     if (!token) return false;

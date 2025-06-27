@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -10,7 +10,7 @@ import { Presentation } from '../../components/admin/presentation.component';
 import { TablaComponent } from '../../components/admin/tabla.component';
 import { Loading } from '../../components/loading.component';
 import { Navegacion } from '../../components/navegacion.component';
-import { usuario } from '../../interfaces/usuario.interface';
+import { ColumnasUsuario } from '../../interfaces/usuario.interface';
 
 @Component({
   imports: [Navegacion, Presentation, TablaComponent, Loading, FormsModule],
@@ -28,7 +28,7 @@ import { usuario } from '../../interfaces/usuario.interface';
           class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
         >
           <div
-            class="flex w-full rounded-[15px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
+            class="flex w-full rounded-[15px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-90 sm:flex-row sm:items-center"
           >
             <svg
               class="text-[#3B3D3E]"
@@ -44,10 +44,10 @@ import { usuario } from '../../interfaces/usuario.interface';
               />
             </svg>
             <input
-              [(ngModel)]="busqueda"
-              class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
+              [(ngModel)]="serviceUsuarios.busqueda"
+              class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] placeholder-gray-400 outline-none"
               type="search"
-              placeholder="Buscar usuario"
+              placeholder="Buscar usuarios por nombre, apellido o email..."
               id="search"
               name="search"
             />
@@ -69,72 +69,92 @@ import { usuario } from '../../interfaces/usuario.interface';
             <button
               class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
               [class]="
-                filtro() === ''
+                !serviceUsuarios.filtro().valor
                   ? 'bg-[#806bff] font-semibold text-white'
                   : 'text-gray-700'
               "
-              (click)="filtrarUsuarios('estado', '')"
+              (click)="
+                serviceUsuarios.filtro.set({ clave: 'nombre', valor: '' })
+              "
             >
-              <span class="mr-2">Todos</span>
+              <span>Todos</span>
             </button>
             <button
               class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
               [class]="
-                filtro() === 'activo'
+                serviceUsuarios.filtro().valor === 'activo'
                   ? 'bg-[#806bff] font-semibold text-white'
                   : 'text-gray-700'
               "
-              (click)="filtrarUsuarios('estado', 'activo')"
+              (click)="
+                serviceUsuarios.filtro.set({ clave: 'estado', valor: 'activo' })
+              "
             >
-              <span class="mr-2">Activo</span>
+              <span>Activo</span>
             </button>
             <button
               class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
               [class]="
-                filtro() === 'inactivo'
+                serviceUsuarios.filtro().valor === 'inactivo'
                   ? 'bg-[#806bff] font-semibold text-white'
                   : 'text-gray-700'
               "
-              (click)="filtrarUsuarios('estado', 'inactivo')"
+              (click)="
+                serviceUsuarios.filtro.set({
+                  clave: 'estado',
+                  valor: 'inactivo',
+                })
+              "
             >
-              <span class="mr-2">Inactivo</span>
+              <span>Inactivo</span>
             </button>
             <button
               class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
               [class]="
-                filtro() === 'femenino'
+                serviceUsuarios.filtro().valor === 'femenino'
                   ? 'bg-[#806bff] font-semibold text-white'
                   : 'text-gray-700'
               "
-              (click)="filtrarUsuarios('genero', 'femenino')"
+              (click)="
+                serviceUsuarios.filtro.set({
+                  clave: 'genero',
+                  valor: 'femenino',
+                })
+              "
             >
-              <span class="mr-2">Femenino</span>
+              <span>Femenino</span>
             </button>
             <button
               class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
               [class]="
-                filtro() === 'masculino'
+                serviceUsuarios.filtro().valor === 'masculino'
                   ? 'bg-[#806bff] font-semibold text-white'
                   : 'text-gray-700'
               "
-              (click)="filtrarUsuarios('genero', 'masculino')"
+              (click)="
+                serviceUsuarios.filtro.set({
+                  clave: 'genero',
+                  valor: 'masculino',
+                })
+              "
             >
-              <span class="mr-2">Masculino</span>
+              <span>Masculino</span>
             </button>
           </div>
 
           <div class="w-full overflow-auto">
-            @if (carga()) {
+            @if (serviceUsuarios.carga()) {
               <loading></loading>
-            } @else if (datosBuscados().length > 0) {
+            } @else if (serviceUsuarios.datosBuscados().length > 0) {
               <tabla
-                [datosTabla]="datosBuscados()"
+                [datosTabla]="serviceUsuarios.datosBuscados()"
                 [servicio]="serviceUsuarios"
+                [columnasTabla]="columnasTabla"
                 titulo="usuario"
                 acciones="Visualizar"
               ></tabla>
             } @else {
-              <div class="flex gap-2 justify-center  items-center mt-6">
+              <div class="mt-6 flex items-center justify-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="26"
@@ -152,7 +172,7 @@ import { usuario } from '../../interfaces/usuario.interface';
                     />
                   </g>
                 </svg>
-                <p class=" text-center">No se encontraron registros</p>
+                <p class="text-center">No se encontraron registros</p>
               </div>
             }
           </div>
@@ -162,64 +182,16 @@ import { usuario } from '../../interfaces/usuario.interface';
   `,
 })
 export class UsersPage {
-  //estado de carga
-  public usuarios: usuario[] = [];
-
-  public carga = signal<boolean>(true);
-
   public serviceUsuarios = inject(UsuariosService);
 
-  public busqueda = signal<string>('');
-  public filtro = signal<string>('');
-  public datosFiltrados = signal<usuario[]>([]);
-
-
-
-  //variable que almacena datos filtrados de barra de busqueda
-  public datosBuscados = linkedSignal<usuario[]>(() =>
-    this.datosFiltrados().filter((registro) =>
-      Object.values(registro).some((valor: any) =>
-        valor.toString().toLowerCase().includes(this.busqueda().toLowerCase()),
-      ),
-    ),
-  );
-
-  //variable que almacena lo que traera del backend
-
   public datosUsuarios = new FormGroup({
-    //id : number,
     nombre: new FormControl('', [Validators.required]),
     apellido: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
-  //consumo de endpoint de usuarios
-  constructor() {
-    this.serviceUsuarios
-      .obtener()
-      .subscribe({
-        next: (respuesta: any) => {
-          this.usuarios = respuesta.clientes;
-          this.datosFiltrados.set(this.usuarios);
-        },
-      })
-      .add(() => {
-        this.carga.set(false);
-      }); //cambia estado de carga;
-  }
-
-  //metodo para filtar usuario
-  public filtrarUsuarios(clave: keyof usuario, valor: string) {
-    this.filtro.set(valor);
-    if (valor) {
-      this.datosFiltrados.set(
-        this.usuarios.filter(
-          (usuario) =>
-            usuario[clave]?.toString().toLowerCase() === valor.toLowerCase(),
-        ),
-      );
-    } else {
-      this.datosFiltrados.set(this.usuarios);
-    }
-  }
+  public columnasTabla: ColumnasUsuario = {
+    claves: ['nombre', 'apellido', 'email', 'genero', 'estado'],
+    nombres: ['Nombre', 'Apellido', 'Correo Electrónico', 'Género', 'Estado'],
+  };
 }

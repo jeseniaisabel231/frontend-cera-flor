@@ -56,12 +56,12 @@ import { producto } from '../../interfaces/producto.interface';
                   />
                 </svg>
                 <input
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
+                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
                   type="search"
-                  placeholder="Buscar producto"
+                  placeholder="Buscar productos por nombre..."
                   id="search"
                   name="search"
-                  [(ngModel)]="busqueda"
+                  [(ngModel)]="productosService.busqueda"
                 />
               </div>
               <div class="mt-4 flex items-center gap-2">
@@ -83,11 +83,13 @@ import { producto } from '../../interfaces/producto.interface';
                 <button
                   class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                   [class]="
-                    filtro === ''
+                    !productosService.filtro().valor
                       ? 'bg-[#806bff] font-semibold text-white'
                       : 'text-gray-700'
                   "
-                  (click)="filtrarPorCategoria('')"
+                  (click)="
+                    productosService.filtro.set({ clave: 'nombre', valor: '' })
+                  "
                 >
                   <span>Todos</span>
                 </button>
@@ -96,15 +98,45 @@ import { producto } from '../../interfaces/producto.interface';
                   <button
                     class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                     [class]="
-                      filtro === categoria._id
+                      productosService.filtro().valor === categoria._id
                         ? 'bg-[#806bff] font-semibold text-white'
                         : 'text-gray-700'
                     "
-                    (click)="filtrarPorCategoria(categoria._id)"
+                    (click)="
+                      productosService.filtro.set({
+                        clave: 'id_categoria',
+                        valor: categoria._id,
+                      })
+                    "
                   >
                     <span>{{ categoria.nombre }}</span>
                   </button>
                 }
+
+                <select
+                  #selectTipos
+                  class="relative inline-flex items-center rounded-[15px] px-4 py-2 text-[14px] text-gray-700 outline-none hover:border-[#806bff]"
+                  [class]="
+                    productosService.filtro().clave === 'tipo' &&
+                    productosService.filtro().valor
+                      ? 'border-2 border-[#806bff] font-semibold'
+                      : 'border border-gray-300'
+                  "
+                  (change)="
+                    productosService.filtro.set({
+                      clave: 'tipo',
+                      valor: selectTipos.value,
+                    })
+                  "
+                >
+                  <option value="">Todos los tipos</option>
+                  <option value="piel seca">Piel seca</option>
+                  <option value="piel grasa">Piel grasa</option>
+                  <option value="piel mixta">Piel mixta</option>
+                  <option value="aromatizante">Aromatizante</option>
+                  <option value="decorativa">Decorativa</option>
+                  <option value="humidificacion">Humidifación</option>
+                </select>
               </div>
             </div>
             <button
@@ -136,13 +168,13 @@ import { producto } from '../../interfaces/producto.interface';
 
           <!--Lista de productos en cartas -->
 
-          @if (carga()) {
+          @if (productosService.carga()) {
             <loading></loading>
           } @else {
             <section
               class="grid h-[380px] grid-cols-1 gap-5 overflow-y-auto pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (item of datosBuscados(); track $index) {
+              @for (item of productosService.datosBuscados(); track $index) {
                 <div
                   class="mx-auto flex h-90 min-h-[400px] w-full max-w-[305px] flex-col rounded-xl border border-gray-300"
                 >
@@ -277,12 +309,7 @@ export class ProductsPage {
   // Variables y servicios necesarios para la página de productos
   public productosService = inject(ProductosService);
   public categoriaService = inject(CategoryService);
-  public carga = signal<boolean>(true); // Al iniciar la página, se establece en true para indicar que los datos están cargando
   public categorias = signal<categorias[]>([]);
-  public busqueda = signal<string>('');
-  public filtro: string = '';
-  public productos: producto[] = [];
-  public datosFiltrados: producto[] = [];
 
   // Variables para el modal del formulario
   public mostrarModal = signal<boolean>(false);
@@ -298,14 +325,6 @@ export class ProductsPage {
     this.categoriaService
       .obtener()
       .subscribe(({ categorias }) => this.categorias.set(categorias));
-
-    this.productosService
-      .obtener(1)
-      .subscribe(({ productos }: any) => {
-        this.productos = productos;
-        this.datosFiltrados = productos;
-      })
-      .add(() => this.carga.set(false));
   }
 
   // Funciones para las diferentes acciones que tiene el formulario
@@ -341,21 +360,7 @@ export class ProductsPage {
     }
   }
 
-  // Funciones para filtrar y buscar productos por categoría y nombre
-  public filtrarPorCategoria(categoria: string) {
-    this.filtro = categoria;
-    if (categoria) {
-      this.datosFiltrados = this.productos.filter((producto) => {
-        if (typeof producto.id_categoria === 'string') {
-          return producto.id_categoria === categoria; // Si id_categoria es un string, compara directamente
-        }
-        return producto.id_categoria._id === categoria; // Si id_categoria es un objeto, compara su _id
-      });
-    } else {
-      this.datosFiltrados = this.productos;
-    }
-  }
-
+  // Funcion para saber el nombre de la categoría
   public encontrarCategoria(categoria: any): string {
     if (categoria?._id) return categoria.nombre;
 
@@ -364,17 +369,5 @@ export class ProductsPage {
     );
 
     return categoriaEncontrada!.nombre;
-  }
-
-  public datosBuscados(): producto[] {
-    const busqueda = this.busqueda().toLowerCase().trim();
-
-    if (busqueda) {
-      return this.datosFiltrados.filter(({ nombre }) =>
-        nombre.toLowerCase().includes(busqueda),
-      );
-    }
-
-    return this.datosFiltrados;
   }
 }

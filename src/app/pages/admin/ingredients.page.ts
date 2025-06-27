@@ -59,12 +59,12 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                   />
                 </svg>
                 <input
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
+                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
                   type="search"
-                  placeholder="Buscar ingrediente"
+                  placeholder="Buscar ingredientes por nombre..."
                   id="search"
                   name="search"
-                  [(ngModel)]="busqueda"
+                  [(ngModel)]="servicioIngredientes.busqueda"
                 />
               </div>
               <button
@@ -105,55 +105,55 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro === ''
+                  !servicioIngredientes.filtro().valor
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="filtrarIngredientes('tipo', '')"
+                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: '' })"
               >
                 <span>Todos</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro === 'molde'
+                  servicioIngredientes.filtro().valor === 'molde'
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="filtrarIngredientes('tipo', 'molde')"
+                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'molde' })"
               >
                 <span>Moldes</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro === 'color'
+                  servicioIngredientes.filtro().valor === 'color'
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="filtrarIngredientes('tipo', 'color')"
+                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'color' })"
               >
                 <span>Colores</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro === 'esencia'
+                  servicioIngredientes.filtro().valor === 'esencia'
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="filtrarIngredientes('tipo', 'esencia')"
+                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'esencia' })"
               >
                 <span>Esencias</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro === 'aroma'
+                  servicioIngredientes.filtro().valor === 'aroma'
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="filtrarIngredientes('tipo', 'aroma')"
+                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'aroma' })"
               >
                 <span>Aromas</span>
               </button>
@@ -161,11 +161,11 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 <button
                   class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                   [class]="
-                    filtro === categoria._id
+                    servicioIngredientes.filtro().valor === categoria._id
                       ? 'bg-[#806bff] font-semibold text-white'
                       : 'text-gray-700'
                   "
-                  (click)="filtrarIngredientes('id_categoria', categoria._id)"
+                  (click)="servicioIngredientes.filtro.set({ clave: 'id_categoria', valor: categoria._id })"
                 >
                   <span>{{ categoria.nombre }}</span>
                 </button>
@@ -179,13 +179,13 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
             [idRegistro]="idRegistro()"
           ></form-ingredients>
 
-          @if (carga()) {
+          @if (servicioIngredientes.carga()) {
             <loading></loading>
           } @else {
             <section
               class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (item of datosBuscados(); track $index) {
+              @for (item of servicioIngredientes.datosBuscados(); track $index) {
                 <div
                   class="mx-auto flex h-90 min-h-[400px] w-full max-w-[300px] flex-col rounded-xl border border-gray-300"
                 >
@@ -320,12 +320,8 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
 })
 export class IngredientsPage {
   public idRegistro = signal<string>(''); //almacena el id del ingrediente a editar
-  public id_categoria = signal<string>(''); //almacena el id de la categoria del ingrediente
   public mostrarModal = signal<boolean>(false);
-  public carga = signal<boolean>(true); //variable para mostrar el loading
   public servicioIngredientes = inject(IngredientesService);
-  public busqueda = signal<string>('');
-  public numeroPagina = signal<number>(1); //almacena el numero de pagina
   public serviceCategorias = inject(CategoryService);
   public categorias: categorias[] = []; //almacena las categorias
   public categoriasObject: Record<string, string> = {}; //almacena las categorias como un objeto
@@ -333,11 +329,8 @@ export class IngredientsPage {
   public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
   public mostrarModalConfirmacion = signal<boolean>(false);
   public ingredienteEliminar = signal<string | null>(null);
-  public filtro = '';
 
-  //variable que almacena lo que traera del backend
-  public ingredientes: ingrediente[] = [];
-  public datosFiltrados: ingrediente[] = []; //almacena los datos filtrados de la barra de busqueda
+
   public datosIngredientes = new FormGroup({
     tipo: new FormControl('', [Validators.required]),
     nombre: new FormControl('', [Validators.required]),
@@ -379,19 +372,6 @@ export class IngredientsPage {
   }
 
   constructor() {
-    this.carga.set(true); // Cambia el estado de carga a true antes de obtener los ingredientes
-    this.servicioIngredientes
-      .obtener(1)
-      .subscribe({
-        next: (respuesta: any) => {
-          this.ingredientes = respuesta.ingredientes;
-          this.datosFiltrados = respuesta.ingredientes; // Actualiza los datos filtrados
-        },
-      })
-      .add(() => {
-        this.carga.set(false); // Cambia el estado de carga a false después de obtener los ingredientes
-      });
-
     this.serviceCategorias.obtener().subscribe({
       next: (respuesta: any) => {
         this.categorias = respuesta.categorias;
@@ -405,31 +385,5 @@ export class IngredientsPage {
 
   public getCategorias(id: any): string {
     return this.categoriasObject[id] || 'Ambas Categorías';
-  }
-  public filtrarIngredientes(clave: keyof ingrediente, valor: string) {
-    this.filtro = valor; // Actualiza el filtro
-    console.log('Filtrando por:', clave, valor);
-    if (valor) {
-      this.datosFiltrados = this.ingredientes.filter((ingrediente) => {
-        if (clave === 'id_categoria') {
-          return (ingrediente.id_categoria as string[]).includes(valor);
-        }
-        return ingrediente[clave] === valor;
-      });
-    } else {
-      this.datosFiltrados = this.ingredientes;
-    }
-  }
-
-  public datosBuscados() {
-    const busqueda = this.busqueda().toLowerCase().trim();
-
-    if (busqueda) {
-      return this.datosFiltrados.filter(({ nombre }) =>
-        nombre.toLowerCase().includes(busqueda),
-      );
-    }
-
-    return this.datosFiltrados; // Retorna todos los productos si no hay búsqueda
   }
 }

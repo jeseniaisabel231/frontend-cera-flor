@@ -51,20 +51,20 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
       <!-- Contenido del formulario -->
       <div class="p-6">
         <div class="mb-6 flex justify-center">
-        <!-- Contenedor de imagen si existe -->
-        @if (verDatos()['imagen']) {
+          <!-- Contenedor de imagen si existe -->
+          @if (verDatos()['imagen']) {
             <img
               class="h-40 w-40 rounded-full border-4 border-gray-100 object-cover shadow-sm"
               [src]="verDatos()['imagen']"
               alt="Imagen de perfil"
             />
-          } @else if(verDatos()['genero'] === 'Femenino') {
+          } @else if (verDatos()['genero'] === 'Femenino') {
             <img
               class="h-40 w-40 rounded-full border-4 border-gray-100 object-cover shadow-sm"
               src="perfilMujer.jpg"
               alt="Imagen de perfil"
             />
-          }@else {
+          } @else {
             <img
               class="h-40 w-40 rounded-full border-4 border-gray-100 object-cover shadow-sm"
               src="perfilHombre.jpg"
@@ -82,7 +82,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                   class="block text-sm font-medium text-gray-700"
                   [for]="clave"
                 >
-                  {{ clave | titlecase }}
+                  {{ inputs[titulo()]['nombres'][$index] }}
                 </label>
 
                 @if (clave.toString() === 'cliente_id') {
@@ -134,30 +134,49 @@ export class ModalComponent {
   public titulo = input.required<TituloForms>();
   public acciones = input.required<Actions>();
 
-  public inputs: Record<TituloForms, string[]> = {
-    //nombras van igual que los del backend
-    usuario: [
-      'nombre',
-      'apellido',
-      'imagen',
-      'email',
-      'genero',
-      'telefono',
-      'direccion',
-      'cedula',
-      'fecha_nacimiento',
-      'createdAt',
-      'updatedAt',
-    ],
+  public inputs: Record<TituloForms, Record<string, string[]>> = {
+    usuario: {
+      claves: [
+        'nombre',
+        'apellido',
+        'imagen',
+        'email',
+        'genero',
+        'telefono',
+        'direccion',
+        'cedula',
+        'fecha_nacimiento',
+        'createdAt',
+        'updatedAt',
+      ],
+      nombres: [
+        'Nombre',
+        'Apellido',
+        'Imagen',
+        'Correo Electrónico',
+        'Género',
+        'Teléfono',
+        'Dirección',
+        'Cédula',
+        'Fecha de Nacimiento',
+        'Fecha de Registro',
+        'Última Actualización',
+      ],
+    },
 
-    venta: ['cliente_id', 'productos', 'total', 'fecha_venta'],
+    venta: {
+      claves: ['cliente_id', 'productos', 'total', 'fecha_venta'],
+      nombres: [
+        'Cliente',
+        'Productos',
+        'Total',
+        'Fecha de Venta',
+      ],
+    },
   };
 
-  //variable que obtenga las claves de los 'inputs'
-  //ingresa al input y verifica el titulo y devuelve el array de inputs
-  public clavesCampos = computed(() => this.inputs[this.titulo()]);
+  public clavesCampos = computed(() => this.inputs[this.titulo()]['claves']);
 
-  //esta funcion se encarga de cerrar el modal
   public close() {
     this.mostrarModal.set(false);
   }

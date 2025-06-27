@@ -1,7 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
+import { ingrediente } from '../../app/interfaces/ingrediente.interface';
 import { environment } from '../../environments/environment';
+
+interface Filtro {
+  clave: keyof ingrediente;
+  valor: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +15,51 @@ import { environment } from '../../environments/environment';
 export class IngredientesService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  public ingredientes: any[] = [];
+  private ingredientes = signal<ingrediente[]>([]);
+  public carga = signal<boolean>(true);
+
+  public busqueda = signal<string>('');
+  public filtro = signal<Filtro>({
+    clave: 'nombre',
+    valor: '',
+  });
+
+  public datosFiltrados = computed(() => {
+    const ingredientes = this.ingredientes();
+    const { clave, valor } = this.filtro();
+
+    if (valor) {
+      return ingredientes.filter((ingrediente) => {
+        console.log(`Filtrando por ${clave}: ${valor}`);
+        console.log(ingrediente[clave]);
+        if (typeof ingrediente[clave] === 'string') {
+          return ingrediente[clave].toLowerCase() === valor;
+        } else if (clave === 'id_categoria' && Array.isArray(ingrediente[clave])) {
+          return ingrediente[clave].includes(valor);
+        }
+        return false;
+      });
+    }
+    return ingredientes;
+  });
+
+  public datosBuscados = computed(() => {
+    const ingredientes = this.datosFiltrados();
+    const busqueda = this.busqueda().toLowerCase().trim();
+
+    if (busqueda) {
+      return ingredientes.filter((ingrediente) =>
+        ingrediente.nombre.toLowerCase().includes(busqueda),
+      );
+    }
+    return ingredientes;
+  });
+
+  constructor() {
+    this.obtener()
+      .subscribe()
+      .add(() => this.carga.set(false));
+  }
 
   obtener(page: number = 1, limit: number = 100) {
     return this.http
@@ -20,9 +70,7 @@ export class IngredientesService {
         },
       )
       .pipe(
-        tap((respuesta: any) => {
-          this.ingredientes = respuesta.ingredientes;
-        }),
+        tap((respuesta: any) => this.ingredientes.set(respuesta.ingredientes)),
       );
   }
   registrar(datos: any) {
@@ -31,9 +79,12 @@ export class IngredientesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) => {
-          this.ingredientes.push(respuesta.ingrediente);
-        }),
+        tap((respuesta: any) =>
+          this.ingredientes.update((ingredientes) => [
+            ...ingredientes,
+            respuesta.ingrediente,
+          ]),
+        ),
       );
   }
   eliminar(id: string) {
@@ -42,15 +93,11 @@ export class IngredientesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap(() => {
-          const index = this.ingredientes.findIndex(
-            (ingrediente) => ingrediente._id === id,
-          );
-
-          if (index !== -1) {
-            this.ingredientes.splice(index, 1);
-          }
-        }),
+        tap(() =>
+          this.ingredientes.update((ingredientes) =>
+            ingredientes.filter((ingrediente) => ingrediente._id !== id),
+          ),
+        ),
       );
   }
   editar(id: string, datos: any) {
@@ -59,14 +106,13 @@ export class IngredientesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) => {
-          const index = this.ingredientes.findIndex(
-            (ingrediente) => ingrediente._id === id,
-          );
-          if (index !== -1) {
-            this.ingredientes[index] = respuesta.ingrediente;
-          }
-        }),
+        tap((respuesta: any) =>
+          this.ingredientes.update((ingredientes) =>
+            ingredientes.map((ingrediente) =>
+              ingrediente._id === id ? respuesta.ingrediente : ingrediente,
+            ),
+          ),
+        ),
       );
   }
 }

@@ -4,11 +4,15 @@ import {
   ElementRef,
   input,
   model,
-  output,
   signal,
   viewChild,
 } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
 
@@ -18,7 +22,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
   template: `
     <dialog
       #modal
-      class="backdrop:bg-gris-600/25 m-auto rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px]"
+      class="backdrop:bg-gris-600/25 m-auto w-3/4 rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px] md:w-1/3"
     >
       <div class="flex items-center justify-between px-7 pt-5">
         <h1 class="mb-6 text-lg font-medium text-[#3C3C3B]">
@@ -45,9 +49,16 @@ import { ModalAvisosComponent } from './modalavisos.component';
         (ngSubmit)="onSubmit()"
         [formGroup]="formulario"
       >
+        @let imagenInvalida =
+          (formulario.get('imagen')?.invalid &&
+            formulario.get('imagen')?.value) ||
+          errores().imagen;
         <div class="col-span-1 mb-4 h-full">
           <label for="foto" class="">
-            Imagen del producto
+            <span>
+              Imagen de la promoción
+              <strong>(tamaño máximo: 2MB)</strong>
+            </span>
 
             <div
               class="flex h-47 flex-col items-center justify-center rounded-xl border border-gray-300"
@@ -55,7 +66,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               @if (imagePreview !== null) {
                 <img
                   [src]="imagePreview"
-                  alt=""
+                  alt="imagen de la promoción"
                   class="h-full w-full rounded-xl object-cover"
                 />
               } @else {
@@ -86,10 +97,23 @@ import { ModalAvisosComponent } from './modalavisos.component';
               />
             </div>
           </label>
-          <small class="font-medium text-red-700">{{ errores().imagen }}</small>
+          @if (errores().imagen) {
+            <small class="text-red-600">
+              {{ errores().imagen }}
+            </small>
+          } @else if (imagenInvalida) {
+            <small class="text-red-600">
+              La imagen debe ser un archivo de imagen válido (JPG, PNG, GIF).
+            </small>
+          }
         </div>
 
         <!-- Título y descripción -->
+        @let nombreInvalido =
+          (formulario.get('nombre')?.invalid &&
+            formulario.get('nombre')?.value) ||
+          errores().nombre;
+
         <div class="col-span-2 w-full gap-6">
           <!-- Título -->
           <div>
@@ -103,9 +127,16 @@ import { ModalAvisosComponent } from './modalavisos.component';
               placeholder="Ej: 20% de descuento en jabones"
               formControlName="nombre"
             />
-            <small class="font-medium text-red-700">
-              {{ errores().nombre }}
-            </small>
+
+            @if (errores().nombre) {
+              <small class="text-red-600">
+                {{ errores().nombre }}
+              </small>
+            } @else if (nombreInvalido) {
+              <small class="text-red-600">
+                El título debe contener al menos 3 letras y como máximo 30 caracteres.
+              </small>
+            }
           </div>
         </div>
 
@@ -130,29 +161,29 @@ import { ModalAvisosComponent } from './modalavisos.component';
         [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
         [mensaje]="respuestaBack()"
         [tipo]="tipoRespuesta()"
-        (closed)="cerraTodo()"
       ></app-modal>
     </dialog>
   `,
 })
 export class FormProm {
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
-  public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarModal = model<boolean>(false);
   public mostrarModalExito = signal(false);
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public respuestaBack = signal('');
   public servicioPromocion = input<any>();
   public acciones = input.required<Actions>();
-  public cambioEmitir = output<any>();
   public idRegistro = input<string>();
-  public mostrarDatos = input<any>(); // Datos a mostrar en el formulario
+  public mostrarDatos = input<any>();
+
   public formulario = new FormGroup({
-    imagen: new FormControl<File | null>(null),
-    nombre: new FormControl(''),
-    createdAt: new FormControl(''),
+    imagen: new FormControl<File | null>(null, Validators.required),
+    nombre: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){3})[\s\S]{3,30}$/),
+    ]),
   });
-  //objeto que almacena los eerores del formulario
+
   public errores = signal({
     nombre: '',
     imagen: '',
@@ -169,6 +200,7 @@ export class FormProm {
   public close() {
     this.mostrarModal.set(false);
   }
+
   constructor() {
     effect(() => {
       if (!this.mostrarModalExito() && this.tipoRespuesta() === 'exito') {
@@ -185,13 +217,11 @@ export class FormProm {
     });
 
     effect(() => {
-      // Aquí manejamos la carga de datos cuando es para visualizar/editar
       if (this.acciones() !== 'Registrar') {
         const datos = this.mostrarDatos();
         this.formulario.patchValue({
           nombre: datos.nombre,
           imagen: datos.imagen,
-          createdAt: datos.createdAt,
         });
 
         // Cargar la imagen preview si existe
@@ -206,7 +236,6 @@ export class FormProm {
           this.formulario.enable();
         }
       } else if (this.acciones() === 'Registrar') {
-        console.log('Registrar nueva promoción');
         this.resetearFormulario();
         this.formulario.enable();
       }
@@ -214,57 +243,29 @@ export class FormProm {
   }
 
   onSubmit() {
-    if (this.formulario?.invalid) {
-      alert('Formulario inválido');
-      return;
-    }
-    const formData = this.toFormData(); //convierte el formulario a FormData
-    //vaciat lo errores
-    this.errores.set({
-      nombre: '',
-      imagen: '',
-    });
+    const formData = this.toFormData();
 
-    //fun cion para crear un registro
     if (this.acciones() === 'Registrar') {
       this.servicioPromocion()
-        .registrar(formData) //envia el formulario al backend
+        .registrar(formData)
         .subscribe({
-          next: () => {
-            this.mostrarModalExito.set(true); //muestra el modal de exito
-            this.tipoRespuesta.set('exito'); //setea el tipo de respuesta
-            this.respuestaBack.set('Promoción registrada correctamente'); //mensaje de exito
-            this.resetearFormulario(); //resetea el formulario
-          },
-          //funcion para manejar errores
-          //si el backend devuelve un error, se setea en el objeto errores
-          error: ({ error }: { error: any }) => {
-            const { details = [] } = error;
-            details.forEach((detail: any) => {
-              const { path, msg } = detail;
-              this.errores.update((prev) => ({ ...prev, [path]: msg })); //setea los errores
-            });
-          },
-        });
+          next: this.respuestaExitoBack,
+          error: this.respuestadeErrorBack,
+        })
+        .add(() => this.mostrarModalExito.set(true));
     } else if (this.acciones() === 'Actualizar') {
-      //funcion para actualizar registro
       this.servicioPromocion()
-        .editar(this.idRegistro(), this.formulario?.value)
+        .editar(this.idRegistro(), formData)
         .subscribe({
-          next: (registroActualizado: any) => {
-            this.cambioEmitir.emit(registroActualizado);
-            this.mostrarModalExito.set(true); //muestra el modal de exito
-            this.tipoRespuesta.set('exito'); //setea el tipo de respuesta
-            this.respuestaBack.set(registroActualizado.msg);
-            this.resetearFormulario(); //resetea el formulario
-          },
-          error: ({ error }: { error: any }) => {
-            this.tipoRespuesta.set('error');
-            this.mostrarModalExito.set(true); //muestra el modal de error
-            this.respuestaBack.set(error.msg); //mensaje de error
-          },
-        });
+          next: this.respuestaExitoBack,
+          error: this.respuestadeErrorBack,
+        })
+        .add(() => this.mostrarModalExito.set(true));
     }
+  }
+
+  borrarError(campo: string) {
+    this.errores.update((prev) => ({ ...prev, [campo]: '' })); //setea los errores
   }
 
   //Funcion que permite visualizar una imagen previa de la promocion
@@ -278,20 +279,39 @@ export class FormProm {
       this.formulario.patchValue({
         imagen: file,
       });
+      this.borrarError('imagen');
     }
   }
+
   public resetearFormulario() {
     this.formulario.setValue({
       nombre: '',
       imagen: null,
-      createdAt: '',
     });
     this.imagePreview = null;
   }
-  cerraTodo() {
-    this.mostrarModalExito.set(false);
-    if (this.tipoRespuesta() === 'exito') {
-      this.close(); // Solo cerramos el formulario si fue éxito
+
+  private respuestadeErrorBack = ({ error }: { error: any }) => {
+    const { details = [], msg } = error;
+
+    if (details.length > 0) {
+      details.forEach(({ path, msg }: any) => {
+        this.errores.update((prev: any) => ({
+          ...prev,
+          [path]: msg,
+        }));
+      });
     }
-  }
+
+    this.tipoRespuesta.set('error');
+    this.respuestaBack.set(
+      msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.',
+    );
+  };
+
+  private respuestaExitoBack = ({ msg }: any) => {
+    this.tipoRespuesta.set('exito');
+    this.respuestaBack.set(msg);
+    this.resetearFormulario();
+  };
 }

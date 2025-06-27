@@ -1,39 +1,25 @@
-import { TitleCasePipe } from '@angular/common';
-import {
-  Component,
-  computed,
-  effect,
-  input,
-  linkedSignal,
-  signal,
-} from '@angular/core';
-import { promocion } from '../../interfaces/promocion.interface';
-import { usuario } from '../../interfaces/usuario.interface';
-import { venta } from '../../interfaces/venta.interface';
+import { Component, effect, input, linkedSignal, signal } from '@angular/core';
+import { ColumnasUsuario, usuario } from '../../interfaces/usuario.interface';
+import { ColumnasVenta, venta } from '../../interfaces/venta.interface';
 import { transformaFecha } from '../../utils/transformaFecha';
 import { SwitchComponent } from '../switch.component';
 import { Actions, ModalComponent, TituloForms } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
 
-export type DatosTabla = usuario | venta | promocion; //representacion de la clave
+export type DatosTabla = usuario | venta; //representacion de la clave
 
 @Component({
   selector: 'tabla',
-  imports: [
-    TitleCasePipe,
-    ModalComponent,
-    SwitchComponent,
-    ModalAvisosComponent,
-  ],
+  imports: [ModalComponent, SwitchComponent, ModalAvisosComponent],
   template: `
     <table
       class="mt-6 w-full table-auto border-collapse overflow-hidden rounded-lg text-[14px] shadow-md"
     >
       <thead>
         <tr class="bg-[#c6bcff]">
-          @for (columna of columnas(); track $index) {
-            <th class=" text-center font-semibold text-gray-800">
-              {{ columna | titlecase }}
+          @for (nombre of columnasTabla()?.nombres; track $index) {
+            <th class="text-center font-semibold text-gray-800">
+              {{ nombre }}
             </th>
           }
           <th class="p-3 text-center font-semibold text-gray-800">Acciones</th>
@@ -42,19 +28,13 @@ export type DatosTabla = usuario | venta | promocion; //representacion de la cla
       <tbody class="divide-y divide-gray-200">
         @for (fila of datosTabla(); track $index) {
           <tr class="transition-colors duration-150 hover:bg-gray-50">
-            @for (columna of columnas(); track $index) {
+            @for (columna of columnasTabla()?.claves; track $index) {
               <td class="max-w-[150px] p-3 text-center">
                 <div class="truncate whitespace-nowrap">
                   @if (columna.toString() === 'cliente_id') {
                     {{ nombreCliente(fila[columna]) }}
                   } @else if (columna.toString() === 'productos') {
                     {{ producto(fila[columna]) }}
-                  } @else if (columna.toString() === 'imagen') {
-                    <img
-                      class="border-gris-300 mx-auto h-[30px] w-[30px] rounded-full border"
-                      [src]="fila[columna] || '/sinFoto.jpg'"
-                      alt=""
-                    />
                   } @else if (columna.toString() === 'estado') {
                     @let esActivo =
                       fila[columna] === 'activo' ||
@@ -139,8 +119,7 @@ export class TablaComponent {
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public decision = signal<boolean>(false);
   public itemPorCambiar = signal<DatosTabla>({} as DatosTabla); //para almacenar el item que se va a cambiar
-  //datos que van a llegar a la tabla
-  public datosTabla = input<DatosTabla[]>(); //input es tipo DatosTabla
+  public datosTabla = input<any[]>();
   public mensajeEstado = signal<string>('');
 
   public datosMostrar = linkedSignal<DatosTabla>(
@@ -148,10 +127,10 @@ export class TablaComponent {
   ); //input es tipo DatosTabla
 
   public servicio = input<any>();
+  public columnasTabla = input<ColumnasUsuario | ColumnasVenta>();
 
   public acciones = signal<Actions>('Visualizar');
 
-  public columnasMostrar = input<(keyof DatosTabla)[]>();
   public mostrarModalDesicion = signal(false);
   constructor() {
     effect(() => {
@@ -161,29 +140,6 @@ export class TablaComponent {
       }
     });
   }
-
-  // En TablaComponent
-  public columnas = computed(() => {
-    const todasLasColumnas = Object.keys(
-      this.datosTabla()?.[0] ?? [],
-    ) as (keyof DatosTabla)[];
-    // Excluir las columnas que no quieres mostrar
-    return todasLasColumnas.filter(
-      (columna) =>
-        ![
-          'telefono',
-          'cedula',
-          'direccion',
-          'fecha_nacimiento',
-          'imagen_id',
-          '__v',
-          '_id',
-          'confirmEmail',
-          'createdAt',
-          'updatedAt',
-        ].includes(columna),
-    );
-  });
 
   //visualizado
   public verFormulario(datos: DatosTabla) {
@@ -225,6 +181,7 @@ export class TablaComponent {
   almacenarDesicion(decision: boolean) {
     this.decision.set(decision);
   }
+
   cambiarEstado() {
     const item = this.itemPorCambiar();
     const estado = this.verificarEstado(item);
@@ -242,13 +199,15 @@ export class TablaComponent {
       this.servicio().activarEstado(item._id).subscribe();
     }
   }
-  //metodo para llamar al modal de confirmacion
+
   public confirmarCambioEstado(item: any) {
     const estado = this.verificarEstado(item);
     const esVenta = this.verificarTipo(item) === 'venta';
     if (esVenta) {
       this.mensajeEstado.set(
-        estado ? '¿Está seguro de que desea finalizar la venta?' : '¿Está seguro de que desea reactivar la venta?',
+        estado
+          ? '¿Está seguro de que desea finalizar la venta?'
+          : '¿Está seguro de que desea reactivar la venta?',
       );
     } else {
       this.mensajeEstado.set(
@@ -256,7 +215,6 @@ export class TablaComponent {
           ? `¿Está seguro de que desea inactivar al cliente ${item.nombre} ${item.apellido}?`
           : `¿Está seguro de que desea activar al cliente ${item.nombre} ${item.apellido}?`,
       );
-      
     }
     this.mostrarModalDesicion.set(true);
     this.itemPorCambiar.set(item);

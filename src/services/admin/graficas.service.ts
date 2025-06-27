@@ -12,9 +12,20 @@ export class DashboardService {
 
   obtenerVentas() {
     const fechaActual = new Date();
-    const fechaFin = fechaActual.toISOString().split('T')[0];
-    fechaActual.setDate(fechaActual.getDate() - 14);
-    const fechaInicio = fechaActual.toISOString().split('T')[0];
+    const fechaFin = new Intl.DateTimeFormat('es-EC', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(fechaActual).split('/').reverse().join('-');
+
+    fechaActual.setDate(fechaActual.getDate() - 13);
+
+    const fechaInicio = new Intl.DateTimeFormat('es-EC', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(fechaActual).split('/').reverse().join('-');
+
     console.log('Fecha inicio:', fechaInicio);
     console.log('Fecha fin:', fechaFin);
     return this.http.get<GraficaVentas>(

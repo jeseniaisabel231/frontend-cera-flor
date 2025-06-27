@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { tap } from 'rxjs';
 import { promocion } from '../../app/interfaces/promocion.interface';
 import { environment } from '../../environments/environment';
-import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,17 +10,35 @@ import { tap } from 'rxjs';
 export class PromocionesService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  public promociones = signal<promocion[]>([]);
+  private promociones = signal<promocion[]>([]);
 
-  obtener(page: number) {
+  public carga = signal<boolean>(true);
+  public busqueda = signal<string>('');
+
+  public datosBuscados = computed(() => {
+    const busqueda = this.busqueda().toLowerCase().trim();
+    const promociones = this.promociones();
+    if (busqueda) {
+      return promociones.filter((promocion) =>
+        promocion.nombre.toLowerCase().includes(busqueda),
+      );
+    }
+    return promociones;
+  });
+
+  constructor() {
+    this.obtener()
+      .subscribe()
+      .add(() => this.carga.set(false));
+  }
+
+  obtener(page: number = 1) {
     return this.http
-      .get(`${this.urlBackend}/api/promociones?page=${page}&limit=4`, {
+      .get(`${this.urlBackend}/api/promociones?page=${page}&limit=100`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) => {
-          this.promociones.set(respuesta.promociones);
-        })
+        tap((respuesta: any) => this.promociones.set(respuesta.promociones)),
       );
   }
   registrar(datos: promocion) {
@@ -29,12 +47,12 @@ export class PromocionesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) => {
-          this.promociones.update((promocionesAnteriores) => {
-            promocionesAnteriores.push(respuesta.promocion);
-            return promocionesAnteriores;
-          });
-        })
+        tap((respuesta: any) =>
+          this.promociones.update((promociones) => [
+            ...promociones,
+            respuesta.promocion,
+          ]),
+        ),
       );
   }
   eliminar(id: string) {
@@ -43,17 +61,11 @@ export class PromocionesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap(() => {
-          this.promociones.update((promocionesAnteriores) => {
-            const index = promocionesAnteriores.findIndex(
-              (promocion) => promocion._id === id
-            );
-            if (index !== -1) {
-              promocionesAnteriores.splice(index, 1);
-            }
-            return promocionesAnteriores;
-          });
-        })
+        tap(() =>
+          this.promociones.update((promociones) =>
+            promociones.filter((promocion) => promocion._id !== id),
+          ),
+        ),
       );
   }
   editar(id: string, datos: promocion) {
@@ -62,17 +74,15 @@ export class PromocionesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) => {
-          this.promociones.update((promocionesAnteriores) => {
-            const index = promocionesAnteriores.findIndex(
-              (promocion) => promocion._id === id
-            );
-            if (index !== -1) {
-              promocionesAnteriores[index] = respuesta.promocion;
-            }
-            return promocionesAnteriores;
-          });
-        })
+        tap((respuesta: any) =>
+          this.promociones.update((promociones) =>
+            promociones.map((promocion) =>
+              promocion._id === id
+                ? { ...promocion, ...respuesta.promocion }
+                : promocion,
+            ),
+          ),
+        ),
       );
   }
 }

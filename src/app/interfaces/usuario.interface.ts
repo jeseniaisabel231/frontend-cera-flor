@@ -7,3 +7,8 @@ export interface usuario {
   genero: string;
   estado: string;
 }
+
+export interface ColumnasUsuario {
+  claves: (keyof usuario)[]; // Claves de las propiedades del usuario como viene en el backend
+  nombres: string[]; // Nombres formateados para mostrar en la tabla
+}

@@ -1,4 +1,4 @@
-import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -10,7 +10,7 @@ import { Presentation } from '../../components/admin/presentation.component';
 import { TablaComponent } from '../../components/admin/tabla.component';
 import { Loading } from '../../components/loading.component';
 import { Navegacion } from '../../components/navegacion.component';
-import { venta } from '../../interfaces/venta.interface';
+import { ColumnasVenta } from '../../interfaces/venta.interface';
 @Component({
   imports: [Navegacion, Presentation, Loading, TablaComponent, FormsModule],
   template: `
@@ -42,12 +42,12 @@ import { venta } from '../../interfaces/venta.interface';
                 />
               </svg>
               <input
-                class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
+                class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
                 type="search"
-                placeholder="Buscar venta"
+                placeholder="Buscar ventas por cliente..."
                 id="search"
                 name="search"
-                [(ngModel)]="busqueda"
+                [(ngModel)]="serviceVentas.busqueda"
               />
             </div>
             <div class="mt-4 flex items-center gap-2">
@@ -69,42 +69,43 @@ import { venta } from '../../interfaces/venta.interface';
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro() === '' ? 'bg-[#806bff] text-white' : 'text-[#3B3D3E]'
+                  !serviceVentas.filtro() ? 'bg-[#806bff] text-white' : 'text-[#3B3D3E]'
                 "
-                (click)="filtrarVenta('')"
+                (click)="serviceVentas.filtro.set('')"
               >
                 <span>Todos</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro() === 'finalizado'
+                  serviceVentas.filtro() === 'finalizado'
                     ? 'bg-[#806bff] text-white'
                     : 'text-[#3B3D3E]'
                 "
-                (click)="filtrarVenta('finalizado')"
+                (click)="serviceVentas.filtro.set('finalizado')"
               >
                 <span>Finalizado</span>
               </button>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                 [class]="
-                  filtro() === 'pendiente'
+                  serviceVentas.filtro() === 'pendiente'
                     ? 'bg-[#806bff] text-white'
                     : 'text-[#3B3D3E]'
                 "
-                (click)="filtrarVenta('pendiente')"
+                (click)="serviceVentas.filtro.set('pendiente')"
               >
                 <span>Pendiente</span>
               </button>
             </div>
           </div>
-          @if (carga()) {
+          @if (serviceVentas.carga()) {
             <loading></loading>
-          } @else if (datosBuscados().length > 0) {
+          } @else if (serviceVentas.datosBuscados().length > 0) {
             <div class="overflo-y-auto">
               <tabla
-                [datosTabla]="datosBuscados()"
+                [datosTabla]="serviceVentas.datosBuscados()"
+                [columnasTabla]="columnasTabla"
                 titulo="venta"
                 acciones="Visualizar"
                 [servicio]="serviceVentas"
@@ -138,56 +139,17 @@ import { venta } from '../../interfaces/venta.interface';
   `,
 })
 export class ShoppingPage {
-  //estado de carga
-  public carga = signal<boolean>(true);
   public serviceVentas = inject(VentasService);
-  public busqueda = signal<string>('');
-  public datosFiltrados: venta[] = [];
 
   //variable que almacena lo que traera del backend
-  public ventas = signal<venta[]>([]);
-  public filtro = signal<string>('');
-  public datosVentas = new FormGroup({
-    //id : number,
-    nombre: new FormControl('', [Validators.required]),
-    apellido: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-  });
-
-  //consumo de endpoint de usuarios
-  constructor() {
-    this.serviceVentas
-      .obtener()
-      .subscribe({
-        next: (respuesta: any) => {
-          this.ventas.set(respuesta.ventas);
-          this.datosFiltrados = this.ventas();
-        },
-      })
-      .add(() => {
-        this.carga.set(false);
-      }); //cambia estado de carga;
-  }
-  //metodo de filtrar venta
-  public filtrarVenta(estado: string) {
-    this.filtro.set(estado);
-    if (estado) {
-      this.datosFiltrados = this.ventas().filter(
-        (venta) => venta.estado === estado,
-      );
-    } else {
-      this.datosFiltrados = this.ventas();
-    }
-  }
-
-  public datosBuscados(){
-    const busqueda = this.busqueda().toLowerCase().trim();
-    if (busqueda) {
-      return this.datosFiltrados.filter(({ cliente_id }) =>
-        cliente_id.nombre.toLowerCase().includes(busqueda) ||
-        cliente_id.apellido.toLowerCase().includes(busqueda)
-      );
-    }
-    return this.datosFiltrados;
-  }
+  public columnasTabla: ColumnasVenta = {
+    claves: ['cliente_id', 'productos', 'total', 'fecha_venta', 'estado'],
+    nombres: [
+      'Cliente',
+      'Productos',
+      'Total',
+      'Fecha de Venta',
+      'Estado de Entrega',
+    ],
+  };
 }

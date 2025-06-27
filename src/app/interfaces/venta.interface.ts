@@ -1,15 +1,24 @@
-import { usuario } from "./usuario.interface";
+import { producto } from './producto.interface';
+import { usuario } from './usuario.interface';
 
-export interface venta{
-    cliente_id: usuario,
-    _id: string,
-    id_usuario: string,
-    estado: string,
-    id_producto: string,
-    fecha: string,
-    cantidad: number,
-    total: number,
-    nombre_usuario: string,
-    nombre_producto: string,
-    precio_producto: number
+export interface venta {
+  _id: string;
+  cliente_id: Pick<usuario, '_id' | 'apellido' | 'email' | 'nombre'>;
+  productos: productoInformacion[];
+  total: number;
+  fecha_venta: `${number}-${number}-${number}`;
+  estado: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export interface productoInformacion {
+  _id: string;
+  producto_id: producto;
+  cantidad: number;
+  subtotal: number;
+}
+
+export interface ColumnasVenta {
+  claves: (keyof venta)[]; // Claves de las propiedades del usuario como viene en el backend
+  nombres: string[]; // Nombres formateados para mostrar en la tabla
 }

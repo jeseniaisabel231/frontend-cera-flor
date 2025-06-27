@@ -141,11 +141,11 @@ export class DashboardPage {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             // context.formattedValue es el valor mostrado
             return 'Ingresos de $' + context.formattedValue;
-          }
-        }
+          },
+        },
       },
     },
     scales: {
@@ -200,17 +200,20 @@ export class DashboardPage {
         const dias: string[] = [];
 
         data.ventasDiarias.forEach((element, index: number) => {
-          const fechaFormateada = element.fecha.split('/').reverse().join('-');
-          const dia = new Date(fechaFormateada).toLocaleDateString('es-ES', {
-            weekday: 'long',
-          });
+          const [dia, mes, anio] = element.fecha.split('/').map(Number);
+          const fecha = new Date(anio, mes - 1, dia);
+          const diaSemana = new Intl.DateTimeFormat('es-EC', {
+            weekday: 'short',
+          }).format(fecha);
+          console.log('Día:', dia);
           if (index < 7) {
-            dias.push(dia.charAt(0).toUpperCase() + dia.slice(1));
+            dias.push(diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1));
             ventaSemanaPasada.push(element.totalVentas);
           } else {
             ventaSemanaActual.push(element.totalVentas);
           }
         });
+        
         this.datos.set({
           labels: dias,
           datasets: [

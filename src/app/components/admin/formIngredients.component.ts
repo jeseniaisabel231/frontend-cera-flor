@@ -11,6 +11,8 @@ import {
 import {
   FormControl,
   FormGroup,
+  FormsModule,
+  NgModel,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -25,7 +27,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
   template: `
     <dialog
       #modal
-      class="backdrop:bg-gris-600/25 m-auto rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px]"
+      class="backdrop:bg-gris-600/25 m-auto w-3/4 rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px] lg:w-1/2"
     >
       <div class="flex items-center justify-between px-7 py-5">
         <h1 class="text-lg font-medium text-[#3C3C3B]">
@@ -56,54 +58,94 @@ import { ModalAvisosComponent } from './modalavisos.component';
         [formGroup]="formulario"
       >
         <!-- Subir foto -->
+        
+        @let imagenInvalida =
+          (formulario.get('imagen')?.invalid &&
+            formulario.get('imagen')?.value) ||
+          errores().imagen;
 
         <div class="h-full">
-          <label for="foto" class="mb-2">
-            Imagen del ingrediente
+          @if (formulario.get('tipo')?.value !== 'color') {
+            <label for="foto" class="mb-2">
+              <span>
+                Imagen del ingrediente
+                <strong>(tamaño máximo: 2MB)</strong>
+              </span>
 
-            <div
-              class="flex h-47 flex-col items-center justify-center rounded-xl border border-gray-300"
-            >
-              @if (imagePreview !== null) {
-                <img
-                  [src]="imagePreview"
-                  alt=""
-                  class="h-full w-full rounded-xl object-cover"
+              <div
+                class="flex h-47 flex-col items-center justify-center rounded-xl border border-gray-300"
+                [class]="
+                  imagenInvalida
+                    ? 'border-red-500 focus:ring-0 focus:outline-none'
+                    : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+                "
+              >
+                @if (imagePreview !== null) {
+                  <img
+                    [src]="imagePreview"
+                    alt="Imagen del ingrediente"
+                    class="h-full w-full rounded-xl object-cover"
+                  />
+                } @else {
+                  <div class="flex cursor-pointer flex-col items-center gap-2">
+                    <svg
+                      class=""
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="26"
+                      height="26"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="#3C3C3B"
+                        d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
+                      />
+                    </svg>
+                    <span>Subir una imagen</span>
+                  </div>
+                }
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  id="foto"
+                  (change)="onFileChange($event)"
                 />
-              } @else {
-                <div class="flex cursor-pointer flex-col items-center gap-2">
-                  <svg
-                    class=""
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="26"
-                    height="26"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="#3C3C3B"
-                      d="m11.18 8.933 3.232-5.596q2.025.522 3.662 2.046t2.38 3.55zM8.888 11.26 5.673 5.606Q6.946 4.358 8.57 3.679T12 3q.383 0 .875.047t.746.097zm-5.6 2.97q-.15-.638-.219-1.176T3 12q0-1.583.537-3.042.536-1.46 1.567-2.74l4.588 8.013zm6.404 6.472q-2.141-.561-3.82-2.104-1.679-1.542-2.344-3.588h9.402zM12 21q-.375 0-.81-.05t-.71-.1l4.71-7.994 3.156 5.519q-1.254 1.248-2.897 1.937T12 21m6.896-3.217L14.308 9.73h6.406q.13.58.208 1.158T21 12q0 1.616-.536 3.062-.535 1.446-1.568 2.72"
-                    />
-                  </svg>
-                  <span>Subir una imagen</span>
-                </div>
+              </div>
+              @if (errores().imagen) {
+                <small class="text-red-600">
+                  {{ errores().imagen }}
+                </small>
+              } @else if (imagenInvalida) {
+                <small class="text-red-600">
+                  La imagen debe ser un archivo de imagen válido (JPG, PNG,
+                  GIF).
+                </small>
               }
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                id="foto"
-                class="text-sm"
-                (change)="onFileChange($event)"
-              />
-            </div>
-          </label>
+            </label>
+          } @else {
+            <label class="mb-2 block text-sm font-medium">
+              Seleccione el color
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+            #inputColor
+              type="color"
+              class="w-full h-50 rounded-lg border border-gray-300 p-2 focus:ring-morado-400 focus:ring-2 focus:outline-none"
+              [class]="imagenInvalida
+                  ? 'border-red-500 focus:ring-0 focus:outline-none'
+                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+              "
+              (input)="color.set(inputColor.value);borrarError('imagen')"
+              (change)="generarImagenCircularDesdeColor()"
+            />
+          }
         </div>
 
         <!-- Nombre -->
         <div class="space-y-4">
           <div>
             <label class="mb-1 block text-sm font-medium">
-              Nombre del ingrediente:
+              Nombre del ingrediente
               <span class="text-red-500">*</span>
             </label>
             @let nombreInvalido =
@@ -118,28 +160,40 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
               "
               type="text"
-              placeholder="Ej: Jabón de avena y miel"
+              placeholder="Ej: Vainilla"
               class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="nombre"
               (input)="borrarError('nombre')"
             />
             @if (errores().nombre) {
-              <small class="text-red-600">Este campo es obligatorio.</small>
+              <small class="text-red-600">
+                {{ errores().nombre }}
+              </small>
             } @else if (nombreInvalido) {
               <small class="text-red-600">
                 <div class="w-[215px]">
-                  El nombre es requerido y debe tener al menos 3 caracteres.
+                  El nombre debe contener entre 3 y 25 letras
                 </div>
               </small>
             }
           </div>
+
+          @let tipoInvalido =
+            (formulario.get('tipo')?.invalid &&
+              formulario.get('tipo')?.value) ||
+            errores().tipo;
+
           <div>
             <label class="mb-1 block text-sm font-medium">Tipo:</label>
             <select
               class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
               formControlName="tipo"
-              [class]=""
-              [value]="formulario.value.tipo"
+              [class]="
+                tipoInvalido
+                  ? 'border-red-500 focus:ring-0 focus:outline-none'
+                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+              "
+              (change)="borrarError('tipo')"
             >
               <option selected value="" disabled hidden>
                 Selecciona un tipo de ingrediente
@@ -150,7 +204,23 @@ import { ModalAvisosComponent } from './modalavisos.component';
               <option value="aroma">Aroma</option>
               <option value="color">Color</option>
             </select>
+
+            @if (errores().tipo) {
+              <small class="text-red-600">
+                {{ errores().tipo }}
+              </small>
+            } @else if (tipoInvalido) {
+              <small class="text-red-600">
+                Debes seleccionar un tipo de ingrediente.
+              </small>
+            }
           </div>
+
+          @let precioInvalido =
+            (formulario.get('precio')?.invalid &&
+              formulario.get('precio')?.value) ||
+            errores().precio;
+
           <div class="mt-4">
             <label class="mb-1 block text-sm font-medium">Precio</label>
             <div class="flex items-center gap-2">
@@ -160,15 +230,44 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 placeholder="Ej: 5.50"
                 class="placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
                 formControlName="precio"
+                [class]="
+                  precioInvalido
+                    ? 'border-red-500 focus:ring-0 focus:outline-none'
+                    : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+                "
                 (input)="borrarError('precio')"
               />
             </div>
+
+            @if (errores().precio) {
+              <small class="text-red-600">
+                {{ errores().precio }}
+              </small>
+            } @else if (
+              precioInvalido || formulario.get('precio')?.value == '0'
+            ) {
+              <small class="text-red-600">
+                El precio es requerido y debe ser un número entre 1 y 100.
+              </small>
+            }
           </div>
+
+          @let categoriaInvalida =
+            (formulario.get('id_categoria')?.invalid &&
+              formulario.get('id_categoria')?.value) ||
+            errores().id_categoria;
+
           <label class="mb-1 block text-sm font-medium">Categoria:</label>
 
           <select
             class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 text-gray-600 focus:ring-2 focus:outline-none"
             formControlName="id_categoria"
+            [class]="
+              categoriaInvalida
+                ? 'border-red-500 focus:ring-0 focus:outline-none'
+                : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+            "
+            (change)="borrarError('id_categoria')"
           >
             <option selected value="" disabled hidden>
               Selecciona una categoría
@@ -180,6 +279,12 @@ import { ModalAvisosComponent } from './modalavisos.component';
             }
             <option value="ambas">Ambas categorías</option>
           </select>
+
+          @if (errores().id_categoria) {
+            <small class="text-red-600">
+              {{ errores().id_categoria }}
+            </small>
+          }
         </div>
         <div class="col-span-2 mt-4 flex flex-col gap-4">
           <div class="flex items-center gap-2">
@@ -248,18 +353,15 @@ import { ModalAvisosComponent } from './modalavisos.component';
       ></app-modal>
     </dialog>
   `,
-  imports: [ModalAvisosComponent, ReactiveFormsModule],
+  imports: [ModalAvisosComponent, ReactiveFormsModule, FormsModule],
 })
 export class FormIngredientsComponent {
   public servicioIngredientes = inject(IngredientesService);
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public respuestaBack = signal('');
-  public ingredientes = signal<any[]>([]);
-  public ingredientesSeleccionados = signal<string[]>([]);
   public mostrarModalExito = signal(false);
   public mostrarModal = model<boolean>(false);
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
-  public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarDatos = input<any>();
   public acciones = input.required<Actions>();
   public idRegistro = input<string>();
@@ -267,36 +369,37 @@ export class FormIngredientsComponent {
   public serviceCategorias = inject(CategoryService);
   public categorias: categorias[] = []; //almacena las categoria
   public idsCategorias = signal<string[]>([]); //almacena los ids de las categorias
+  public color = signal<string>(''); //almacena el color seleccionado
 
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null, Validators.required),
     nombre: new FormControl('', [
       Validators.required,
-      Validators.minLength(3),
-      Validators.pattern('^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$'),
+      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{3,25}$/),
     ]),
     precio: new FormControl('', [
       Validators.required,
-      Validators.min(0),
-      Validators.max(100),
-      Validators.pattern(/^\d+(\.\d{1,2})?$/),
+      Validators.pattern(/^(100(\.0{1,2})?|\d{1,2}(\.\d{1,2})?)$/),
     ]),
     stock: new FormControl(57, Validators.required),
     tipo: new FormControl('', Validators.required),
-    id_categoria: new FormControl(''),
+    id_categoria: new FormControl('', Validators.required),
   });
+
   public errores = signal<any>({
+    imagen: '',
     nombre: '',
     precio: '',
     stock: '',
     tipo: '',
+    id_categoria: '',
   });
+
   borrarError(campo: string) {
     this.errores.update((prev) => ({ ...prev, [campo]: '' })); //setea los errores
   }
   public close() {
     this.mostrarModal.set(false);
-    this.alerta()?.nativeElement.close(); //cierra el modal de alerta
   }
 
   onSubmit() {
@@ -305,34 +408,19 @@ export class FormIngredientsComponent {
       this.servicioIngredientes
         .registrar(formData) //envia el formulario al backend
         .subscribe({
-          next: ({ msg }: { msg: any }) => {
-            this.tipoRespuesta.set('exito');
-            this.mostrarModalExito.set(true);
-            this.respuestaBack.set(msg);
-            this.resetearFormulario(); //resetea el formulario
-            
-          },
-          error: ({ error }: { error: any }) => {
-            this.tipoRespuesta.set('error');
-            this.mostrarModalExito.set(true);
-            this.respuestaBack.set(error.msg);
-          },
-        });
+          next: this.respuestaExitoBack,
+          error: this.respuestadeErrorBack,
+        })
+        .add(() => this.mostrarModalExito.set(true));
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
-      this.servicioIngredientes.editar(this.idRegistro()!, formData).subscribe({
-        next: ({ msg }: any) => {
-          this.mostrarModalExito.set(true);
-          this.tipoRespuesta.set('exito');
-          this.respuestaBack.set(msg);
-          this.resetearFormulario(); //resetea el formulario
-        },
-        error: ({ error }: { error: any }) => {
-          this.tipoRespuesta.set('error');
-          this.mostrarModalExito.set(true);
-          this.respuestaBack.set(error.msg);
-        },
-      });
+      this.servicioIngredientes
+        .editar(this.idRegistro()!, formData)
+        .subscribe({
+          next: this.respuestaExitoBack,
+          error: this.respuestadeErrorBack,
+        })
+        .add(() => this.mostrarModalExito.set(true));
     }
   }
   public toFormData(): FormData {
@@ -363,7 +451,6 @@ export class FormIngredientsComponent {
         }
       }
     });
-    console.log('Valor del formulario:', this.formulario.value);
     return formData;
   }
   public onFileChange(event: any) {
@@ -375,22 +462,12 @@ export class FormIngredientsComponent {
         this.formulario.patchValue({
           imagen: file,
         });
-        this.formulario.get('imagen')?.updateValueAndValidity();
+        this.borrarError('imagen');
       };
       reader.readAsDataURL(file);
     }
   }
   constructor() {
-    //llama al servicio de ingredientes
-    this.servicioIngredientes.obtener().subscribe({
-      next: (ingredientes: any) => {
-        this.ingredientes.set(ingredientes.ingredientes);
-      },
-      error: (error: any) => {
-        console.error('Error al obtener los ingredientes:', error);
-      },
-    });
-
     effect(() => {
       if (!this.mostrarModalExito() && this.tipoRespuesta() === 'exito') {
         this.mostrarModal.set(false);
@@ -404,6 +481,7 @@ export class FormIngredientsComponent {
         this.modal()?.nativeElement.close();
       }
     });
+
     effect(() => {
       if (this.acciones() !== 'Registrar' && this.mostrarDatos()) {
         const datos = this.mostrarDatos();
@@ -425,9 +503,6 @@ export class FormIngredientsComponent {
           this.imagePreview = null;
         }
 
-        this.ingredientesSeleccionados.set(
-          datos.ingredientes?.map((item: any) => item?._id ?? item), //almacena los ingredientes seleccionados
-        );
         if (this.acciones() === 'Visualizar') {
           this.formulario.disable();
         } else {
@@ -448,7 +523,6 @@ export class FormIngredientsComponent {
         this.categorias = respuesta.categorias;
         this.idsCategorias.set(
           this.categorias.map((categoria: categorias) => categoria._id),
-
         ); //almacena los ids de las categorias
       },
       error: (err) => console.error('Error al cargar categorías', err),
@@ -464,5 +538,67 @@ export class FormIngredientsComponent {
       id_categoria: '',
     });
     this.imagePreview = null;
+  }
+
+  private respuestadeErrorBack = ({ error }: { error: any }) => {
+    console.log('Error en la respuesta del backend:', error);
+    const { details = [], msg } = error;
+
+    if (details.length > 0) {
+      details.forEach(({ path, msg }: any) => {
+        this.errores.update((prev: any) => ({
+          ...prev,
+          [path]: msg,
+        }));
+      });
+    }
+
+    if (!this.formulario.value.id_categoria) {
+      this.errores.update((prev: any) => ({
+        ...prev,
+        id_categoria: 'Debes seleccionar una categoría.',
+      }));
+    }
+
+    this.tipoRespuesta.set('error');
+    this.respuestaBack.set(
+      msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.',
+    );
+  };
+
+  private respuestaExitoBack = ({ msg }: any) => {
+    this.tipoRespuesta.set('exito');
+    this.respuestaBack.set(msg);
+    this.resetearFormulario();
+  };
+
+  generarImagenCircularDesdeColor() {
+    const size = 200; // tamaño del lienzo (ancho y alto)
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      // Limpia fondo (transparente)
+      ctx.clearRect(0, 0, size, size);
+
+      // Dibuja un círculo relleno con el color seleccionado
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI); // círculo centrado
+      ctx.fillStyle = this.color(); // usa el color seleccionado
+      ctx.fill();
+      ctx.closePath();
+
+      // Convertir a Blob y luego a File
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], 'color-circle.png', { type: 'image/png' });
+          this.formulario.patchValue({
+            imagen: file, // Actualiza el campo de imagen con el nuevo archivo
+          });
+        }
+      }, 'image/png');
+    }
   }
 }

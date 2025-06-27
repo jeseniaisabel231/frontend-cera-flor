@@ -26,7 +26,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
   template: `
     <dialog
       #modal
-      class="backdrop:bg-gris-600/25 m-auto rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px]"
+      class="backdrop:bg-gris-600/25 m-auto w-3/4 rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px] lg:w-1/2"
     >
       <div class="flex items-center justify-between px-7 py-5">
         <h1 class="text-lg font-medium text-[#3C3C3B]">
@@ -59,16 +59,25 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <!-- Subir foto -->
 
         <div class="h-full">
-          <label for="foto" class="mb-2">
-            Imagen del producto
+          <label for="foto" class="flex flex-col gap-1">
+            <span>Imagen del producto <strong>(tamaño máximo: 2MB)</strong></span>
 
+            @let imagenInvalida =
+              (formulario.get('imagen')?.invalid &&
+                formulario.get('imagen')?.value) ||
+              errores().imagen;
             <div
               class="flex h-47 flex-col items-center justify-center rounded-xl border border-gray-300"
+              [class]="
+                imagenInvalida
+                  ? 'border-red-500 focus:ring-0 focus:outline-none'
+                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+              "
             >
               @if (imagePreview !== null) {
                 <img
                   [src]="imagePreview"
-                  alt=""
+                  alt="imagen del producto"
                   class="h-full w-full rounded-xl object-cover"
                 />
               } @else {
@@ -98,14 +107,24 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 (change)="onFileChange($event)"
               />
             </div>
+            @if (errores().imagen) {
+              <small class="text-red-600">{{ errores().imagen }}</small>
+            } @else if (imagenInvalida) {
+              <small class="text-red-600">
+                <div>
+                  La imagen debe ser un archivo de imagen válido
+                  (JPG, PNG, GIF).
+                </div>
+              </small>
+            }
           </label>
         </div>
 
         <!-- Nombre y descripción -->
-        <div class="space-y-4">
-          <div>
-            <label class="mb-1 block text-sm font-medium">
-              Nombre del producto:
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="block text-sm font-medium">
+              Nombre del producto
               <span class="text-red-500">*</span>
             </label>
             @let nombreInvalido =
@@ -125,18 +144,18 @@ import { ModalAvisosComponent } from './modalavisos.component';
               formControlName="nombre"
               (input)="borrarError('nombre')"
             />
-            @if (errores().nombre) {
-              <small class="text-red-600">Este campo es obligatorio.</small>
-            } @else if (nombreInvalido) {
-              <small class="text-red-600">
-                <div class="w-[215px]">
-                  El nombre es requerido y debe tener al menos 3 caracteres.
-                </div>
-              </small>
-            }
+            <div>
+              @if (errores().nombre) {
+                <small class="text-red-600">{{ errores().nombre }}</small>
+              } @else if (nombreInvalido) {
+                <small class="wrap-break-word text-red-600">
+                  El nombre debe contener entre 3 y 25 letras
+                </small>
+              }
+            </div>
           </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">
+          <div class="flex flex-col gap-1">
+            <label class="block text-sm font-medium">
               Beneficios
               <span class="text-red-500">*</span>
             </label>
@@ -158,21 +177,23 @@ import { ModalAvisosComponent } from './modalavisos.component';
               formControlName="beneficios"
               (input)="borrarError('beneficios')"
             ></textarea>
-            @if (errores().beneficios) {
-              <small class="text-red-600">Este campo es obligatorio.</small>
-            } @else if (beneficiosInvalido) {
-              <small class="text-red-600">
-                <div class="w-[215px]">
-                  El campo beneficios es requerido y debe contener solo letras,
-                  números y caracteres especiales como: . , ; : ! ? ( ) -
-                </div>
-              </small>
-            }
+            <div class="w-[215px] break-words">
+              @if (errores().beneficios) {
+                <small class="text-red-600">
+                  {{ errores().beneficios }}
+                </small>
+              } @else if (beneficiosInvalido) {
+                <small class="text-red-600">
+                  Los beneficios deben estar separados por coma y contener 3
+                  beneficios de entre 10 y 100 caracteres.
+                </small>
+              }
+            </div>
           </div>
         </div>
 
-        <div class="col-span-2 mt-4">
-          <label class="mb-1 block text-sm font-medium">
+        <div class="col-span-2 mt-4 flex flex-col gap-1">
+          <label class="block text-sm font-medium">
             Descripción
             <span class="text-red-500">*</span>
           </label>
@@ -194,10 +215,13 @@ import { ModalAvisosComponent } from './modalavisos.component';
             (input)="borrarError('descripcion')"
           ></textarea>
           @if (errores().descripcion) {
-            <small class="text-red-600">Este campo es obligatorio.</small>
+            <small class="text-red-600">
+              {{ errores().descripcion }}
+            </small>
           } @else if (descripcionInvalido) {
             <small class="text-red-600">
-              La descripción es requerida y debe tener al menos 3 caracteres.
+              La descripción debe contener al menos 10 letras y como maximo 500
+              caracteres de cualquier tipo.
             </small>
           }
         </div>
@@ -229,17 +253,19 @@ import { ModalAvisosComponent } from './modalavisos.component';
             (input)="borrarError('stock')"
           />
           @if (errores().stock) {
-            <small class="text-red-600">Este campo es obligatorio.</small>
+            <small class="text-red-600">
+              {{ errores().stock }}
+            </small>
           } @else if (stockInvalido) {
             <small class="text-red-600">
-              El stock es requerido y debe ser un número entre 1 y 100.
+              El stock debe ser un número entre 1 y 100.
             </small>
           }
         </div>
 
         <!-- Categoría y precio -->
         <div class="mt-4">
-          <label class="mb-1 block text-sm font-medium">
+          <label class="block text-sm font-medium">
             Categoría
             <span class="text-red-500">*</span>
           </label>
@@ -249,17 +275,18 @@ import { ModalAvisosComponent } from './modalavisos.component';
             errores().id_categoria;
 
           <select
-            class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+            class="w-full rounded-lg border border-gray-300 p-2 outline-none focus:ring-1"
             formControlName="id_categoria"
             (change)="
               categoriaSeleccionada.set(
                 formulario.get('id_categoria')?.value ?? ''
-              )
+              );
+              borrarError('id_categoria')
             "
             [class]="
               categoriaInvalido
-                ? 'border-red-500 focus:ring-0 focus:outline-none'
-                : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+                ? 'border-red-500 focus:ring-red-500'
+                : 'focus:ring-morado-400 border-gray-300'
             "
           >
             <option selected value="" disabled hidden>
@@ -271,6 +298,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
               </option>
             }
           </select>
+
+          @if (errores().id_categoria) {
+            <small class="text-red-600">Debes seleccionar una categoría.</small>
+          }
         </div>
 
         @let precioInvalido =
@@ -279,24 +310,36 @@ import { ModalAvisosComponent } from './modalavisos.component';
           errores().precio;
 
         <div class="mt-4">
-          <label class="mb-1 block text-sm font-medium">Precio</label>
+          <label class="block text-sm font-medium">Precio</label>
           <div class="flex items-center gap-2">
             <span class="text-gray-600">$</span>
             <input
               type="number"
               placeholder="Ej: 5.50"
+              [class]="
+                precioInvalido
+                  ? 'border-red-500 focus:ring-0 focus:outline-none'
+                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+              "
               class="placeholder-gris-200 w-full [appearance:textfield] rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               formControlName="precio"
               (input)="borrarError('precio')"
             />
           </div>
-          @if (errores().precio) {
-            <small class="text-red-600">Este campo es obligatorio.</small>
-          } @else if (precioInvalido) {
-            <small class="text-red-600">
-              El precio es requerido y debe ser un número válido (Ejm: 2.34).
-            </small>
-          }
+          <div class="w-[215px] break-words">
+            @if (errores().precio) {
+              <small class="text-red-600">
+                {{ errores().precio }}
+              </small>
+            } @else if (
+              precioInvalido || formulario.get('precio')?.value == '0'
+            ) {
+              <small class="text-red-600">
+                El precio debe ser un número entre 1 y 100, con un máximo de dos
+                decimales.
+              </small>
+            }
+          </div>
         </div>
 
         <!-- Ingredientes -->
@@ -307,16 +350,21 @@ import { ModalAvisosComponent } from './modalavisos.component';
               <span class="text-red-500">*</span>
             </p>
 
-            <div class="mb-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-              <fieldset>
-                <label class="mb-1 block text-sm font-medium">
+            @let ingredientesInvalido =
+              (ingredientesSeleccionados().length !== 0 &&
+                ingredientesSeleccionados().length < 2) ||
+              errores().ingredientes;
+
+            <div class="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+              <fieldset class="flex flex-col gap-1">
+                <label class="text-sm font-medium">
                   Selecciona
                   <strong class="text-bold">dos</strong>
                   ingredientes
                   <span class="text-red-500">*</span>
                 </label>
 
-                <div class="grid grid-cols-1 gap-2 pl-2 text-sm">
+                <div class="flex flex-col gap-1.5 pl-2 text-sm">
                   @for (ingrediente of ingredientes(); track ingrediente) {
                     <label>
                       <input
@@ -334,12 +382,21 @@ import { ModalAvisosComponent } from './modalavisos.component';
                     </label>
                   }
                 </div>
+                @if (errores().ingredientes) {
+                  <small class="text-red-600">
+                    {{ errores().ingredientes }}
+                  </small>
+                } @else if (ingredientesInvalido) {
+                  <small class="text-red-600">
+                    Debes seleccionar dos ingredientes.
+                  </small>
+                }
               </fieldset>
 
               <!-- Aroma y tipo de piel -->
-              <div class="grid grid-cols-1 gap-4">
-                <fieldset>
-                  <label class="mb-1 block font-medium">
+              <div class="flex flex-col gap-4">
+                <fieldset class="flex flex-col gap-1">
+                  <label class="block font-medium">
                     Aroma
                     <span class="text-red-500">*</span>
                   </label>
@@ -357,16 +414,18 @@ import { ModalAvisosComponent } from './modalavisos.component';
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
                   />
+                  @if (errores().aroma) {
+                    <small class="text-red-600">
+                      {{ errores().aroma }}
+                    </small>
+                  } @else if (aromaInvalido) {
+                    <small class="text-red-600">
+                      El campo aroma es requerido y debes escoger un aroma.
+                    </small>
+                  }
                 </fieldset>
-                @if (errores().aroma) {
-                  <small class="text-red-600">Este campo es obligatorio.</small>
-                } @else if (aromaInvalido) {
-                  <small class="text-red-600">
-                    El campo aroma es requerido y debes escoger un aroma.
-                  </small>
-                }
-                <fieldset>
-                  <label class="mb-1 block font-medium">
+                <fieldset class="flex flex-col gap-1">
+                  <label class="ont-medium">
                     Tipo
                     <span class="text-red-500">*</span>
                   </label>
@@ -407,7 +466,9 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   <small class="font-medium text-red-700"></small>
                 </fieldset>
                 @if (errores().tipo) {
-                  <small class="text-red-600">Este campo es obligatorio.</small>
+                  <small class="text-red-600">
+                    {{ errores().tipo }}
+                  </small>
                 } @else if (tipoInvalido) {
                   <small class="text-red-600">
                     El campo tipo es requerido y debes escoger un tipo de piel
@@ -479,30 +540,33 @@ export class FormProducto {
     imagen: new FormControl<File | null>(null, Validators.required),
     nombre: new FormControl('', [
       Validators.required,
-      Validators.minLength(3),
-      Validators.pattern('^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$'),
+      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{3,25}$/),
     ]),
     descripcion: new FormControl('', [
       Validators.required,
-      Validators.minLength(10),
+      Validators.pattern(/^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){10})[\s\S]{10,500}$/),
     ]),
     beneficios: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\s*[^,]+?\s*,\s*[^,]+?\s*,\s*[^,]+?\s*$/),
+      Validators.pattern(/^[^,]{10,100},\s*[^,]{10,100},\s*[^,]{10,100}$/),
     ]),
-    // Expresión regular para permitir letras, números y caracteres especiales
     precio: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^\d{1,2}(\.\d{1,2})?$/),
+      Validators.pattern(/^(100(\.0{1,2})?|\d{1,2}(\.\d{1,2})?)$/),
     ]),
-    stock: new FormControl(57, Validators.required),
+    stock: new FormControl(57, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(100),
+    ]),
     id_categoria: new FormControl('', Validators.required),
     ingredientes: new FormControl([''], Validators.required),
     aroma: new FormControl('', Validators.required),
     tipo: new FormControl('', Validators.required),
-  }); //devuelve un objeto con los datos del formulario
+  });
 
   public errores = signal<any>({
+    imagen: '',
     nombre: '',
     descripcion: '',
     beneficios: '',
@@ -541,7 +605,6 @@ export class FormProducto {
     this.mostrarModal.set(false);
   }
   constructor() {
-    //llama al servicio de ingredientes
     this.ingredientesServicio.obtener().subscribe(({ ingredientes }: any) => {
       const esencias = ingredientes.filter(
         (ingrediente: any) => ingrediente.tipo === 'esencia',
@@ -667,6 +730,8 @@ export class FormProducto {
       tipo: '',
     });
     this.imagePreview = null;
+    this.ingredientesSeleccionados.set([]);
+    this.categoriaSeleccionada.set('');
   }
 
   //funcion que verifica que haciion hace el boton
@@ -678,35 +743,19 @@ export class FormProducto {
       this.servicioProductos()
         .registrar(formData) //envia el formulario al backend
         .subscribe({
-          next: ({ msg }: { msg: any }) => {
-            this.tipoRespuesta.set('exito');
-            this.mostrarModalExito.set(true);
-            this.respuestaBack.set(msg);
-            this.resetearFormulario(); //resetea el formulario
-          },
-          //funcion para manejar errores
-          //si el backend devuelve un error, se setea en el objeto errores
-          error: ({ error }: { error: any }) => {
-            console.error('Error al crear el registro:', error);
-            this.tipoRespuesta.set('error');
-            this.mostrarModalExito.set(true);
-            this.respuestaBack.set(error.msg);
-          },
+          next: this.respuestaExitoBack,
+          error: this.respuestadeErrorBack,
+        })
+        .add(() => {
+          this.mostrarModalExito.set(true);
         });
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
       this.servicioProductos()
         .editar(this.idRegistro(), formData)
         .subscribe({
-          next: ({ msg }: any) => {
-            this.tipoRespuesta.set('exito');
-            this.respuestaBack.set(msg);
-            this.resetearFormulario(); //resetea el formulario
-          },
-          error: ({ error: { msg } }: any) => {
-            this.tipoRespuesta.set('error');
-            this.respuestaBack.set(msg);
-          },
+          next: this.respuestaExitoBack,
+          error: this.respuestadeErrorBack,
         })
         .add(() => {
           this.mostrarModalExito.set(true);
@@ -717,18 +766,16 @@ export class FormProducto {
   // funcion para almacenar los ingredientes seleccionados
   public seleccionarIngrediente(ingredienteId: string, event: any) {
     if (this.ingredientesSeleccionados().includes(ingredienteId)) {
-      // verifica si el ingrediente ya fue seleccionado
-      this.ingredientesSeleccionados.update(
-        (ingredientes) => ingredientes.filter((id) => id !== ingredienteId), // si fue seleccionado lo elimina
+      this.ingredientesSeleccionados.update((ingredientes) =>
+        ingredientes.filter((id) => id !== ingredienteId),
       );
     } else if (this.ingredientesSeleccionados().length < 2) {
-      // verifica si hay menos de 2 ingredientes seleccionados
       this.ingredientesSeleccionados.update((ingredientes) => [
-        ...ingredientes, // agregar los ingredientes anteriores
-        ingredienteId, // agrega el nuevo ingrediente
+        ...ingredientes,
+        ingredienteId,
       ]);
     } else {
-      event.target.checked = false; // deselecciona el checkbox porque ya hay 2 seleccionados
+      event.target.checked = false;
     }
   }
 
@@ -743,6 +790,37 @@ export class FormProducto {
       this.formulario.patchValue({
         imagen: file,
       });
+      this.borrarError('imagen');
     }
   }
+
+  private respuestadeErrorBack = ({ error }: { error: any }) => {
+    const { details = [], msg } = error;
+
+    if(details.length > 0) {
+      details.forEach(({ path, msg }: any) => {
+      this.errores.update((prev: any) => ({
+        ...prev,
+        [path]: msg,
+      }));
+    });
+    }
+
+
+    if (this.ingredientesSeleccionados().length === 0) {
+      this.errores.update((prev: any) => ({
+        ...prev,
+        ingredientes: 'No has seleccionado ingredientes',
+      }));
+    }
+
+    this.tipoRespuesta.set('error');
+    this.respuestaBack.set(msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.');
+  };
+
+  private respuestaExitoBack = ({ msg }: any) => {
+    this.tipoRespuesta.set('exito');
+    this.respuestaBack.set(msg);
+    this.resetearFormulario();
+  };
 }

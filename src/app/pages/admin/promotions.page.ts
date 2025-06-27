@@ -14,6 +14,7 @@ import { Presentation } from '../../components/admin/presentation.component';
 import { Loading } from '../../components/loading.component';
 import { Navegacion } from '../../components/navegacion.component';
 import { promocion } from '../../interfaces/promocion.interface';
+import { transformaFecha } from '../../utils/transformaFecha';
 @Component({
   imports: [
     Navegacion,
@@ -54,36 +55,15 @@ import { promocion } from '../../interfaces/promocion.interface';
                   />
                 </svg>
                 <input
-                  [(ngModel)]="busqueda"
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none"
+                  [(ngModel)]="servicePromociones.busqueda"
+                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
                   type="search"
-                  placeholder="Buscar por nombre"
+                  placeholder="Buscar promociones por nombre..."
                   id="search"
                   name="search"
                 />
               </div>
-              <div class="mt-4 flex items-center gap-2">
-                <span
-                  class="flex items-center gap-2 font-semibold text-[#3B3D3E]"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
-                  >
-                    <path
-                      d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
-                    />
-                  </svg>
-                  Filtrar por:
-                </span>
-                <button
-                  class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
-                >
-                  <span class="mr-2">Todos</span>
-                </button>
-              </div>
+             
             </div>
             <button
               class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
@@ -111,13 +91,13 @@ import { promocion } from '../../interfaces/promocion.interface';
             [mostrarDatos]="enviarDatos()"
             [idRegistro]="idRegistro()"
           ></formprom>
-          @if (carga()) {
+          @if (servicePromociones.carga()) {
             <loading></loading>
           } @else {
             <div
               class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (item of promociones; track $index) {
+              @for (item of servicePromociones.datosBuscados(); track $index) {
                 <div
                   class="flex h-90 flex-col rounded-xl border border-gray-300"
                 >
@@ -135,7 +115,7 @@ import { promocion } from '../../interfaces/promocion.interface';
                       {{ item?.nombre | titlecase }}
                     </h2>
 
-                    <span>Promocion creada el: {{ item.createdAt }}</span>
+                    <span>Promocion creada el: {{ transformaFecha(item.createdAt) }}</span>
                   </div>
                   <div class="flex items-center justify-center gap-2 px-4">
                     <button
@@ -217,37 +197,13 @@ export class PromotionsPage {
   //variable que almacena el id de productos
   public idRegistro = signal<string>('');
   public mostrarModal = signal<boolean>(false);
-  //estado de carga
-  public carga = signal<boolean>(true);
-
   public servicePromociones = inject(PromocionesService);
-
   public mostrarModalConfirmacion = signal<boolean>(false);
   public promocionAEliminar = signal<string | null>(null);
 
   //variable para setear los datos en el formulario
   public enviarDatos = signal<promocion | null>(null);
-
   public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
-  public numeroPagina = signal<number>(1);
-  public datosFiltrados: promocion[] = []
-
-  public busqueda = signal<string>('');
-
-  //variable que almacena lo que traera del backend
-  public promociones: promocion[] = [];
-
-  public datosBuscados() {
-    const busqueda = this.busqueda().toLowerCase().trim();
-
-    if (busqueda) {
-      return this.datosFiltrados.filter(({ nombre }) =>
-        nombre.toLowerCase().includes(busqueda),
-      );
-    }
-
-    return this.datosFiltrados; // Retorna todos los productos si no hay búsqueda
-  }
 
   //mettodo para visualizar promociones
   public visualizarPromociones(datos: promocion) {
@@ -283,16 +239,8 @@ export class PromotionsPage {
     }
   }
 
-  constructor() {
-    this.servicePromociones
-      .obtener(1)
-      .subscribe({
-        next: (respuesta: any) => {
-          this.promociones = respuesta.promociones;
-          this.datosFiltrados = this.promociones;},
-      })
-      .add(() => {
-        this.carga.set(false);
-      }); //cambia estado de carga;
+  public transformaFecha(fecha: string): string {
+    return transformaFecha(fecha);
   }
+
 }

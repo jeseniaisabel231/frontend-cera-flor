@@ -1,66 +1,92 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { tap } from 'rxjs';
 import { usuario } from '../../app/interfaces/usuario.interface';
 import { environment } from '../../environments/environment';
-import { of, tap } from 'rxjs';
+
+interface Filtro {
+  clave: keyof usuario;
+  valor: 'femenino' | 'masculino' | 'activo' | 'inactivo' | '';
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsuariosService {
-  private urlBackend = environment.urlApi;
+  private urlBackend = environment.urlApi + '/api/admin/clientes';
   private http = inject(HttpClient);
-  private usuarios = signal<usuario[]>([]); // Variable para guardar los usuarios luego de interceptar
+  private headers = {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  };
+  private usuarios = signal<usuario[]>([]);
+
+  public carga = signal<boolean>(true);
+  public busqueda = signal<string>('');
+  public filtro = signal<Filtro>({
+    clave: 'nombre', // En este caso no importa la clave porque no se va a filtrar cuando se seleccione "todos"
+    valor: '',
+  });
+
+  public datosFiltrados = computed(() => {
+    // El computed se ejecuta cuando cambia alguno de estos signals
+    const { clave, valor } = this.filtro();
+    const datos = this.usuarios();
+
+    if (valor) {
+      return datos.filter((usuario) => usuario[clave]?.toLowerCase() === valor);
+    }
+
+    return datos; // Si no hay valor en el filtro, retorna todos los usuarios
+  });
+  public datosBuscados = computed(() => {
+    const busqueda = this.busqueda().toLowerCase().trim();
+    const datos = this.datosFiltrados();
+
+    if (busqueda) {
+      return datos.filter(
+        ({ nombre, apellido, email }) =>
+          nombre.toLowerCase().includes(busqueda) ||
+          apellido.toLowerCase().includes(busqueda) ||
+          email.toLowerCase().includes(busqueda),
+      );
+    }
+
+    return datos; // Si no hay búsqueda, retorna los datos filtrados
+  });
+
+  constructor() {
+    this.obtener()
+      .subscribe()
+      .add(() => this.carga.set(false)); // Llama al método obtener para cargar los usuarios al iniciar el servicio
+  }
 
   obtener() {
     return this.http
-      .get(`${this.urlBackend}/api/admin/clientes`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-      .pipe(
-        // Sirve para interceptar los datos que llegan de la  y es exitosa
-        tap((respuesta: any) => this.usuarios.set(respuesta.clientes)) // Se guarda la respuesta en la variable usuarios
-      );
+      .get(this.urlBackend, { headers: this.headers })
+      .pipe(tap((respuesta: any) => this.usuarios.set(respuesta.clientes)));
   }
 
   activarEstado(id: string) {
     return this.http
-      .patch(
-        `${this.urlBackend}/api/admin/clientes/activar/${id}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        }
-      )
+      .patch(`${this.urlBackend}/activar/${id}`, {}, { headers: this.headers })
       .pipe(
         tap(() =>
-          this.usuarios.update((usuarios) => {
-            const index = usuarios.findIndex((usuario) => usuario._id === id);
-
-            if (index !== -1) { // Encontro al usuario porque el indice en el array es diferente de -1
-              usuarios[index].estado = 'activo'; // Cambia el estado a activo del usuario idenficado con el indice
-            }
-            return usuarios; // Retorno todos los usuarios incluyendo el que se acaba de modificar
-          })
-        ) // Actualiza la lista de usuarios eliminando el usuario con el id proporcionado
+          this.usuarios.update((usuarios) => usuarios.map((usuario) =>
+            usuario._id === id ? { ...usuario, estado: 'activo' } : usuario,
+          )),
+        ),
       );
   }
+
   eliminarEstado(id: string) {
     return this.http
-      .delete(`${this.urlBackend}/api/admin/clientes/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
+      .delete(`${this.urlBackend}/${id}`, { headers: this.headers })
       .pipe(
         tap(() =>
-          this.usuarios.update((usuarios) => {
-            const index = usuarios.findIndex((usuario) => usuario._id === id);
-
-            if (index !== -1) {
-              usuarios[index].estado = 'inactivo'; // Cambia el estado a inactivo
-            }
-            return usuarios;
-          })
-        ) // Actualiza la lista de usuarios eliminando el usuario con el id proporcionado
+          this.usuarios.update((usuarios) => usuarios.map((usuario) =>
+            usuario._id === id ? { ...usuario, estado: 'inactivo' } : usuario,
+          )),
+        ),
       );
   }
 }

@@ -178,7 +178,6 @@ export class CatalogPage {
       next: (respuesta: any) => {
         this.categorias = respuesta.categorias;
       },
-      error: (err) => console.error('Error al cargar categorías', err),
     });
   }
 

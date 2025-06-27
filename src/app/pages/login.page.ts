@@ -315,7 +315,7 @@ export class LoginPage {
           },
           error: ({ error }: { error: any }) => {
             this.titulo.set('Error');
-            this.mensaje.set(error.msg);
+            this.mensaje.set(error.msg ?? 'Ocurrió un error al iniciar sesión. Por favor, intente más tarde.');
             this.tipoRespuesta.set('error');
             this.mostrarModal.set(true);
             this.carga.set(false);

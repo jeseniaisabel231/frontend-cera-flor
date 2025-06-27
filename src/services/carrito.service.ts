@@ -27,9 +27,6 @@ export class CarritoService {
         this.carrito = carrito;
         this.cantidadProductos = carrito?.productos?.length ?? 0; // Inicializa la cantidad de productos
       },
-      error: (error) => {
-        console.error('Error al obtener el carrito:', error);
-      },
     });
   }
 

@@ -220,12 +220,8 @@ export class ShoppingCardPage {
       .obtenerCarrito()
       .subscribe({
         next: ({ carrito }: any) => {
-          console.log('Carrito obtenido:', carrito);
           this.carrito = carrito;
           this.cantidadProducto.set(carrito.productos.length ?? 0);
-        },
-        error: (error) => {
-          console.error('Error al obtener el carrito:', error);
         },
       })
       .add(() => this.carga.set(false));
@@ -236,17 +232,11 @@ export class ShoppingCardPage {
       .modificarCantidadCarrito(producto.producto_id._id, cantidad)
       .subscribe({
         next: () => {},
-        error: (error) => {
-          console.error('Error al actualizar cantidad:', error);
-        },
       });
   }
   eliminarProducto(producto_id: string) {
     this.serviceCarrito.eliminarCarrito(producto_id).subscribe({
       next: () => {},
-      error: (error) => {
-        console.error('Error al eliminar producto:', error);
-      },
     });
   }
   calcularImpuestos() {
@@ -273,9 +263,6 @@ export class ShoppingCardPage {
     if (decision ) {
       this.serviceCarrito.eliminarCarrito(this.idEliminar()).subscribe({
         next: () => {},
-        error: (error) => {
-          console.error('Error al eliminar producto:', error);
-        },
       });
     }
   }

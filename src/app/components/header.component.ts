@@ -209,7 +209,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               [class.font-medium]="rutaActiva() === 'catalogo'"
               [class.text-opacity-80]="rutaActiva() !== 'catalogo'"
             >
-              Catalogo
+              Catálogo
             </a>
           </li>
 

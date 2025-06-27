@@ -138,7 +138,7 @@ export class ModalAvisosComponent {
   //esta funcion se encarga de cerrar el modal
   public close() {
     this.mostrarModal.set(false);
-    if (this.reload()) {
+    if (this.reload() && this.tipo() === 'exito') {
       window.location.reload();
     }
   }

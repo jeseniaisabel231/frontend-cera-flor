@@ -26,8 +26,6 @@ export class DashboardService {
       day: '2-digit',
     }).format(fechaActual).split('/').reverse().join('-');
 
-    console.log('Fecha inicio:', fechaInicio);
-    console.log('Fecha fin:', fechaFin);
     return this.http.get<GraficaVentas>(
       `${this.urlBackend}/api/ventas/dashboard?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`,
       {

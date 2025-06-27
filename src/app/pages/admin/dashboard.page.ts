@@ -205,7 +205,6 @@ export class DashboardPage {
           const diaSemana = new Intl.DateTimeFormat('es-EC', {
             weekday: 'short',
           }).format(fecha);
-          console.log('Día:', dia);
           if (index < 7) {
             dias.push(diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1));
             ventaSemanaPasada.push(element.totalVentas);
@@ -237,7 +236,6 @@ export class DashboardPage {
             },
           ],
         });
-        console.log(data);
         data.ventasPorCategoria.forEach((element) => {
           productosVendidos.push(element.vendidos);
           categorias.push(element.categoría);

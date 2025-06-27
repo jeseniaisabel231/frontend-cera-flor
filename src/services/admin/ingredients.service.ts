@@ -30,11 +30,12 @@ export class IngredientesService {
 
     if (valor) {
       return ingredientes.filter((ingrediente) => {
-        console.log(`Filtrando por ${clave}: ${valor}`);
-        console.log(ingrediente[clave]);
         if (typeof ingrediente[clave] === 'string') {
           return ingrediente[clave].toLowerCase() === valor;
-        } else if (clave === 'id_categoria' && Array.isArray(ingrediente[clave])) {
+        } else if (
+          clave === 'id_categoria' &&
+          Array.isArray(ingrediente[clave])
+        ) {
           return ingrediente[clave].includes(valor);
         }
         return false;
@@ -114,5 +115,12 @@ export class IngredientesService {
           ),
         ),
       );
+  }
+
+  extraerColorDominante(imageUrl: string) {
+    return this.http.post<any>(
+      'https://square-wylma-jhonmata0427s-projects-cccf87c0.koyeb.app/color-dominante',
+      { imageUrl },
+    );
   }
 }

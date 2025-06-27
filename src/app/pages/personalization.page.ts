@@ -59,7 +59,6 @@ export class PersonalizationPage {
       respuesta.categorias.map((categoria: any) => {
         this.almacenarCategoria[categoria.nombre] = categoria._id;
       });
-      console.log(respuesta.categorias);
     });
   }
 }

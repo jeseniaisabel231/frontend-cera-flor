@@ -480,7 +480,6 @@ export class HomePage {
       next: (respuesta: any) => {
         this.productos = respuesta.productos;
       },
-      error: (err) => console.error('Error al cargar productos', err),
     });
   }
   public promocionesResource = httpResource<any>(

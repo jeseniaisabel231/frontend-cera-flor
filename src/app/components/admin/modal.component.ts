@@ -79,7 +79,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
             @if (clave.toString() !== 'imagen') {
               <div class="space-y-1">
                 <label
-                  class="block text-sm font-medium text-gray-700"
+                  class="block text-sm  text-gray-700 font-bold"
                   [for]="clave"
                 >
                   {{ inputs[titulo()]['nombres'][$index] }}
@@ -94,7 +94,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                   clave.toString() === 'createdAt' ||
                   clave.toString() === 'updatedAt'
                 ) {
-                  <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-900">
+                  <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-700">
                     {{ transformaFecha(verDatos()[clave]) }}
                   </div>
                 } @else if (clave.toString() === 'productos') {
@@ -115,7 +115,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                     }
                   </div>
                 } @else {
-                  <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-900">
+                  <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-700">
                     {{ verDatos()[clave] ?? 'Informacion no registrada' }}
                   </div>
                 }

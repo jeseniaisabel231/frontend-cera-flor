@@ -283,9 +283,6 @@ export class PaymentPage {
       next: (respuesta) => {
         this.carritoProductos = respuesta.carrito ?? {}; // Asignar el carrito a la variable objeto{}
       },
-      error: (error) => {
-        console.error('Error al cargar el carrito:', error);
-      },
     });
 
     this.servicePerfil.obtenerPerfil().subscribe({

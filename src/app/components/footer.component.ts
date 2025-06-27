@@ -1,32 +1,41 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'footeer',
+  imports: [RouterLink],
   template: `
     <footer
-      class="bg-[#3C3C3B] flex flex-col items-center py-7 lg:flex-row justify-evenly"
+      class="flex flex-col items-center justify-evenly bg-[#3C3C3B] py-7 lg:flex-row"
     >
-      <div class="flex flex-col lg:flex-row items-center  pb-5 gap-4">
+      <div class="flex flex-col items-center gap-4 pb-5 lg:flex-row">
         <img src="logo.png" alt="flor y cera" class="h-24" />
-        <h1 class="font-playfair font-bold text-[25px] text-[#FFFFEC]">
+        <h1 class="font-playfair text-[25px] font-bold text-[#FFFFEC]">
           Flor & Cera
         </h1>
       </div>
       <nav
-        class="flex flex-col gap-y-5 text-[#FFFFEC] justify-center py-4 border-y border-white w-full lg:border-x lg:border-y-0 lg:w-auto lg:px-20 lg:h-30 items-center"
+        class="flex w-full flex-col items-center justify-center gap-y-5 border-y border-white py-4 text-[#FFFFEC] lg:h-30 lg:w-auto lg:border-x lg:border-y-0 lg:px-20"
       >
-        <ul class="flex flex-row  gap-8">
-          <li><a href="#">Inicio</a></li>
-          <li><a href="#">Catálogo</a></li>
-          <li><a href="#">Personalización</a></li>
-          <li><a href="#">Sobre nosotros</a></li>
+        <ul class="flex flex-row gap-8">
+          <li><a routerLink="/inicio">Inicio</a></li>
+          <li>
+            <a
+              routerLink="/catalogo"
+              [queryParams]="{ categoria: 'jabones-artesanales' }"
+            >
+              Catálogo
+            </a>
+          </li>
+          <li><a routerLink="/personalizacion-producto">Personalización</a></li>
+          <li><a routerLink="/sobre-nosotros">Sobre nosotros</a></li>
         </ul>
-        <a href="" class="text-[#b6b6b6] text-[15px] hidden lg:block"
-          >© Flor & Cera Todos los derechos reservados.
+        <a href="" class="hidden text-[15px] text-[#b6b6b6] lg:block">
+          © Flor & Cera Todos los derechos reservados.
         </a>
       </nav>
       <div class="flex flex-col items-center justify-center gap-5 py-5">
-        <h2 class="text-white font-semibold text-[18px]">Contactanos:</h2>
+        <h2 class="text-[18px] font-semibold text-white">Contáctanos:</h2>
         <div class="flex flex-row gap-4">
           <div
             class="flex h-14 w-14 items-center justify-center rounded-full border border-white text-white"
@@ -83,8 +92,8 @@ import { Component } from '@angular/core';
             </svg>
           </div>
         </div>
-        <a href="" class="text-[#b6b6b6] text-[15px] lg:hidden"
-          >© Flor & Cera Todos los derechos reservados.
+        <a href="" class="text-[15px] text-[#b6b6b6] lg:hidden">
+          © Flor & Cera Todos los derechos reservados.
         </a>
       </div>
     </footer>

@@ -60,7 +60,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
         <div class="h-full">
           <label for="foto" class="flex flex-col gap-1">
-            <span>Imagen del producto <strong>(tamaño máximo: 2MB)</strong></span>
+            <span>
+              Imagen del producto
+              <strong>(tamaño máximo: 2MB)</strong>
+            </span>
 
             @let imagenInvalida =
               (formulario.get('imagen')?.invalid &&
@@ -112,7 +115,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             } @else if (imagenInvalida) {
               <small class="text-red-600">
                 <div>
-                  La imagen debe ser un archivo de imagen válido
+                  La imagen es requerida y debe ser un archivo de imagen válido
                   (JPG, PNG, GIF).
                 </div>
               </small>
@@ -124,7 +127,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-1">
             <label class="block text-sm font-medium">
-              Nombre del producto
+              Nombre del producto:
               <span class="text-red-500">*</span>
             </label>
             @let nombreInvalido =
@@ -413,6 +416,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                         ? 'border-red-500 focus:ring-0 focus:outline-none'
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
+                    (input)="borrarError('aroma')"
                   />
                   @if (errores().aroma) {
                     <small class="text-red-600">
@@ -441,6 +445,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                         ? 'border-red-500 focus:ring-0 focus:outline-none'
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
+                    (change)="borrarError('tipo')"
                   >
                     <option
                       class="text-gris-200"
@@ -704,6 +709,19 @@ export class FormProducto {
         } else {
           this.formulario.enable();
         }
+
+        this.errores.set({
+          imagen: '',
+          nombre: '',
+          descripcion: '',
+          beneficios: '',
+          precio: '',
+          stock: '',
+          id_categoria: '',
+          ingredientes: '',
+          aroma: '',
+          tipo: '',
+        });
       } else if (this.acciones() === 'Registrar') {
         this.resetearFormulario();
         this.formulario.enable();
@@ -736,9 +754,32 @@ export class FormProducto {
 
   //funcion que verifica que haciion hace el boton
   onSubmit() {
-    const formData = this.toFormData(); //convierte el formulario a FormData
-    //vaciat lo errores
-    //fun cion para crear un registro
+    if (this.formulario.invalid || this.ingredientesSeleccionados().length < 2) {
+      this.errores.update((prev) => {
+        const newErrors: any = {};
+        Object.keys(prev).forEach((key) => {
+          const campo = this.formulario.get(key);
+
+          if (campo?.errors?.['required']) {
+            newErrors[key] = 'Este campo es requerido';
+          }
+        });
+
+        if (this.ingredientesSeleccionados().length === 0) {
+          newErrors.ingredientes = 'No has seleccionado ingredientes';
+        }
+
+        return { ...prev, ...newErrors };
+      });
+      this.mostrarModalExito.set(true);
+      this.tipoRespuesta.set('error');
+      this.respuestaBack.set(
+        'Por favor, completa todos los campos requeridos correctamente.',
+      );
+      return;
+    }
+
+    const formData = this.toFormData();
     if (this.acciones() === 'Registrar') {
       this.servicioProductos()
         .registrar(formData) //envia el formulario al backend
@@ -797,15 +838,14 @@ export class FormProducto {
   private respuestadeErrorBack = ({ error }: { error: any }) => {
     const { details = [], msg } = error;
 
-    if(details.length > 0) {
+    if (details.length > 0) {
       details.forEach(({ path, msg }: any) => {
-      this.errores.update((prev: any) => ({
-        ...prev,
-        [path]: msg,
-      }));
-    });
+        this.errores.update((prev: any) => ({
+          ...prev,
+          [path]: msg,
+        }));
+      });
     }
-
 
     if (this.ingredientesSeleccionados().length === 0) {
       this.errores.update((prev: any) => ({
@@ -815,7 +855,9 @@ export class FormProducto {
     }
 
     this.tipoRespuesta.set('error');
-    this.respuestaBack.set(msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.');
+    this.respuestaBack.set(
+      msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.',
+    );
   };
 
   private respuestaExitoBack = ({ msg }: any) => {

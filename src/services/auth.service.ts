@@ -20,7 +20,7 @@ export class AuthService {
   login(email: string, password: string) {
     //metodo post: enviar datos
     return this.http
-      .post<respuestaLogin>(`${this.urlBackend}/api/login`, {
+      .post<respuestaLogin>(`${this.urlBackend}/api/login?environment=mobile`, {
         email,
         password,
       })

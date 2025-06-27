@@ -12,7 +12,6 @@ import {
   FormControl,
   FormGroup,
   FormsModule,
-  NgModel,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -58,7 +57,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         [formGroup]="formulario"
       >
         <!-- Subir foto -->
-        
+
         @let imagenInvalida =
           (formulario.get('imagen')?.invalid &&
             formulario.get('imagen')?.value) ||
@@ -128,14 +127,16 @@ import { ModalAvisosComponent } from './modalavisos.component';
               <span class="text-red-500">*</span>
             </label>
             <input
-            #inputColor
+              #inputColor
               type="color"
-              class="w-full h-50 rounded-lg border border-gray-300 p-2 focus:ring-morado-400 focus:ring-2 focus:outline-none"
-              [class]="imagenInvalida
+              class="focus:ring-morado-400 h-50 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+              [class]="
+                imagenInvalida
                   ? 'border-red-500 focus:ring-0 focus:outline-none'
                   : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
               "
-              (input)="color.set(inputColor.value);borrarError('imagen')"
+              [value]="color()"
+              (input)="color.set(inputColor.value); borrarError('imagen')"
               (change)="generarImagenCircularDesdeColor()"
             />
           }
@@ -503,6 +504,16 @@ export class FormIngredientsComponent {
           this.imagePreview = null;
         }
 
+        if (datos.tipo === 'color') {
+          this.servicioIngredientes
+            .extraerColorDominante(datos.imagen)
+            .subscribe({
+              next: ({ color }) => {
+                this.color.set(color);
+              },
+            });
+        }
+
         if (this.acciones() === 'Visualizar') {
           this.formulario.disable();
         } else {
@@ -525,7 +536,6 @@ export class FormIngredientsComponent {
           this.categorias.map((categoria: categorias) => categoria._id),
         ); //almacena los ids de las categorias
       },
-      error: (err) => console.error('Error al cargar categorías', err),
     });
   }
   public resetearFormulario() {
@@ -541,7 +551,6 @@ export class FormIngredientsComponent {
   }
 
   private respuestadeErrorBack = ({ error }: { error: any }) => {
-    console.log('Error en la respuesta del backend:', error);
     const { details = [], msg } = error;
 
     if (details.length > 0) {
@@ -593,7 +602,9 @@ export class FormIngredientsComponent {
       // Convertir a Blob y luego a File
       canvas.toBlob((blob) => {
         if (blob) {
-          const file = new File([blob], 'color-circle.png', { type: 'image/png' });
+          const file = new File([blob], 'color-circle.png', {
+            type: 'image/png',
+          });
           this.formulario.patchValue({
             imagen: file, // Actualiza el campo de imagen con el nuevo archivo
           });

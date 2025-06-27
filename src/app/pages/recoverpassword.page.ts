@@ -403,8 +403,6 @@ export class RecuperarContrasenia {
             this.tipoRespuestaPassword.set('exito');
 
             this.mostrarModalPassword.set(true);
-            console.log(res);
-            
           },
           error: (err) => {
             this.titulo.set('Error');

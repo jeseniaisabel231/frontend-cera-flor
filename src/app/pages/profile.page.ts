@@ -273,9 +273,6 @@ export class ProfilePage {
       next: (respuesta) => {
         this.perfil.patchValue(respuesta.cliente)
       },
-      error: (error) => {
-        console.error('Error al cargar el perfil:', error);
-      },
     });
   }
 

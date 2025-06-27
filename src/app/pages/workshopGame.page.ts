@@ -426,15 +426,10 @@ export class WorkshopGamePage {
             recomendacion: { producto_personalizado },
           } = respuesta;
 
-          console.log('Recomendaciones de IA:', producto_personalizado);
-
           this.moldesSeleccionados = [producto_personalizado.molde];
           this.coloresSeleccionados = [producto_personalizado.color];
           this.aromasSeleccionados = [producto_personalizado.aroma];
           this.esenciasSeleccionadas = producto_personalizado.esencias;
-        },
-        error: (error: any) => {
-          console.error('Error al obtener recomendaciones de IA:', error);
         },
       });
   }
@@ -454,14 +449,10 @@ export class WorkshopGamePage {
       .registrarPersonalizacion(this.formularioPersonalizado as any)
       .subscribe({
         next: (respuesta: any) => {
-          console.log('Producto personalizado registrado:', respuesta);
-
           this.mostrarDialogoConfirmacion.set(true);
-
           this.mensajeProductoPersonalizado.set(respuesta.msg);
         },
         error: (error: any) => {
-          console.error('Error al registrar producto personalizado:', error);
           this.mostrarDialogoConfirmacion.set(true);
           this.mensajeProductoPersonalizado.set(
             error.error.msg || 'Error al registrar el producto personalizado',
@@ -503,7 +494,6 @@ export class WorkshopGamePage {
     }
   }
   dropAromas(event: CdkDragDrop<any[]>) {
-    console.log('dropAromas');
     if (
       event.previousContainer === event.container ||
       event.previousContainer.id !== 'aromas'
@@ -534,7 +524,6 @@ export class WorkshopGamePage {
     }
   }
   dropColores(event: CdkDragDrop<any[]>) {
-    console.log('dropColores', event.container);
     if (
       event.previousContainer === event.container ||
       event.previousContainer.id !== 'colores'
@@ -599,7 +588,6 @@ export class WorkshopGamePage {
   }
 
   confirmar() {
-    console.log('Compra confirmada!');
     this.mostrarDialogo.set(false);
   }
 

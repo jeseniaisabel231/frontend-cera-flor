@@ -11,11 +11,11 @@ import { Headers } from '../components/header.component';
       <section class="bg-white px-6 py-12 text-center">
         <div class="mx-auto max-w-4xl">
           <img
-            src="https://via.placeholder.com/150"
+            src="/SBprincipal.jpg"
             alt="Nuestra historia"
             class="mx-auto mb-4 h-40 w-40 rounded-full object-cover"
           />
-          <h2 class="mb-4 text-3xl font-semibold text-green-800">
+          <h2 class="mb-4 text-3xl font-semibold font-playfair ">
             Nuestra historia
           </h2>
           <p>
@@ -29,7 +29,7 @@ import { Headers } from '../components/header.component';
 
       <!-- Nuestra Filosofía -->
       <section class="bg-yellow-50 px-6 py-12 text-center">
-        <h2 class="mb-10 text-2xl font-semibold text-gray-800">
+        <h2 class="mb-10 text-2xl font-semibold font-playfair">
           Nuestra Filosofía
         </h2>
         <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-4">
@@ -74,7 +74,7 @@ import { Headers } from '../components/header.component';
           class="mx-auto flex max-w-6xl flex-col items-center gap-8 md:flex-row"
         >
           <div class="md:w-1/2">
-            <h2 class="mb-4 text-2xl font-semibold text-gray-800">Misión</h2>
+            <h2 class="mb-4 text-2xl font-semibold font-playfair">Misión</h2>
             <p>
               nuestra misión es ofrecer jabones y velas artesanales elaborados
               con ingredientes naturales y procesos sostenibles, proporcionando
@@ -86,7 +86,7 @@ import { Headers } from '../components/header.component';
           </div>
           <div class="md:w-1/2">
             <img
-              src="https://via.placeholder.com/300x200"
+              src="/SBjabones.png"
               alt="Misión"
               class="rounded-lg"
             />
@@ -100,7 +100,7 @@ import { Headers } from '../components/header.component';
           class="mx-auto flex max-w-6xl flex-col items-center gap-8 md:flex-row-reverse"
         >
           <div class="md:w-1/2">
-            <h2 class="mb-4 text-2xl font-semibold text-gray-800">Visión</h2>
+            <h2 class="mb-4 text-2xl font-semibold font-playfair">Visión</h2>
             <p>
               Ser una marca reconocida por la calidad, autenticidad y compromiso
               ecológico de nuestros jabones y velas artesanales. Queremos
@@ -112,7 +112,7 @@ import { Headers } from '../components/header.component';
           </div>
           <div class="md:w-1/2">
             <img
-              src="https://via.placeholder.com/300x200"
+              src="/SBvelas.png"
               alt="Visión"
               class="rounded-lg"
             />

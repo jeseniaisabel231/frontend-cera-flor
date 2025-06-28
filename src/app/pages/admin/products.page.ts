@@ -172,19 +172,19 @@ import { producto } from '../../interfaces/producto.interface';
             <loading></loading>
           } @else {
             <section
-              class="grid h-[380px] grid-cols-1 gap-5 overflow-y-auto pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              class="grid h-100 grid-cols-1 gap-5 overflow-y-auto mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-lg"
             >
               @for (item of productosService.datosBuscados(); track $index) {
                 <div
-                  class="mx-auto flex h-90 min-h-[400px] w-full max-w-[305px] flex-col rounded-xl border border-gray-300"
+                  class="mx-auto flex min-h-[400px] w-full max-w-[305px] flex-col rounded-xl border border-gray-300"
                 >
                   <figure
-                    class="relative aspect-square overflow-hidden border-b border-gray-300 pt-[75%]"
+                    class="aspect-square overflow-hidden border-b border-gray-300"
                   >
                     <img
                       [src]="item?.imagen"
                       alt="{{ item?.nombre }}"
-                      class="absolute top-0 left-0 h-full w-full rounded-t-md object-cover"
+                      class="h-full w-full rounded-t-md object-cover"
                     />
                   </figure>
                   <div class="flex flex-col justify-between p-4">
@@ -200,7 +200,7 @@ import { producto } from '../../interfaces/producto.interface';
                         {{ item?.tipo | titlecase }}
                       </small>
                     </div>
-                    <h3 class="mt-2 text-lg font-bold">{{ item?.nombre }}</h3>
+                    <h3 class="mt-2 text-lg font-bold overflow-hidden text-ellipsis">{{ item?.nombre }}</h3>
                     <p class="text-lg font-bold text-purple-600">
                       $ {{ item?.precio }}
                     </p>

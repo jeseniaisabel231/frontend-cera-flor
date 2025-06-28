@@ -76,7 +76,7 @@ import { Headers } from '../components/header.component';
           <div class="md:w-1/2">
             <h2 class="mb-4 text-2xl font-semibold font-playfair">Misión</h2>
             <p>
-              nuestra misión es ofrecer jabones y velas artesanales elaborados
+              Nuestra misión es ofrecer jabones y velas artesanales elaborados
               con ingredientes naturales y procesos sostenibles, proporcionando
               bienestar, relajación y cuidado para la piel y el hogar. Nos
               comprometemos a crear productos únicos, libres de químicos
@@ -103,7 +103,7 @@ import { Headers } from '../components/header.component';
             <h2 class="mb-4 text-2xl font-semibold font-playfair">Visión</h2>
             <p>
               Ser una marca reconocida por la calidad, autenticidad y compromiso
-              ecológico de nuestros jabones y velas artesanales. Queremos
+              sostenible de nuestros jabones y velas artesanales. Queremos
               inspirar a más personas a elegir productos naturales, expandiendo
               nuestro impacto en el bienestar y la sostenibilidad, mientras
               seguimos innovando con nuevas fragancias, texturas y experiencias

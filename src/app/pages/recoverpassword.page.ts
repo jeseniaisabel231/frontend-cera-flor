@@ -27,6 +27,12 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
             >
               Restablecer contraseña
             </h2>
+
+            @let contrasenaInvalida =
+              (formPassword.get('nuevaPassword')?.invalid &&
+                formPassword.get('nuevaPassword')?.value) ||
+              errores().nuevaPassword;
+
             <div class="mb-6 flex flex-col gap-2">
               <div class="relative flex flex-col gap-1">
                 <svg
@@ -48,7 +54,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                   </g>
                 </svg>
                 <label class="font-medium text-white">
-                  Contraseña
+                  Nueva contraseña
                   <span class="text-red-400">*</span>
                 </label>
                 <input
@@ -56,6 +62,12 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                   formControlName="nuevaPassword"
                   placeholder="Contraseña"
                   class="h-[46px] w-full rounded-[15px] border bg-white p-1.5 px-4 py-3 pl-12 placeholder-gray-400"
+                  (input)="borrarErrores('nuevaPassword')"
+                  [class]="
+                    contrasenaInvalida
+                      ? 'border-red-400 text-red-400 outline-red-400'
+                      : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
+                  "
                 />
                 <svg
                   class="absolute inset-y-0 right-4 my-10 cursor-pointer"
@@ -76,7 +88,27 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                     />
                   }
                 </svg>
+                @if (contrasenaInvalida) {
+                  <small class="text-red-400">
+                    Debe contener al menos una mayúscula, una minúscula, un
+                    número y un carácter especial (&#64;$!%*?&).
+                  </small>
+                } @else if (errores().nuevaPassword) {
+                  <small class="text-red-400">
+                    {{ errores().nuevaPassword }}
+                  </small>
+                }
               </div>
+
+              @let contrasena = formPassword.get('nuevaPassword')?.value;
+              @let confirmarContrasena =
+                formPassword.get('confirmarPassword')?.value;
+
+              @let contrasenaNoCoincide =
+                contrasena &&
+                confirmarContrasena &&
+                contrasena !== confirmarContrasena;
+
               <div class="relative flex flex-col gap-1">
                 <svg
                   class="absolute inset-y-0 left-4 my-10"
@@ -104,6 +136,12 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                   placeholder="Confirmar contraseña"
                   formControlName="confirmarPassword"
                   class="h-[46px] w-full rounded-[15px] border bg-white p-1.5 px-4 py-3 pl-12 placeholder-gray-400"
+                  (input)="borrarErrores('confirmarPassword')"
+                  [class]="
+                    contrasenaNoCoincide
+                      ? 'border-red-400 text-red-400 outline-red-400'
+                      : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
+                  "
                 />
                 <svg
                   class="absolute inset-y-0 right-4 my-10 cursor-pointer"
@@ -124,7 +162,17 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                     />
                   }
                 </svg>
+
+                @if (contrasenaNoCoincide) {
+                  <small class="text-red-400">
+                    Las contraseñas no coinciden.
+                  </small>
+                }
               </div>
+              @let codigoInvalido =
+                (formPassword.get('codigoRecuperacion')?.invalid &&
+                  formPassword.get('codigoRecuperacion')?.value) ||
+                errores().codigoRecuperacion;
               <div class="relative flex flex-col gap-1">
                 <svg
                   class="absolute inset-y-0 left-4 my-10"
@@ -138,6 +186,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                     d="M7 14q-.825 0-1.412-.587T5 12t.588-1.412T7 10t1.413.588T9 12t-.587 1.413T7 14m0 4q-2.5 0-4.25-1.75T1 12t1.75-4.25T7 6q1.675 0 3.038.825T12.2 9H21l3 3l-4.5 4.5l-2-1.5l-2 1.5l-2.125-1.5H12.2q-.8 1.35-2.162 2.175T7 18m0-2q1.4 0 2.463-.85T10.875 13H14l1.45 1.025L17.5 12.5l1.775 1.375L21.15 12l-1-1h-9.275q-.35-1.3-1.412-2.15T7 8Q5.35 8 4.175 9.175T3 12t1.175 2.825T7 16"
                   />
                 </svg>
+
                 <label for="" class="font-medium text-white">
                   Código de confirmación
                   <span class="text-red-400">*</span>
@@ -149,30 +198,43 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                   placeholder="Código de confirmación"
                   formControlName="codigoRecuperacion"
                   class="h-[46px] w-full rounded-[15px] border bg-white p-1.5 px-4 py-3 pl-12 placeholder-gray-400"
+                  (input)="borrarErrores('codigoRecuperacion')"
+                  [class]="
+                    codigoInvalido
+                      ? 'border-red-400 text-red-400 outline-red-400'
+                      : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
+                  "
                 />
+                @if (codigoInvalido) {
+                  <small class="text-red-400">
+                    El código de confirmación debe ser un número de 6 dígitos.
+                  </small>
+                } @else if (errores().codigoRecuperacion) {
+                  <small class="text-red-400">
+                    {{ errores().codigoRecuperacion }}
+                  </small>
+                }
               </div>
             </div>
-            
+
             <button
-              type="submit"
               class="hover:bg-morado-600 relative inline-flex h-[46px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-[15px] bg-[#9F93E7] p-[1px] px-3 py-1 font-medium text-white backdrop-blur-3xl transition-colors duration-500"
             >
-            @if(carga()){
-              <svg
-                class="m-auto animate-spin fill-[#ffffff]"
-                xmlns="http://www.w3.org/2000/svg"
-                height="24"
-                viewBox="0 -960 960 960"
-                width="24"
-              >
-                <path
-                  d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
-                />
-              </svg>
-            }@else {
-
-              Recuperar
-            }
+              @if (carga()) {
+                <svg
+                  class="m-auto animate-spin fill-[#ffffff]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24"
+                  viewBox="0 -960 960 960"
+                  width="24"
+                >
+                  <path
+                    d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                  />
+                </svg>
+              } @else {
+                Recuperar
+              }
             </button>
           </form>
         </div>
@@ -319,9 +381,22 @@ export class RecuperarContrasenia {
   public tipoRespuesta = signal<'exito' | 'error'>('error');
 
   public formPassword = new FormGroup({
-    nuevaPassword: new FormControl('', [Validators.required]),
-    confirmarPassword: new FormControl('', [Validators.required]),
-    codigoRecuperacion: new FormControl('', [Validators.required]),
+    nuevaPassword: new FormControl('', [
+      Validators.required,
+      Validators.pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/,
+      ),
+    ]),
+    confirmarPassword: new FormControl('', [
+      Validators.required,
+      Validators.pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/,
+      ),
+    ]),
+    codigoRecuperacion: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{6}$/),
+    ]),
   });
 
   public router = inject(Router);
@@ -332,6 +407,12 @@ export class RecuperarContrasenia {
     email: new FormControl('', [Validators.required, Validators.email]),
   });
   public error = signal('');
+  public errores = signal({
+    nuevaPassword: '',
+    confirmarPassword: '',
+    codigoRecuperacion: '',
+  });
+
   constructor() {
     effect(() => {
       if (
@@ -350,8 +431,6 @@ export class RecuperarContrasenia {
         .recuperarContrasenia(this.formulario.value.email!)
         .subscribe({
           next: (res) => {
-            //momentaneamente
-            //this.error.set(res.msg);
             this.titulo.set('Éxito');
             this.mensaje.set(res.msg);
 
@@ -359,7 +438,6 @@ export class RecuperarContrasenia {
             this.mostrarModal.set(true);
           },
           error: (err) => {
-            //this.error.set(err.error.msg);
             this.titulo.set('Error');
             this.mensaje.set(err.error.msg);
             this.tipoRespuesta.set('error');
@@ -378,45 +456,48 @@ export class RecuperarContrasenia {
     this.error.set('');
   }
 
+  borrarErrores(clave: any) {
+    this.errores.update((prev) => ({
+      ...prev,
+      [clave]: '',
+    }));
+  }
+
   //metodo para el formulario de reestablecer contrasnia
   onSubmitPassword() {
-    // Verificar si las contraseñas coinciden
-    if (
-      this.formPassword.value.nuevaPassword !==
-      this.formPassword.value.confirmarPassword
-    ) {
-      this.error.set('Las contraseñas no coinciden.');
-      return;
-    }
-    if (this.formPassword.valid) {
-      this.carga.set(true);
-      this.authService
-        .restablecerContrasenia(
-          this.formulario.value.email!,
-          this.formPassword.value.nuevaPassword!,
-          this.formPassword.value.codigoRecuperacion!,
-        )
-        .subscribe({
-          next: (res) => {
-            this.titulo.set('Éxito');
-            this.mensaje.set(res.msg);
-            this.tipoRespuestaPassword.set('exito');
+    this.carga.set(true);
+    this.authService
+      .restablecerContrasenia(
+        this.formulario.value.email!,
+        this.formPassword.value.nuevaPassword!,
+        this.formPassword.value.codigoRecuperacion!,
+      )
+      .subscribe({
+        next: (res) => {
+          this.titulo.set('Éxito');
+          this.mensaje.set(res.msg);
+          this.tipoRespuestaPassword.set('exito');
 
-            this.mostrarModalPassword.set(true);
-          },
-          error: (err) => {
-            this.titulo.set('Error');
-            this.mensaje.set(err.error.msg);
-            this.tipoRespuesta.set('error');
-            this.mostrarModal.set(true);
-          },
-        })
-        .add(() => {
-          this.carga.set(false);
-        });
-    } else {
-      // Manejo de errores para el formulario de reestablecer contraseña
-      this.error.set('Por favor, completa todos los campos correctamente.');
-    }
+          this.mostrarModalPassword.set(true);
+        },
+        error: (err) => {
+          const { details = [] } = err.error;
+
+          details.forEach((error: any) => {
+            this.errores.update((prev) => ({
+              ...prev,
+              [error.path]: error.msg,
+            }));
+          });
+
+          this.titulo.set('Error');
+          this.mensaje.set(err.error.msg);
+          this.tipoRespuestaPassword.set('error');
+          this.mostrarModalPassword.set(true);
+        },
+      })
+      .add(() => {
+        this.carga.set(false);
+      });
   }
 }

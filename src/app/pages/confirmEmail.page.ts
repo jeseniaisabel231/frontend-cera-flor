@@ -23,7 +23,7 @@ import { Headers } from '../components/header.component';
             />
           </svg>
         } @else {
-          @if (respuesta.statusCode() === 40) {
+          @if (respuesta.statusCode() === 404) {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="150"
@@ -49,7 +49,7 @@ import { Headers } from '../components/header.component';
             >
               Continuar al registro
             </a>
-          } @else if (respuesta.statusCode() === 404) {
+          } @else if (respuesta.statusCode() === 500) {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="150"

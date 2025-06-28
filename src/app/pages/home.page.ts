@@ -376,7 +376,7 @@ import { PromocionesService } from '../../services/admin/promociones.service';
                   artificial
                 </p>
                 <p class="text-sm text-gray-600">
-                  La IA analiza las preferenicas del cliente para recomendar y
+                  La IA analiza las preferencias del cliente para recomendar y
                   diseñar productos únicos.
                 </p>
               </div>
@@ -395,7 +395,7 @@ import { PromocionesService } from '../../services/admin/promociones.service';
                 </p>
                 <p class="text-sm text-gray-600">
                   Todos los artículos se elaboran con ingredientes 100%
-                  naturales, , veganos y seguros para la piel.
+                  naturales, veganos y seguros para la piel.
                 </p>
               </div>
 

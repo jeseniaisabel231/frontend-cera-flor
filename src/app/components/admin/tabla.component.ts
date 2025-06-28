@@ -12,90 +12,94 @@ export type DatosTabla = usuario | venta; //representacion de la clave
   selector: 'tabla',
   imports: [ModalComponent, SwitchComponent, ModalAvisosComponent],
   template: `
-    <table
-      class="mt-6 w-full table-auto border-collapse overflow-hidden rounded-lg text-[14px] shadow-md"
-    >
-      <thead>
-        <tr class="bg-[#c6bcff]">
-          @for (nombre of columnasTabla()?.nombres; track $index) {
-            <th class="text-center font-semibold text-gray-800">
-              {{ nombre }}
+    <div class="flex flex-col h-80 overflow-y-auto mt-4 rounded-lg">
+      <table
+        class="w-full table-auto border-collapse text-[14px] shadow-md"
+      >
+        <thead>
+          <tr class="bg-[#c6bcff]">
+            @for (nombre of columnasTabla()?.nombres; track $index) {
+              <th class="text-center font-semibold text-gray-800">
+                {{ nombre }}
+              </th>
+            }
+            <th class="p-3 text-center font-semibold text-gray-800">
+              Acciones
             </th>
-          }
-          <th class="p-3 text-center font-semibold text-gray-800">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        @for (fila of datosTabla(); track $index) {
-          <tr class="transition-colors duration-150 hover:bg-gray-50">
-            @for (columna of columnasTabla()?.claves; track $index) {
-              <td class="max-w-[150px] p-3 text-center">
-                <div class="truncate whitespace-nowrap">
-                  @if (columna.toString() === 'cliente_id') {
-                    {{ nombreCliente(fila[columna]) }}
-                  } @else if (columna.toString() === 'productos') {
-                    {{ producto(fila[columna]) }}
-                  } @else if (columna.toString() === 'estado') {
-                    @let esActivo =
-                      fila[columna] === 'activo' ||
-                      fila[columna] === 'finalizado';
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          @for (fila of datosTabla(); track $index) {
+            <tr class="transition-colors duration-150 hover:bg-gray-50">
+              @for (columna of columnasTabla()?.claves; track $index) {
+                <td class="max-w-[150px] p-3 text-center">
+                  <div class="truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                    @if (columna.toString() === 'cliente_id') {
+                      {{ nombreCliente(fila[columna]) }}
+                    } @else if (columna.toString() === 'productos') {
+                      {{ producto(fila[columna]) }}
+                    } @else if (columna.toString() === 'estado') {
+                      @let esActivo =
+                        fila[columna] === 'activo' ||
+                        fila[columna] === 'finalizado';
 
-                    <div
-                      class="rounded-full border font-bold"
-                      [class]="
-                        esActivo
-                          ? 'border-[#4ab763] text-[#4ab763]'
-                          : 'border-[#f44336] text-[#f44336]'
-                      "
+                      <div
+                        class="rounded-full border font-bold"
+                        [class]="
+                          esActivo
+                            ? 'border-[#4ab763] text-[#4ab763]'
+                            : 'border-[#f44336] text-[#f44336]'
+                        "
+                      >
+                        <span>{{ fila[columna] }}</span>
+                      </div>
+                    } @else if (columna.toString() === 'fecha_venta') {
+                      {{ transformaFecha(fila[columna]) }}
+                    } @else {
+                      {{ fila[columna] }}
+                    }
+                  </div>
+                </td>
+              }
+
+              <td class="p-3">
+                <div class="flex items-center justify-center gap-3">
+                  <button
+                    (click)="confirmarCambioEstado(fila)"
+                    [title]="
+                      verificarTipo(fila) === 'venta'
+                        ? 'pendiente o finalizado'
+                        : 'activo o inactivo'
+                    "
+                  >
+                    <switch [estado]="verificarEstado(fila)"></switch>
+                  </button>
+
+                  <button
+                    class="brounded-[8px] mr-[3px] flex h-6 w-[36px] items-center justify-center rounded-[9px] bg-green-400 px-2 text-white hover:bg-green-500"
+                    (click)="verFormulario(fila)"
+                    title="Visualizar información"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class="size-6"
                     >
-                      <span>{{ fila[columna] }}</span>
-                    </div>
-                  } @else if (columna.toString() === 'fecha_venta') {
-                    {{ transformaFecha(fila[columna]) }}
-                  } @else {
-                    {{ fila[columna] }}
-                  }
+                      <path
+                        fill-rule="evenodd"
+                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34zM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </td>
-            }
-
-            <td class="p-3">
-              <div class="flex items-center justify-center gap-3">
-                <button
-                  (click)="confirmarCambioEstado(fila)"
-                  [title]="
-                    verificarTipo(fila) === 'venta'
-                      ? 'pendiente o finalizado'
-                      : 'activo o inactivo'
-                  "
-                >
-                  <switch [estado]="verificarEstado(fila)"></switch>
-                </button>
-
-                <button
-                  class="brounded-[8px] mr-[3px] flex h-6 w-[36px] items-center justify-center rounded-[9px] bg-green-400 px-2 text-white hover:bg-green-500"
-                  (click)="verFormulario(fila)"
-                  title="Visualizar información"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34zM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
     <app-modal
       titulo="Confirmación de acción"

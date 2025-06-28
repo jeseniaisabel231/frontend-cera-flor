@@ -53,6 +53,21 @@
   --color-gris-900: #0d0d0d;
   --color-gris-950: #050505;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #806bff;  /* Cambia el color de la barra de scroll */
+  border-radius: 10px;
+}
+
 @keyframes float1 {
   0%,
   100% {

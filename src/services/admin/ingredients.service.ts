@@ -15,7 +15,7 @@ interface Filtro {
 export class IngredientesService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  private ingredientes = signal<ingrediente[]>([]);
+  public ingredientes = signal<ingrediente[]>([]);
   public carga = signal<boolean>(true);
 
   public busqueda = signal<string>('');

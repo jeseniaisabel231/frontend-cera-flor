@@ -37,7 +37,7 @@ import { Component } from '@angular/core';
         </p>
         <p>
           <span class="font-semibold">Correo:</span>
-          jesenia.com
+          jesenia&#64;example.com
         </p>
       </div>
 

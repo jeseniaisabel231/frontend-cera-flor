@@ -203,7 +203,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               <span
                 class="hover:bg-morado-600 inline-flex h-full w-full cursor-pointer items-center justify-center rounded-[15px] bg-[#9F93E7] px-3 py-1 font-bold text-white backdrop-blur-3xl transition-colors duration-500"
               >
-                Iniciar sesion
+                Iniciar sesión
               </span>
             }
           </button>

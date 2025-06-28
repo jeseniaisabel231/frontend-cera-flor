@@ -1,6 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import {
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -29,15 +30,23 @@ import { ModalAvisosComponent } from './modalavisos.component';
       class="backdrop:bg-gris-600/25 m-auto w-3/4 rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px] lg:w-1/2"
     >
       <div class="flex items-center justify-between px-7 py-5">
-        <h1 class="text-lg font-medium text-[#3C3C3B]">
-          {{
-            acciones() === 'Visualizar'
-              ? 'Detalles del producto'
-              : acciones() === 'Actualizar'
-                ? 'Actualizar producto'
-                : 'Registrar producto'
-          }}
-        </h1>
+        <div class="flex flex-col">
+          <h1 class="text-lg font-medium text-[#3C3C3B]">
+            {{
+              acciones() === 'Visualizar'
+                ? 'Detalles del producto'
+                : acciones() === 'Actualizar'
+                  ? 'Actualizar producto'
+                  : 'Registrar producto'
+            }}
+          </h1>
+          @if (acciones() !== 'Visualizar') {
+            <small class="text-[#806bff]">
+              Recuerde no dejar espacios en blanco al derecho y al reves de cada
+              campo.
+            </small>
+          }
+        </div>
         <button (click)="close()" class="focus:outline-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +118,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 accept="image/*"
                 id="foto"
                 class="text-sm"
-                (change)="onFileChange($event)"
+                (input)="onFileChange($event)"
+                [value]="formulario.get('imagen')?.value ?? ''"
               />
             </div>
             @if (errores().imagen) {
@@ -144,7 +154,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
               "
               type="text"
-              placeholder="Ej: Jabón de avena y miel"
+              placeholder="Ej. Jabón de avena y miel"
               class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="nombre"
               (input)="borrarError('nombre')"
@@ -154,7 +164,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 <small class="text-red-600">{{ errores().nombre }}</small>
               } @else if (nombreInvalido) {
                 <small class="wrap-break-word text-red-600">
-                  El nombre debe contener entre 3 y 25 letras.
+                  El nombre debe contener entre 3 y 25 caracteres alfabéticos.
                 </small>
               }
             </div>
@@ -225,7 +235,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
             </small>
           } @else if (descripcionInvalido) {
             <small class="text-red-600">
-              La descripción debe contener, como máximo, 500 caracteres de cualquier tipo.
+              La descripción debe contener por lo menos 10 caracteres
+              alfabéticos, y como máximo 500 caracteres alfanuméricos.
             </small>
           }
         </div>
@@ -318,8 +329,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
           <div class="flex items-center gap-2">
             <span class="text-gray-600">$</span>
             <input
-              type="number"
-              placeholder="Ej: 5.50"
+              placeholder="Ej. 5.50"
               [class]="
                 precioInvalido
                   ? 'border-red-500 focus:ring-0 focus:outline-none'
@@ -327,7 +337,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               "
               class="placeholder-gris-200 w-full [appearance:textfield] rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               formControlName="precio"
-              (input)="borrarError('precio')"
+              (input)="eliminarLetras($event)"
             />
           </div>
           <div class="w-[215px] break-words">
@@ -335,9 +345,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               <small class="text-red-600">
                 {{ errores().precio }}
               </small>
-            } @else if (
-              precioInvalido || formulario.get('precio')?.value == '0'
-            ) {
+            } @else if (precioInvalido) {
               <small class="text-red-600">
                 El precio debe ser un número entre 1 y 100, con un máximo de dos
                 decimales.
@@ -369,7 +377,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 </label>
 
                 <div class="flex flex-col gap-1.5 pl-2 text-sm">
-                  @for (ingrediente of ingredientes(); track ingrediente) {
+                  @for (ingrediente of esencias(); track ingrediente) {
                     <label>
                       <input
                         type="checkbox"
@@ -408,17 +416,26 @@ import { ModalAvisosComponent } from './modalavisos.component';
                     (formulario.get('aroma')?.invalid &&
                       formulario.get('aroma')?.value) ||
                     errores().aroma;
-                  <input
+                  <select
                     class="focus:ring-morado-400 placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
                     formControlName="aroma"
-                    placeholder="Ej: Vainilla"
                     [class]="
                       aromaInvalido
                         ? 'border-red-500 focus:ring-0 focus:outline-none'
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
-                    (input)="borrarError('aroma')"
-                  />
+                    (change)="borrarError('aroma')"
+                  >
+                    <option selected value="" disabled hidden>
+                      Selecciona un aroma
+                    </option>
+
+                    @for (aroma of aromas(); track $index) {
+                      <option [value]="aroma._id">
+                        {{ aroma.nombre }}
+                      </option>
+                    }
+                  </select>
                   @if (errores().aroma) {
                     <small class="text-red-600">
                       {{ errores().aroma }}
@@ -491,7 +508,22 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <button
               class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
             >
-              {{ acciones() }} producto
+              @if (carga()) {
+                <svg
+                  class="animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24"
+                  viewBox="0 -960 960 960"
+                  width="24"
+                  fill="#434343"
+                >
+                  <path
+                    d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                  />
+                </svg>
+              } @else {
+                {{ acciones() }} producto
+              }
             </button>
           }
 
@@ -523,10 +555,22 @@ export class FormProducto {
   public respuestaBack = signal('');
   public ingredientesServicio = inject(IngredientesService);
   public categoriasServicio = inject(CategoryService);
-  public categorias = signal<any[]>([]); //se inicializa como un arreglo vacio
+  public categorias = signal<any[]>([]);
   public categoriaSeleccionada = signal<string>('');
+  public carga = signal<boolean>(false);
 
-  public ingredientes = signal<any[]>([]);
+  public esencias = computed(() => {
+    const ingredientes = this.ingredientesServicio.ingredientes();
+
+    return ingredientes.filter(({ tipo }) => tipo === 'esencia');
+  });
+
+  public aromas = computed(() => {
+    const ingredientes = this.ingredientesServicio.ingredientes();
+
+    return ingredientes.filter(({ tipo }) => tipo === 'aroma');
+  });
+
   public ingredientesSeleccionados = signal<string[]>([]);
   public mostrarModalExito = signal(false);
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
@@ -534,7 +578,7 @@ export class FormProducto {
   public mostrarModal = model<boolean>(false);
   public servicioProductos = input<any>();
   public acciones = input.required<Actions>();
-  //variable para emitir el cambio
+
   public idRegistro = input<string>();
   public categoriaYTipos = signal<Record<string, string[]>>({});
 
@@ -543,10 +587,10 @@ export class FormProducto {
 
   //almacena los datos del formulario, para enviar al body del backend
   public formulario = new FormGroup({
-    imagen: new FormControl<File | null>(null, Validators.required),
+    imagen: new FormControl<File | string | null>(null, Validators.required),
     nombre: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{3,25}$/),
+      Validators.pattern(/^(?!\s+$)[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{3,25}$/),
     ]),
     descripcion: new FormControl('', [
       Validators.required,
@@ -558,7 +602,7 @@ export class FormProducto {
     ]),
     precio: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^(100(\.0{1,2})?|\d{1,2}(\.\d{1,2})?)$/),
+      Validators.pattern(/^(?:[1-9]\d?(?:\.\d{1,2})?|100(?:\.0{1,2})?)$/),
     ]),
     stock: new FormControl(57, [
       Validators.required,
@@ -584,7 +628,6 @@ export class FormProducto {
     tipo: '',
   });
 
-  //metodo para borrar errores del cuando se escribe un nuevo valor
   borrarError(campo: string) {
     this.errores.update((prev) => ({ ...prev, [campo]: '' })); //setea los errores
   }
@@ -597,10 +640,19 @@ export class FormProducto {
           formData.append('ingredientes[]', item);
         });
       } else if (key === 'beneficios' && typeof value === 'string') {
-        value.split(',').forEach((item) => {
-          formData.append('beneficios[]', item.trim());
-        });
-      } else if (value !== null && value !== undefined) {
+        value
+          .trim()
+          .split(',')
+          .forEach((item) => {
+            const beneficio = item.trim();
+
+            if (beneficio.length > 9 && beneficio.length < 100) {
+              formData.append('beneficio[]', beneficio);
+            }
+          });
+      } else if (typeof value === 'string') {
+        formData.append(key, value.trim());
+      } else if (value) {
         formData.append(key, value as any);
       }
     });
@@ -610,14 +662,8 @@ export class FormProducto {
   public close() {
     this.mostrarModal.set(false);
   }
-  constructor() {
-    this.ingredientesServicio.obtener().subscribe(({ ingredientes }: any) => {
-      const esencias = ingredientes.filter(
-        (ingrediente: any) => ingrediente.tipo === 'esencia',
-      );
 
-      this.ingredientes.set(esencias);
-    });
+  constructor() {
     this.categoriasServicio.obtener().subscribe({
       next: ({ categorias }: any) => {
         this.categorias.set(categorias); //almacena las categorias en la variable categorias
@@ -668,6 +714,19 @@ export class FormProducto {
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();
+
+        this.errores.set({
+          imagen: '',
+          nombre: '',
+          descripcion: '',
+          beneficios: '',
+          precio: '',
+          stock: '',
+          id_categoria: '',
+          ingredientes: '',
+          aroma: '',
+          tipo: '',
+        });
       } else {
         this.modal()?.nativeElement.close();
       }
@@ -693,9 +752,7 @@ export class FormProducto {
         });
 
         // Cargar la imagen preview si existe
-        if (datos.imagen) {
-          this.imagePreview = datos.imagen;
-        }
+        if (datos.imagen) this.imagePreview = datos.imagen;
 
         this.ingredientesSeleccionados.set(
           datos.ingredientes.map((item: any) => item?._id ?? item), //almacena los ingredientes seleccionados
@@ -710,31 +767,13 @@ export class FormProducto {
         } else {
           this.formulario.enable();
         }
-
-        this.errores.set({
-          imagen: '',
-          nombre: '',
-          descripcion: '',
-          beneficios: '',
-          precio: '',
-          stock: '',
-          id_categoria: '',
-          ingredientes: '',
-          aroma: '',
-          tipo: '',
-        });
       } else if (this.acciones() === 'Registrar') {
         this.resetearFormulario();
         this.formulario.enable();
       }
     });
   }
-  cerraTodo() {
-    this.mostrarModalExito.set(false);
-    if (this.tipoRespuesta() === 'exito') {
-      this.close(); // Solo cerramos el formulario si fue éxito
-    }
-  }
+
   public resetearFormulario() {
     this.formulario.setValue({
       nombre: '',
@@ -783,6 +822,7 @@ export class FormProducto {
       return;
     }
 
+    this.carga.set(true)
     const formData = this.toFormData();
     if (this.acciones() === 'Registrar') {
       this.servicioProductos()
@@ -793,6 +833,7 @@ export class FormProducto {
         })
         .add(() => {
           this.mostrarModalExito.set(true);
+          this.carga.set(false);
         });
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
@@ -804,6 +845,7 @@ export class FormProducto {
         })
         .add(() => {
           this.mostrarModalExito.set(true);
+          this.carga.set(false);
         });
     }
   }
@@ -837,6 +879,14 @@ export class FormProducto {
       });
       this.borrarError('imagen');
     }
+  }
+
+  public eliminarLetras(event: any) {
+    const { value } = event.target;
+    const numericValue = value.replace(/[^0-9.]/g, '');
+
+    this.formulario.patchValue({ precio: numericValue });
+    this.borrarError('precio');
   }
 
   private respuestadeErrorBack = ({ error }: { error: any }) => {

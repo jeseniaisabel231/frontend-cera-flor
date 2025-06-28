@@ -59,7 +59,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                   />
                 </svg>
                 <input
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
+                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] placeholder-gray-400 outline-none"
                   type="search"
                   placeholder="Buscar ingredientes por nombre..."
                   id="search"
@@ -83,7 +83,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     fill="#3C3C3B"
                   />
                 </svg>
-                  Registrar ingrediente
+                Registrar ingrediente
               </button>
             </div>
             <div class="flex items-center gap-2">
@@ -109,7 +109,9 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: '' })"
+                (click)="
+                  servicioIngredientes.filtro.set({ clave: 'tipo', valor: '' })
+                "
               >
                 <span>Todos</span>
               </button>
@@ -120,7 +122,12 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'molde' })"
+                (click)="
+                  servicioIngredientes.filtro.set({
+                    clave: 'tipo',
+                    valor: 'molde',
+                  })
+                "
               >
                 <span>Moldes</span>
               </button>
@@ -131,7 +138,12 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'color' })"
+                (click)="
+                  servicioIngredientes.filtro.set({
+                    clave: 'tipo',
+                    valor: 'color',
+                  })
+                "
               >
                 <span>Colores</span>
               </button>
@@ -142,7 +154,12 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'esencia' })"
+                (click)="
+                  servicioIngredientes.filtro.set({
+                    clave: 'tipo',
+                    valor: 'esencia',
+                  })
+                "
               >
                 <span>Esencias</span>
               </button>
@@ -153,7 +170,12 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     ? 'bg-[#806bff] font-semibold text-white'
                     : 'text-gray-700'
                 "
-                (click)="servicioIngredientes.filtro.set({ clave: 'tipo', valor: 'aroma' })"
+                (click)="
+                  servicioIngredientes.filtro.set({
+                    clave: 'tipo',
+                    valor: 'aroma',
+                  })
+                "
               >
                 <span>Aromas</span>
               </button>
@@ -165,7 +187,12 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                       ? 'bg-[#806bff] font-semibold text-white'
                       : 'text-gray-700'
                   "
-                  (click)="servicioIngredientes.filtro.set({ clave: 'id_categoria', valor: categoria._id })"
+                  (click)="
+                    servicioIngredientes.filtro.set({
+                      clave: 'id_categoria',
+                      valor: categoria._id,
+                    })
+                  "
                 >
                   <span>{{ categoria.nombre }}</span>
                 </button>
@@ -183,19 +210,27 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
             <loading></loading>
           } @else {
             <section
-              class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              class="mt-4 grid h-100 grid-cols-1 gap-6 overflow-y-auto rounded-lg sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (item of servicioIngredientes.datosBuscados(); track $index) {
+              @for (
+                item of servicioIngredientes.datosBuscados();
+                track $index
+              ) {
                 <div
                   class="mx-auto flex h-90 min-h-[400px] w-full max-w-[300px] flex-col rounded-xl border border-gray-300"
                 >
                   <figure
-                    class="relative aspect-square overflow-hidden border-b border-gray-300 pt-[75%]"
+                    class="aspect-square overflow-hidden border-b border-gray-300 flex"
                   >
                     <img
                       [src]="item?.imagen"
-                      alt="{{ item?.nombre }}"
-                      class="absolute top-0 left-0 h-full w-full rounded-t-md object-contain"
+                      [alt]="item?.nombre"
+                      class="object-contain"
+                      [class]="
+                        item?.tipo === 'color'
+                          ? 'rounded-full border m-auto h-3/4'
+                          : 'rounded-t-md h-full w-full'
+                      "
                     />
                   </figure>
                   <div class="flex flex-col justify-between p-4">
@@ -211,7 +246,9 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                         {{ item?.tipo | titlecase }}
                       </small>
                     </div>
-                    <h3 class="mt-2 text-[17px] font-bold text-gray-800">
+                    <h3
+                      class="mt-2 overflow-hidden text-[17px] font-bold text-ellipsis text-gray-800"
+                    >
                       {{ item?.nombre | titlecase }}
                     </h3>
                     <p class="text-lg font-bold text-purple-600">
@@ -329,7 +366,6 @@ export class IngredientsPage {
   public accionAsignada = signal<Actions>('Registrar'); //valor inicial registrar
   public mostrarModalConfirmacion = signal<boolean>(false);
   public ingredienteEliminar = signal<string | null>(null);
-
 
   public datosIngredientes = new FormGroup({
     tipo: new FormControl('', [Validators.required]),

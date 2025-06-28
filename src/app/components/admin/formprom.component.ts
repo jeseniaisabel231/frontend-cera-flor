@@ -26,7 +26,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
     >
       <div class="flex items-center justify-between px-7 pt-5">
         <h1 class="mb-6 text-lg font-medium text-[#3C3C3B]">
-           {{
+          {{
             acciones() === 'Registrar'
               ? 'Registrar promoción'
               : acciones() === 'Actualizar'
@@ -130,7 +130,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               type="text"
               id="titulo"
               class="focus:ring-morado-400 placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
-              placeholder="Ej: 20% de descuento en jabones"
+              placeholder="Ej. 20% de descuento en jabones"
               formControlName="nombre"
             />
 
@@ -140,7 +140,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
               </small>
             } @else if (nombreInvalido) {
               <small class="text-red-600">
-                El título debe contener al menos 3 letras y como máximo 30 caracteres.
+                El título debe contener al menos 10 caracteres alfabeticos y
+                como máximo 30 caracteres alfanuméricos
               </small>
             }
           </div>
@@ -151,7 +152,22 @@ import { ModalAvisosComponent } from './modalavisos.component';
           <button
             class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
           >
-            {{ acciones() }} promoción
+            @if (carga()) {
+              <svg
+                class="animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 -960 960 960"
+                width="24"
+                fill="#434343"
+              >
+                <path
+                  d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                />
+              </svg>
+            } @else {
+              {{ acciones() }} promoción
+            }
           </button>
           <button
             type="button"
@@ -181,12 +197,13 @@ export class FormProm {
   public acciones = input.required<Actions>();
   public idRegistro = input<string>();
   public mostrarDatos = input<any>();
+  public carga = signal<boolean>(false);
 
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null, Validators.required),
     nombre: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){3})[\s\S]{3,30}$/),
+      Validators.pattern(/^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){10})[\s\S]{10,30}$/),
     ]),
   });
 
@@ -217,6 +234,10 @@ export class FormProm {
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();
+        this.errores.set({
+          nombre: '',
+          imagen: '',
+        });
       } else {
         this.modal()?.nativeElement.close();
       }
@@ -250,7 +271,7 @@ export class FormProm {
 
   onSubmit() {
     const formData = this.toFormData();
-
+    this.carga.set(true); // Inicia la carga
     if (this.acciones() === 'Registrar') {
       this.servicioPromocion()
         .registrar(formData)
@@ -258,7 +279,7 @@ export class FormProm {
           next: this.respuestaExitoBack,
           error: this.respuestadeErrorBack,
         })
-        .add(() => this.mostrarModalExito.set(true));
+        .add(() => {this.mostrarModalExito.set(true); this.carga.set(false);}); //muestra el modal de exito
     } else if (this.acciones() === 'Actualizar') {
       this.servicioPromocion()
         .editar(this.idRegistro(), formData)
@@ -266,7 +287,7 @@ export class FormProm {
           next: this.respuestaExitoBack,
           error: this.respuestadeErrorBack,
         })
-        .add(() => this.mostrarModalExito.set(true));
+        .add(() => {this.mostrarModalExito.set(true); this.carga.set(false);}); //muestra el modal de exito
     }
   }
 

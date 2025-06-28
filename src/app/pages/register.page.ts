@@ -66,7 +66,7 @@ import { Headers } from '../components/header.component';
                       : 'outline-gris-300 border-[#878787]'
                   "
                   type="text"
-                  placeholder="Ejm. John"
+                  placeholder="Ej.. John"
                   id="nombre"
                   formControlName="nombre"
                   (input)="borrarError('nombre')"
@@ -76,7 +76,7 @@ import { Headers } from '../components/header.component';
                   <small class="text-red-600">Este campo es obligatorio.</small>
                 } @else if (nombreInvalido) {
                   <small class="text-red-600">
-                    El nombre no es válido (Ej: John)
+                    El nombre no es válido (Ej. John)
                   </small>
                 }
               </div>
@@ -116,7 +116,7 @@ import { Headers } from '../components/header.component';
                       : 'outline-gris-300 border-[#878787]'
                   "
                   type="text"
-                  placeholder="Ejm. Mata"
+                  placeholder="Ej.. Mata"
                   id="apellido"
                   formControlName="apellido"
                   (input)="borrarError('apellido')"
@@ -125,7 +125,7 @@ import { Headers } from '../components/header.component';
                   <small class="text-red-600">Este campo es obligatorio.</small>
                 } @else if (apellidoInvalido) {
                   <small class="text-red-600">
-                    El apellido no es válido (Ej: Mata)
+                    El apellido no es válido (Ej. Mata)
                   </small>
                 }
               </div>
@@ -177,7 +177,7 @@ import { Headers } from '../components/header.component';
                 } @else if (emailInvalido) {
                   <small class="text-red-600">
                     El correo electrónico no es válido
-                    (Ej:ejemplo&#64;gmail.com)
+                    (Ej.ejemplo&#64;gmail.com)
                   </small>
                 }
               </div>
@@ -225,7 +225,7 @@ import { Headers } from '../components/header.component';
                 @if (errores().genero) {
                   <small class="text-red-600">Este campo es obligatorio.</small>
                 } @else if (generoInvalido) {
-                  <small class="text-red-600">Selecciona un genero</small>
+                  <small class="text-red-600">Selecciona un género</small>
                 }
               </div>
 

@@ -12,8 +12,8 @@ import { Headers } from '../components/header.component';
               src=""
               class="mb-3 h-20 w-20 rounded-full border-2"
             />
-            <h2 class="text-lg font-medium">María González</h2>
-            <p class="text-sm text-gray-500">maria.com</p>
+            <h2 class="text-lg font-medium">Nombre</h2>
+            <p class="text-sm text-gray-500">Correo</p>
             
           </header>
 
@@ -66,31 +66,30 @@ import { Headers } from '../components/header.component';
             <article class="mb-6 overflow-hidden rounded-lg bg-white shadow-sm">
               <header class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4">
                 <div>
-                  <span class="text-sm font-medium text-gray-500">Pedido #ART-78945</span>
+                  <span class="text-sm font-medium text-gray-500"></span>
                   <span class="mx-2 text-gray-300" >•</span>
-                  <span class="text-sm font-medium text-amber-600">Enviado</span>
+                  <span class="text-sm font-medium text-morado-200">Enviado</span>
                   <span class="mx-2 text-gray-300" >•</span>
                   <time datetime="2023-05-15" class="text-sm text-gray-500">15 de Mayo, 2023</time>
                 </div>
-                <span class="text-lg font-semibold">$1,250.00 <abbr title="Pesos Mexicanos">MXN</abbr></span>
+                <span class="text-lg font-semibold">$1,250.00 <abbr title="Pesos Mexicanos"></abbr></span>
               </header>
               
               <div class="p-6">
                 <section aria-labelledby="productos-pedido-78945">
-                  <h3 id="productos-pedido-78945" class="sr-only">Productos del pedido ART-78945</h3>
+                  <h3 id="productos-pedido-78945" class="sr-only">Productos del pedido</h3>
                   <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <!-- Producto 1 -->
                     <section class="flex items-start">
                       <img
                         src="https://via.placeholder.com/80x80?text=Jarrón+Barro"
-                        alt="Jarrón de barro negro artesanal - Artesanía Oaxaqueña"
                         class="mr-4 h-16 w-16 rounded-md object-cover"
                         loading="lazy"
                       />
                       <div>
-                        <h4 class="text-sm font-medium">Jarrón de barro negro</h4>
-                        <p class="mt-1 text-xs text-gray-500">Artesanía Oaxaqueña</p>
-                        <p class="mt-1 text-sm font-medium">$450.00</p>
+                        <h4 class="text-sm font-medium">Jabon de arroz</h4>
+                        <p class="mt-1 text-xs text-gray-500"></p>
+                        <p class="mt-1 text-sm font-medium">$</p>
                         <p class="mt-1 text-xs text-gray-500">Cantidad: 1</p>
                       </div>
                     </section>
@@ -104,15 +103,15 @@ import { Headers } from '../components/header.component';
                         loading="lazy"
                       />
                       <div>
-                        <h4 class="text-sm font-medium">Huipil tradicional</h4>
-                        <p class="mt-1 text-xs text-gray-500">Textil Maya</p>
-                        <p class="mt-1 text-sm font-medium">$650.00</p>
+                        <h4 class="text-sm font-medium">l</h4>
+                        <p class="mt-1 text-xs text-gray-500"></p>
+                        <p class="mt-1 text-sm font-medium">$</p>
                         <p class="mt-1 text-xs text-gray-500">Cantidad: 1</p>
                       </div>
                     </section>
                     
                     <!-- Producto 3 -->
-                    <section class="flex items-start">
+                    <!-- <section class="flex items-start">
                       <img
                         src="https://via.placeholder.com/80x80?text=Alebrije"
                         alt="Alebrije de madera tallada a mano - Arte Popular Mexicano"
@@ -125,7 +124,7 @@ import { Headers } from '../components/header.component';
                         <p class="mt-1 text-sm font-medium">$150.00</p>
                         <p class="mt-1 text-xs text-gray-500">Cantidad: 1</p>
                       </div>
-                    </section>
+                    </section> -->
                   </div>
                 </section>
                 

@@ -33,7 +33,9 @@ import { ModalAvisosComponent } from './modalavisos.component';
           {{
             acciones() === 'Visualizar'
               ? 'Detalles del producto'
-              : 'Agregar producto'
+              : acciones() === 'Actualizar'
+                ? 'Actualizar producto'
+                : 'Registrar producto'
           }}
         </h1>
         <button (click)="close()" class="focus:outline-none">
@@ -152,7 +154,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 <small class="text-red-600">{{ errores().nombre }}</small>
               } @else if (nombreInvalido) {
                 <small class="wrap-break-word text-red-600">
-                  El nombre debe contener entre 3 y 25 letras
+                  El nombre debe contener entre 3 y 25 letras.
                 </small>
               }
             </div>
@@ -223,8 +225,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             </small>
           } @else if (descripcionInvalido) {
             <small class="text-red-600">
-              La descripción debe contener al menos 10 letras y como maximo 500
-              caracteres de cualquier tipo.
+              La descripción debe contener, como máximo, 500 caracteres de cualquier tipo.
             </small>
           }
         </div>
@@ -490,7 +491,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <button
               class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
             >
-              {{ acciones() }} productos
+              {{ acciones() }} producto
             </button>
           }
 
@@ -754,7 +755,10 @@ export class FormProducto {
 
   //funcion que verifica que haciion hace el boton
   onSubmit() {
-    if (this.formulario.invalid || this.ingredientesSeleccionados().length < 2) {
+    if (
+      this.formulario.invalid ||
+      this.ingredientesSeleccionados().length < 2
+    ) {
       this.errores.update((prev) => {
         const newErrors: any = {};
         Object.keys(prev).forEach((key) => {
@@ -856,7 +860,7 @@ export class FormProducto {
 
     this.tipoRespuesta.set('error');
     this.respuestaBack.set(
-      msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.',
+      msg ?? 'Ocurrió un error inesperado, por favor intente más tarde.',
     );
   };
 

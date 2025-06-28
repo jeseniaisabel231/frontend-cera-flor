@@ -27,7 +27,7 @@ import { producto } from '../interfaces/producto.interface';
     <headers ></headers>
     <main class="flex flex-col">
       <barranav
-        rutaSeccionSeleccionada="catalogo"
+        rutaSeccionSeleccionada="catálogo"
         [rutaCategoriaSeleccionada]="titulo().replace('-', ' ')"
       />
       <div class="relative aspect-[16/9]  md:h-115">

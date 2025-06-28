@@ -6,7 +6,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 import { Loading } from '../components/loading.component';
-import { carrito } from '../interfaces/carrito.interface';
+import { carritoProducto } from '../interfaces/carrito.interface';
 
 @Component({
   imports: [
@@ -32,43 +32,46 @@ import { carrito } from '../interfaces/carrito.interface';
       >
         <section class="mt-8 flex-1 lg:w-3/5">
           <div class="rounded-lg border border-gray-200 bg-white shadow-sm">
-            @if (carga()) {
+            @if (serviceCarrito.carga()) {
               <loading />
             } @else {
-              @for (producto of serviceCarrito.carrito.productos; track $index) {
+              @for (
+                producto of serviceCarrito.carrito().productos;
+                track $index
+              ) {
+                @let item = producto.producto;
                 <article
                   class="flex items-center justify-between border-b border-gray-100 p-4 last:border-b-0 hover:bg-gray-50"
                 >
                   <div class="flex items-center gap-4">
                     <img
-                      [src]="producto.producto.imagen"
-                      [alt]="producto.producto.nombre"
+                      [src]="item.imagen || imagenPersonalizado"
+                      [alt]="item.nombre"
                       class="h-24 w-24 rounded-lg object-cover sm:h-28 sm:w-28"
                     />
                     <div class="flex h-28 flex-col justify-center">
                       <small class="text-xs font-medium text-gray-500">
                         {{
-                          producto.producto.id_categoria._id ===
-                          '680fd248f613dc80267ba5d7'
+                          item.id_categoria._id === '680fd248f613dc80267ba5d7'
                             ? 'Jabones Artesanales'
                             : 'Velas Artesanales'
                         }}
                       </small>
                       <h2 class="text-lg font-bold text-gray-800">
-                        {{ producto.producto.nombre }}
+                        {{ item.nombre || 'Producto personalizado' }}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small
                           class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs"
                         >
                           <strong>Aroma:</strong>
-                          {{ producto.producto.aroma }}
+                          {{ item.aroma }}
                         </small>
                         <small
                           class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs"
                         >
                           <strong>Tipo:</strong>
-                          {{ producto.producto.tipo }}
+                          {{ item.tipo }}
                         </small>
                       </div>
                     </div>
@@ -94,7 +97,7 @@ import { carrito } from '../interfaces/carrito.interface';
                         </span>
                         <button
                           class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
-                          (click)="incrementarCantidad(producto)"
+                          (click)="incrementarCantidad(producto.producto_id)"
                           title="Aumentar cantidad"
                         >
                           +
@@ -108,7 +111,7 @@ import { carrito } from '../interfaces/carrito.interface';
 
                     <button
                       class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
-                      (click)="mostrarModalEliminar(producto.producto_id)"
+                      (click)="mostrarModalEliminar(producto.producto_id, producto.tipo_producto)"
                       title="Eliminar producto"
                     >
                       <svg
@@ -153,7 +156,7 @@ import { carrito } from '../interfaces/carrito.interface';
             <ul class="space-y-3 text-gray-700">
               <li class="flex justify-between">
                 <span>
-                  Subtotal ({{ serviceCarrito.carrito.productos.length }}
+                  Subtotal ({{ serviceCarrito.carrito().productos.length }}
                   productos)
                 </span>
                 <span class="font-medium">
@@ -161,7 +164,7 @@ import { carrito } from '../interfaces/carrito.interface';
                 </span>
               </li>
               <li class="flex justify-between">
-                <span>Impuestos</span>
+                <span>Impuestos (IVA 15%)</span>
                 <span class="font-medium">
                   {{ calcularImpuestos() | currency }}
                 </span>
@@ -171,7 +174,7 @@ import { carrito } from '../interfaces/carrito.interface';
               >
                 <span>Total a pagar:</span>
                 <span class="text-[#9810fa]">
-                  {{ serviceCarrito.carrito.total | currency }}
+                  {{ serviceCarrito.carrito().total | currency }}
                 </span>
               </li>
             </ul>
@@ -179,7 +182,7 @@ import { carrito } from '../interfaces/carrito.interface';
             <button
               class="mt-6 w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
               routerLink="/informacion-pago"
-              [disabled]="carrito.productos.length === 0"
+              [disabled]="serviceCarrito.carrito().productos.length === 0"
             >
               Proceder al pago
             </button>
@@ -202,72 +205,45 @@ export class ShoppingCardPage {
   public cantidadProducto = signal(0);
   public mostrarModal = signal(false);
   public desicionProducto = signal(false);
-
   public idEliminar = signal('');
+  public tipoProductoEliminar = signal('');
+  public imagenPersonalizado = localStorage.getItem('personalizacion') ?? '';
 
-  public carrito: carrito = {
-    _id: '',
-    cliente_id: '',
-    estado: '',
-    productos: [],
-    total: 0,
-  };
-  public carga = signal(false);
-
-  constructor() {
-    this.carga.set(true);
+  actualizarCantidadEnCarrito(producto_id: string, cantidad: number = 1) {
     this.serviceCarrito
-      .obtenerCarrito()
-      .subscribe({
-        next: ({ carrito }: any) => {
-          this.carrito = carrito;
-          this.cantidadProducto.set(carrito.productos.length ?? 0);
-        },
-      })
-      .add(() => this.carga.set(false));
+      .modificarCantidadCarrito(producto_id, cantidad)
+      .subscribe();
   }
 
-  actualizarCantidadEnCarrito(producto: any, cantidad: number = 1) {
-    this.serviceCarrito
-      .modificarCantidadCarrito(producto.producto_id._id, cantidad)
-      .subscribe({
-        next: () => {},
-      });
-  }
-  eliminarProducto(producto_id: string) {
-    this.serviceCarrito.eliminarCarrito(producto_id).subscribe({
-      next: () => {},
-    });
-  }
   calcularImpuestos() {
     const iva = 0.15;
-    return this.carrito?.total * iva;
+    return this.serviceCarrito.carrito().total * iva;
   }
 
   calcularSubtotal() {
-    return this.carrito?.total - this.calcularImpuestos();
+    return this.serviceCarrito.carrito().total - this.calcularImpuestos();
   }
 
-  incrementarCantidad(producto: any) {
-    this.actualizarCantidadEnCarrito(producto);
+  incrementarCantidad(producto_id: string) {
+    this.actualizarCantidadEnCarrito(producto_id);
   }
 
-  decrementarCantidad(producto: any) {
+  decrementarCantidad(producto: carritoProducto) {
     if (producto.cantidad > 1) {
-      this.actualizarCantidadEnCarrito(producto, -1);
+      this.actualizarCantidadEnCarrito(producto.producto_id, -1);
     }
   }
+
   desicionModal(decision: boolean) {
     this.desicionProducto.set(decision);
-    this.mostrarModal.set(false);
-    if (decision ) {
-      this.serviceCarrito.eliminarCarrito(this.idEliminar()).subscribe({
-        next: () => {},
-      });
+    if (decision) {
+      this.serviceCarrito.eliminarCarrito(this.idEliminar(), this.tipoProductoEliminar()).subscribe();
     }
   }
-  mostrarModalEliminar(producto_id: string) {
+
+  mostrarModalEliminar(producto_id: string, tipo_producto: string = 'normal') {
     this.idEliminar.set(producto_id);
+    this.tipoProductoEliminar.set(tipo_producto);
     this.mostrarModal.set(true);
   }
 }

@@ -420,9 +420,8 @@ import { Headers } from '../components/header.component';
               class="font-semibold text-purple-600 underline hover:text-purple-800"
               href="/iniciar-sesion"
             >
-              inicia sesión
+              inicia sesión.
             </a>
-            .
           </p>
         </form>
         <!-- Modal -->

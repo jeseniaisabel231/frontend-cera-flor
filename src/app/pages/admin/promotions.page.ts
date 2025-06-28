@@ -81,7 +81,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
                   fill="#3C3C3B"
                 />
               </svg>
-              Añadir promoción
+              Registrar promoción
             </button>
           </div>
           <formprom

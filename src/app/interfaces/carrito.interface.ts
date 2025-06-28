@@ -8,6 +8,7 @@ export interface carrito {
   total: number;
 }
 export interface carritoProducto {
+  tipo_producto: string;
   producto: producto;
   cantidad: number;
   precio_unitario: number;

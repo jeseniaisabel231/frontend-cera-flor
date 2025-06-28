@@ -16,6 +16,7 @@ import { PersonalizationService } from '../../services/personalization.service';
 import { RecolorImageComponent } from '../components/coloredIcon.component';
 import { Headers } from '../components/header.component';
 import { ModalJuegoComponent } from '../components/modalJuego.component';
+import { ModaIAComponent } from "../components/modaIA.component";
 
 @Component({
   template: `
@@ -98,7 +99,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                   class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
                 >
                   <p
-                    class="bg-morado-600 group-hover:border-morado-300 group-hover:bg-morado-700 mx-auto mt-2 w-1/2 rounded-2xl border-2 p-1 text-center text-sm font-semibold text-white transition-colors"
+                    class="bg-morado-600 group-hover:border-morado-300 group-hover:bg-morado-700 mx-auto mt-2 w-3/4 rounded-2xl border-2 p-1 text-center text-sm font-semibold text-white transition-colors"
                   >
                     {{ item.nombre | titlecase }}
                   </p>
@@ -159,7 +160,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             <p
               class="bg-morado-600 relative left-[36%] w-[200px] -translate-x-1/2 rounded-lg p-1 font-semibold text-white"
             >
-              Coloca aqui tu molde
+              Coloca un molde y color
             </p>
             <p
               class="absolute top-0 right-56 w-[130px] rounded-lg bg-amber-600 p-1 font-semibold text-white"
@@ -169,7 +170,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             <p
               class="absolute top-48 right-50 rounded-lg bg-blue-400 p-1 font-semibold text-white"
             >
-              Coloca aqui tus esencias
+              Coloca dos esencias
             </p>
             <div class="mx-auto flex h-40 justify-center">
               <section
@@ -232,10 +233,6 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
               </section>
             </div>
             <div class="mt-10 flex justify-center gap-4">
-              <!-- <button class="bg-red-200" (click)="capturarSeccion()">
-                Descargar Imagen
-              </button> -->
-
               <button
                 (click)="OnsubmitProductoPersonalizado()"
                 class="rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
@@ -248,6 +245,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                   (confirm)="mostrarDialogoConfirmacion.set(false)"
                   [text]="mensajeProductoPersonalizado()"
                   [imagen]="imagenPersonalizada()"
+                  [producto_id]="producto_id()"
                 />
               }
 
@@ -266,7 +264,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
 
           <!-- Contenedor esencias -->
           <div
-            class="bg-opacity-70 relative bottom-8 col-span-3 col-start-2 row-start-5 h-[200%] overflow-x-auto rounded-lg bg-white"
+            class="bg-opacity-70 relative bottom-8 col-span-3 col-start-2 row-start-5 h-[200%]  rounded-lg bg-white"
           >
             <div
               id="esencias"
@@ -274,14 +272,15 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
               cdkDropList
               [cdkDropListData]="esencias"
               (cdkDropListDropped)="dropEsencias($event)"
-              class="bg-opacity-80 m-auto flex min-h-40 w-full justify-center gap-8 p-2"
+              class="bg-opacity-80 m-auto flex min-h-40 w-full justify-start gap-8 p-2 overflow-x-auto overflow-y-hidden whitespace-nowrap"
+              style="scrollbar-width: thin;"
             >
               @for (item of esencias; track $index) {
                 <div
-                  class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
+                  class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105 flex-shrink-0"
                 >
                   <p
-                    class="bg-celeste-600 mx-auto w-full rounded-lg p-1 text-center text-sm font-semibold text-white"
+                    class="bg-celeste-600 mx-auto w-full rounded-lg p-1 text-center text-sm font-semibold text-white whitespace-nowrap"
                   >
                     {{ item.nombre | titlecase }}
                   </p>
@@ -329,6 +328,9 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         </div>
       </div>
     </main>
+    <app-modal-ia
+      [(mostrarModal)]="mostrarModalIA"
+    />
   `,
   imports: [
     Headers,
@@ -340,7 +342,8 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
     RouterLink,
     CommonModule,
     ModalJuegoComponent,
-  ],
+    ModaIAComponent
+],
 })
 export class WorkshopGamePage {
   public imgIngredientes: any[] = [];
@@ -356,32 +359,33 @@ export class WorkshopGamePage {
   public aromasSeleccionados: any[] = [];
   public mostrarDialogo = signal(true);
   public mostrarDialogoConfirmacion = signal(false);
+  public mostrarModalIA = signal(false);
   public servicePersonalizacion = inject(PersonalizationService);
   public categoria = input.required();
   public mostrarAyuda = signal(false);
   public instruccionesJuego = `
-  
-  <ol class="list-decimal list-inside space-y-2 text-left">
-    <li class="font-semibold text-gray-800">
-      <span class="text-purple-600">Selecciona un molde:</span> Arrástralo al área de trabajo central
-    </li>
-    <li class="font-semibold text-gray-800">
-      <span class="text-blue-600">Elige un color:</span> Arrastra tu color favorito sobre el molde
-    </li>
-    <li class="font-semibold text-gray-800">
-      <span class="text-amber-600">Añade un aroma:</span> Colócalo en el círculo amarillo
-    </li>
-    <li class="font-semibold text-gray-800">
-      <span class="text-blue-400">Selecciona esencias:</span> Puedes añadir hasta 2 en el área azul
-    </li>
-    <li class="font-semibold text-gray-800">
-      <span class="text-teal-600">Finaliza tu creación:</span> Guarda tu diseño o pide recomendaciones de la IA
-    </li>
-  </ol>
-  
-`;
+    <ol class="list-decimal list-inside space-y-2 text-left">
+      <li class="font-semibold text-gray-800">
+        <span class="text-purple-600">Selecciona un molde:</span> Arrástralo al área de trabajo central
+      </li>
+      <li class="font-semibold text-gray-800">
+        <span class="text-blue-600">Elige un color:</span> Arrastra tu color favorito sobre el molde
+      </li>
+      <li class="font-semibold text-gray-800">
+        <span class="text-amber-600">Añade un aroma:</span> Colócalo en el círculo amarillo
+      </li>
+      <li class="font-semibold text-gray-800">
+        <span class="text-blue-400">Selecciona esencias:</span> Puedes añadir hasta 2 en el área azul
+      </li>
+      <li class="font-semibold text-gray-800">
+        <span class="text-teal-600">Finaliza tu creación:</span> Guarda tu diseño o pide recomendaciones de la IA
+      </li>
+    </ol>
+  `;
+
   public mensajeProductoPersonalizado = signal('');
   public imagenPersonalizada = signal('');
+  public producto_id = signal('');
   public serviceInteligencia = inject(InteligenciaArtificialService);
 
   constructor() {
@@ -399,7 +403,6 @@ export class WorkshopGamePage {
               break;
             case 'color':
               this.colores.push(ingrediente);
-
               break;
             case 'esencia':
               this.esencias.push(ingrediente);
@@ -418,39 +421,43 @@ export class WorkshopGamePage {
 
   // Método para obtener recomendaciones de IA
   obtenerRecomendacionesIA() {
+const tipo = this.categoria() === '680fd248f613dc80267ba5d7' ? 'piel seca' : 'aromatizante';
+
+    this.mostrarModalIA.set(true);
     this.serviceInteligencia
-      .obtenerRecomendacion('decorativa', this.categoria() as string)
+      .obtenerRecomendacion(tipo, this.categoria() as string)
       .subscribe({
         next: (respuesta: any) => {
-          const {
-            recomendacion: { producto_personalizado },
-          } = respuesta;
+          const { producto_personalizado } = respuesta;
 
           this.moldesSeleccionados = [producto_personalizado.molde];
           this.coloresSeleccionados = [producto_personalizado.color];
           this.aromasSeleccionados = [producto_personalizado.aroma];
           this.esenciasSeleccionadas = producto_personalizado.esencias;
         },
-      });
+      }).add(() => this.mostrarModalIA.set(false));
   }
 
-  //Metodo onsumit
   async OnsubmitProductoPersonalizado() {
+const tipo = this.categoria() === '680fd248f613dc80267ba5d7' ? 'piel seca' : 'aromatizante';
+
     this.formularioPersonalizado.ingredientes = [
       ...this.moldesSeleccionados,
       ...this.coloresSeleccionados,
       ...this.aromasSeleccionados,
       ...this.esenciasSeleccionadas,
     ];
-    this.formularioPersonalizado.tipo_producto = 'piel seca';
+    this.formularioPersonalizado.tipo_producto = tipo;
     this.formularioPersonalizado.id_categoria = this.categoria() as string;
     await this.capturarSeccion(); // Captura la sección antes de enviar el formulario
     this.servicePersonalizacion
       .registrarPersonalizacion(this.formularioPersonalizado as any)
       .subscribe({
         next: (respuesta: any) => {
+          console.log('Respuesta del servidor:', respuesta);
           this.mostrarDialogoConfirmacion.set(true);
           this.mensajeProductoPersonalizado.set(respuesta.msg);
+          this.producto_id.set(respuesta.producto_personalizado._id);
         },
         error: (error: any) => {
           this.mostrarDialogoConfirmacion.set(true);
@@ -582,7 +589,6 @@ export class WorkshopGamePage {
     }
   }
 
-  // Métodos:
   finalizarCreacion() {
     this.mostrarDialogo.set(true);
   }
@@ -597,8 +603,10 @@ export class WorkshopGamePage {
       const captura = await htmlToImage.toJpeg(elemento);
 
       this.imagenPersonalizada.set(captura);
+      localStorage.setItem('personalizacion', captura);
     }
   }
+
   mostrarInstrucciones() {
     this.mostrarAyuda.set(true);
   }

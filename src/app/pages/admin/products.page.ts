@@ -155,7 +155,7 @@ import { producto } from '../../interfaces/producto.interface';
                   fill="#3C3C3B"
                 />
               </svg>
-              Añadir producto
+              Registrar producto
             </button>
           </div>
           <formulario

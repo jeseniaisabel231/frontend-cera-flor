@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../environments/environment';
+import { CarritoService } from './carrito.service';
+import { decodificarToken } from '../app/utils/decodificarToken';
 
 interface respuestaLogin {
   response: string;
@@ -14,17 +16,38 @@ interface respuestaLogin {
 export class AuthService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
+  private carritoService = inject(CarritoService);
   private datosUsuario: any = {};
+  public estaAutenticado = decodificarToken()?.exp * 1000 > Date.now();
 
-  //endpoint de login
   login(email: string, password: string) {
-    //metodo post: enviar datos
+    const productos = this.carritoService.carrito().productos;
+
     return this.http
-      .post<respuestaLogin>(`${this.urlBackend}/api/login?environment=mobile`, {
+      .post<respuestaLogin>(`${this.urlBackend}/api/login`, {
         email,
         password,
       })
-      .pipe(tap((response) => localStorage.setItem('token', response.token)));
+      .pipe(
+        tap(({ token }) => {
+          if (token) {
+            localStorage.setItem('token', token);
+
+            const isAdmin = decodificarToken()?.rol === 'admin';
+
+            if (!isAdmin && productos.length > 0) {
+              productos.forEach((producto: any) => {
+                this.carritoService
+                  .agregarCarrito(producto.producto, producto.cantidad, true)
+                  .subscribe();
+              });
+
+              localStorage.removeItem('carrito');
+              localStorage.removeItem('cantidadProductos');
+            }
+          }
+        }),
+      );
   }
 
   register(
@@ -33,10 +56,7 @@ export class AuthService {
     genero: string,
     email: string,
     password: string,
-
-    //confirmPassword: string,
   ): Observable<respuestaLogin> {
-    // Método POST: enviar todos los datos necesarios
     return this.http
       .post<respuestaLogin>(`${this.urlBackend}/api/registro`, {
         nombre,
@@ -48,7 +68,6 @@ export class AuthService {
       .pipe(
         tap((response) => {
           if (response?.token) {
-            // Considera usar un servicio de autenticación en lugar de localStorage directo
             localStorage.setItem('token', response.token);
           }
         }),
@@ -64,13 +83,15 @@ export class AuthService {
     nuevaPassword: string,
     codigoRecuperacion: string,
   ) {
-    return this.http.post<any>(`${this.urlBackend}/api/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`, {
-      email,
-      nuevaPassword,
-    });
+    return this.http.post<any>(
+      `${this.urlBackend}/api/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`,
+      {
+        email,
+        nuevaPassword,
+      },
+    );
   }
   obtenerPerfil() {
-    
     return this.http
       .get<any>(`${this.urlBackend}/api/perfil`, {
         headers: {
@@ -105,14 +126,9 @@ export class AuthService {
       );
   }
 
-  confirmarEmail(tokenConfirmar:string): Observable<any> {
-    return this.http.get<any>(`${this.urlBackend}/api/confirmarCliente/${tokenConfirmar}`);
-  }
-
-  get estadoAutenticacion(): boolean {
-    const token = localStorage.getItem('token');
-    if (!token) return false;
-
-    return Date.now() < JSON.parse(atob(token.split('.')[1])).exp * 1000;
+  confirmarEmail(tokenConfirmar: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.urlBackend}/api/confirmarCliente/${tokenConfirmar}`,
+    );
   }
 }

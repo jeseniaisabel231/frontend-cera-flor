@@ -48,7 +48,7 @@ export const routes: Routes = [
   { path: 'perfil', component: ProfilePage, canActivate: [AuthGuard] },
   {
     path: 'pedidos',
-    component: OrdersPage,
+    component: ProfilePage,
     canActivate: [AuthGuard],
   },
   //Rutas para el juego

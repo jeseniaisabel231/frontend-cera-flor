@@ -236,7 +236,7 @@ import { Headers } from '../components/header.component';
                     </span>
                   </li>
                   <li class="flex justify-between">
-                    <span>Impuestos</span>
+                    <span>Impuestos (IVA 15%)</span>
                     <span class="font-medium">
                       {{ calcularImpuestos() | currency }}
                     </span>

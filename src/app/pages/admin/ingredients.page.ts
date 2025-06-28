@@ -83,7 +83,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     fill="#3C3C3B"
                   />
                 </svg>
-                Añadir ingrediente
+                  Registrar ingrediente
               </button>
             </div>
             <div class="flex items-center gap-2">

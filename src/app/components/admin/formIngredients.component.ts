@@ -32,8 +32,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <h1 class="text-lg font-medium text-[#3C3C3B]">
           {{
             acciones() === 'Visualizar'
-              ? 'Detalles Ingredientes'
-              : 'Agregar Ingrediente'
+              ? 'Detalles del ingrediente'
+              : acciones() === 'Actualizar'
+                ? 'Actualizar ingrediente'
+                : 'Registrar ingrediente'
           }}
         </h1>
         <button (click)="close()" class="focus:outline-none">
@@ -328,7 +330,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <button
               class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
             >
-              {{ acciones() }} productos
+              {{ acciones() }} ingrediente
             </button>
           }
 
@@ -571,7 +573,7 @@ export class FormIngredientsComponent {
 
     this.tipoRespuesta.set('error');
     this.respuestaBack.set(
-      msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.',
+      msg ?? 'Ocurrió un error inesperado, por favor intente más tarde.',
     );
   };
 

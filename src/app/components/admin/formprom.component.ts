@@ -26,7 +26,13 @@ import { ModalAvisosComponent } from './modalavisos.component';
     >
       <div class="flex items-center justify-between px-7 pt-5">
         <h1 class="mb-6 text-lg font-medium text-[#3C3C3B]">
-          Agregar promoción
+           {{
+            acciones() === 'Registrar'
+              ? 'Registrar promoción'
+              : acciones() === 'Actualizar'
+                ? 'Actualizar promoción'
+                : 'Detalles de la promoción'
+          }}
         </h1>
         <button (click)="close()" class="mb-6 focus:outline-none">
           <svg
@@ -305,7 +311,7 @@ export class FormProm {
 
     this.tipoRespuesta.set('error');
     this.respuestaBack.set(
-      msg ?? 'Ocurrio un error inesperado, por favor intente más tarde.',
+      msg ?? 'Ocurrió un error inesperado, por favor intente más tarde.',
     );
   };
 

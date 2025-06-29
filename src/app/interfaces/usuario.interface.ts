@@ -6,6 +6,10 @@ export interface usuario {
   email: string;
   genero: string;
   estado: string;
+  telefono?: string;
+  direccion?: string;
+  cedula?: string;
+  fecha_nacimiento?: string;
 }
 
 export interface ColumnasUsuario {

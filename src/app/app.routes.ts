@@ -12,9 +12,9 @@ import { PromotionsPage } from './pages/admin/promotions.page';
 import { ShoppingPage } from './pages/admin/shopping.page';
 import { UsersPage } from './pages/admin/users.page';
 import { CatalogPage } from './pages/catalog.page';
+import { ConfirmEmailPage } from './pages/confirmEmail.page';
 import { HomePage } from './pages/home.page';
 import { LoginPage } from './pages/login.page';
-import { OrdersPage } from './pages/orders.page';
 import { PaymentPage } from './pages/payment,page';
 import { PersonalizationPage } from './pages/personalization.page';
 import { ProductDetailPage } from './pages/productDetail.page';
@@ -23,12 +23,16 @@ import { RecuperarContrasenia } from './pages/recoverpassword.page';
 import { RegisterPage } from './pages/register.page';
 import { ShoppingCardPage } from './pages/shoppingCart.page';
 import { WorkshopGamePage } from './pages/workshopGame.page';
-import { ConfirmEmailPage } from './pages/confirmEmail.page';
+import { CustmizedProductPage } from './pages/custmizedProduct.page';
 
 export const routes: Routes = [
   { path: 'iniciar-sesion', component: LoginPage, canActivate: [NoAuthGuard] },
   { path: 'registro', component: RegisterPage, canActivate: [NoAuthGuard] },
-  { path: 'confirmar-email/:token', component: ConfirmEmailPage, canActivate: [NoAuthGuard] },
+  {
+    path: 'confirmar-email/:token',
+    component: ConfirmEmailPage,
+    canActivate: [NoAuthGuard],
+  },
   { path: 'inicio', component: HomePage },
   { path: 'catalogo', component: CatalogPage },
   { path: 'detalle-producto/:id', component: ProductDetailPage },
@@ -57,6 +61,7 @@ export const routes: Routes = [
     path: 'taller-juego/:categoria',
     component: WorkshopGamePage,
   },
+  { path: 'productos-personalizados', component: CustmizedProductPage },
 
   // Rutas de administrador
   {
@@ -83,5 +88,5 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: 'iniciar-sesion', pathMatch: 'full' },
+  { path: '**', redirectTo: 'productos-personalizados', pathMatch: 'full' },
 ];

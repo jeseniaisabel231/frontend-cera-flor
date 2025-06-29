@@ -1,13 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { usuario } from '../app/interfaces/usuario.interface';
+import { decodificarToken } from '../app/utils/decodificarToken';
 import { environment } from '../environments/environment';
 import { CarritoService } from './carrito.service';
-import { decodificarToken } from '../app/utils/decodificarToken';
 
 interface respuestaLogin {
-  response: string;
   token: string;
+  nombre: string;
+  apellido: string;
+  genero: string;
+  email: string;
+  _id: string;
 }
 
 @Injectable({
@@ -17,8 +22,22 @@ export class AuthService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
   private carritoService = inject(CarritoService);
-  private datosUsuario: any = {};
-  public estaAutenticado = decodificarToken()?.exp * 1000 > Date.now();
+  public datosUsuario = signal<usuario>({
+    _id: '',
+    nombre: '',
+    apellido: '',
+    imagen: '',
+    email: '',
+    genero: '',
+    estado: '',
+  });
+  public cargaPerfil = signal<boolean>(true);
+  public clienteAutenticado = signal<boolean>(false);
+
+  constructor() {
+    this.obtenerPerfil().subscribe()
+  }
+
 
   login(email: string, password: string) {
     const productos = this.carritoService.carrito().productos;
@@ -36,9 +55,9 @@ export class AuthService {
             const isAdmin = decodificarToken()?.rol === 'admin';
 
             if (!isAdmin && productos.length > 0) {
-              productos.forEach((producto: any) => {
+              productos.forEach(({ producto, cantidad }: any) => {
                 this.carritoService
-                  .agregarCarrito(producto.producto, producto.cantidad, true)
+                  .agregarCarrito(producto, cantidad, true)
                   .subscribe();
               });
 
@@ -73,11 +92,13 @@ export class AuthService {
         }),
       );
   }
+  
   recuperarContrasenia(email: string): Observable<any> {
     return this.http.post<any>(`${this.urlBackend}/api/recuperar-contrasenia`, {
       email,
     });
   }
+
   restablecerContrasenia(
     email: string,
     nuevaPassword: string,
@@ -91,6 +112,7 @@ export class AuthService {
       },
     );
   }
+  
   obtenerPerfil() {
     return this.http
       .get<any>(`${this.urlBackend}/api/perfil`, {
@@ -99,15 +121,17 @@ export class AuthService {
         },
       })
       .pipe(
-        tap((response) => {
-          this.datosUsuario = response;
-          localStorage.setItem(
-            'datosUsuario',
-            JSON.stringify(this.datosUsuario),
-          );
+        tap(({ cliente }) => {
+          this.cargaPerfil.set(false);
+          this.clienteAutenticado.set(true);
+          this.datosUsuario.update((datos) => ({
+            ...datos,
+            ...cliente,
+          }));
         }),
       );
   }
+  
   actualizarPerfil(datosCliente: any) {
     return this.http
       .put<any>(`${this.urlBackend}/api/perfil`, datosCliente, {

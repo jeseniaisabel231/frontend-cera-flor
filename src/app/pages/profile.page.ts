@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule, TitleCasePipe } from '@angular/common';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { VentasService } from '../../services/admin/ventas.service';
 import { AuthService } from '../../services/auth.service';
+import { FacturaService } from '../../services/facturas.service';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 
@@ -14,6 +14,7 @@ import { Headers } from '../components/header.component';
     ReactiveFormsModule,
     CommonModule,
     RouterLink,
+    TitleCasePipe
   ],
 
   template: `
@@ -28,16 +29,15 @@ import { Headers } from '../components/header.component';
           class="sticky top-8 h-1/2 w-full flex-shrink-0 rounded-lg bg-white p-4 shadow-sm md:w-64"
         >
           <header class="mb-6 flex flex-col items-center">
-            <div class="relative mb-3">
-              @if (perfil.value.genero === 'Femenino') {
+            <label for="foto" class="relative mb-3">
+              @if (perfil.value.genero) {
                 <img
-                  src="perfilMujer.jpg"
-                  [alt]="perfil.value.nombre + ' ' + perfil.value.apellido"
-                  class="h-20 w-20 rounded-full border"
-                />
-              } @else if (perfil.value.genero === 'Masculino') {
-                <img
-                  src="perfilHombre.jpg"
+                  [src]="
+                    imagePreview ??
+                    (perfil.value.genero === 'masculino'
+                      ? 'perfilHombre.jpg'
+                      : 'perfilMujer.jpg')
+                  "
                   [alt]="perfil.value.nombre + ' ' + perfil.value.apellido"
                   class="h-20 w-20 rounded-full border"
                 />
@@ -84,8 +84,14 @@ import { Headers } from '../components/header.component';
                   ></path>
                 </svg>
               </button>
-              <input #fileInput type="file" accept="image/*" class="hidden" />
-            </div>
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                id="foto"
+                (input)="onFileChange($event)"
+              />
+            </label>
 
             <h2 class="text-center font-medium">
               {{ perfil.value.nombre }} {{ perfil.value.apellido }}
@@ -141,7 +147,7 @@ import { Headers } from '../components/header.component';
               <h2 class="text-xl font-semibold text-black">Mi perfil</h2>
             </header>
 
-            <form class="p-6" [formGroup]="perfil">
+            <form class="p-6" [formGroup]="perfil" (ngSubmit)="onSubmit()">
               <fieldset class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
@@ -198,7 +204,7 @@ import { Headers } from '../components/header.component';
                     Cédula
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     formControlName="cedula"
                     class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
                   />
@@ -233,21 +239,19 @@ import { Headers } from '../components/header.component';
                   <div class="flex space-x-4">
                     <label class="inline-flex items-center">
                       <input
-                        type="radio"
-                        name="gender"
-                        [value]="'Masculino'"
-                        class="focus:ring-morado-400 h-4 w-4 text-indigo-600"
                         formControlName="genero"
+                        type="radio"
+                        value="masculino"
+                        class="focus:ring-morado-400 h-4 w-4 text-indigo-600"
                       />
                       <span class="ml-2 text-gray-700">Masculino</span>
                     </label>
                     <label class="inline-flex items-center">
                       <input
-                        type="radio"
-                        name="gender"
-                        [value]="'Femenino'"
-                        class="focus:ring-morado-400 h-4 w-4 text-indigo-600"
                         formControlName="genero"
+                        type="radio"
+                        value="femenino"
+                        class="focus:ring-morado-400 h-4 w-4 text-indigo-600"
                       />
                       <span class="ml-2 text-gray-700">Femenino</span>
                     </label>
@@ -255,11 +259,11 @@ import { Headers } from '../components/header.component';
                 </div>
               </fieldset>
 
-              <section>
+              <!-- <section>
                 <h3 class="mb-4 text-lg font-bold text-gray-900">
                   Cambiar contraseña
                 </h3>
-                <div class="space-y-4">
+                <form class="flex flex-col gap-4">
                   <div>
                     <label class="mb-1 block text-sm font-bold text-gray-700">
                       Contraseña actual
@@ -294,8 +298,8 @@ import { Headers } from '../components/header.component';
                       class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
                     />
                   </div>
-                </div>
-              </section>
+                </form>
+              </section> -->
 
               <div class="mt-8 flex justify-end">
                 <button
@@ -317,66 +321,136 @@ import { Headers } from '../components/header.component';
           <article
             class="flex-grow overflow-hidden rounded-lg bg-white shadow-sm"
           >
-            <!-- ... resto del contenido ... -->
             <header class="px-6 py-4">
               <h2 class="text-xl font-semibold text-black">Mis pedidos</h2>
             </header>
-            <!-- Lista de pedidos -->
             <section class="px-6">
-              <h2 class="mt-2 text-black">Listado de pedidos recientes</h2>
+              @if (carga()) {
+                <div class="flex justify-center p-8">
+                  <svg
+                    class="h-8 w-8 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24"
+                    viewBox="0 -960 960 960"
+                    width="24"
+                    fill="#434343"
+                  >
+                    <path
+                      d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                    />
+                  </svg>
+                  <span class="ml-2">Cargando pedidos...</span>
+                </div>
+              } @else if (pedidos.length === 0) {
+                <div class="p-8 text-center">
+                  <p class="text-gray-500">No tienes pedidos aún</p>
+                </div>
+              } @else {
+                <h2 class="mt-2 text-black">Listado de pedidos recientes</h2>
 
-              <!-- Pedido individual -->
-              <article
-                class="mb-6 overflow-hidden rounded-lg bg-white shadow-sm"
-              >
-                <header
-                  class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
-                >
-                  <div>
-                    <span class="text-sm font-medium text-gray-500"></span>
-                    <span class="mx-2 text-gray-300">•</span>
-                    <span class="text-morado-200 text-sm font-medium">
-                      <span>Estado:</span>
-                      Enviado
-                    </span>
-                    <span class="mx-2 text-gray-300">•</span>
-                    <time datetime="2023-05-15" class="text-sm text-gray-500">
-                      15 de Mayo, 2023
-                    </time>
-                  </div>
-                  <span class="text-lg font-semibold">
-                    $1,250.00
-                    <abbr title="Pesos Mexicanos"></abbr>
-                  </span>
-                </header>
+                <!-- Iterar sobre cada venta/pedido -->
+                @for (venta of pedidos; track venta._id) {
+                  <article
+                    class="mb-6 overflow-hidden rounded-lg  bg-white shadow-sm"
+                  >
+                    <header
+                      class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
+                    >
+                      <div>
+                        <span class="text-sm font-medium text-gray-500">
+                          Pedido {{ venta._id.slice(-8) }}
+                        </span>
+                        <span class="mx-2 text-gray-300">•</span>
+                        <span class="text-sm font-medium text-blue-600">
+                          Estado: {{ venta.estado | titlecase }}
+                        </span>
+                        <span class="mx-2 text-gray-300">•</span>
+                        <time class="text-sm text-gray-500">
+                          {{ venta.fecha_venta | date: 'dd/MM/yyyy' }}
+                        </time>
+                      </div>
+                      <span class="text-lg font-semibold">
+                        {{ venta.total.toFixed(2) }}
+                      </span>
+                    </header>
 
-                <div class="p-6">
-                  <section>
-                    <h3 class="sr-only">Productos del pedido</h3>
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                      <!-- Producto 1 -->
-                      <section class="flex items-start">
-                        <img
-                          src="https://via.placeholder.com/80x80?text=Jarrón+Barro"
-                          class="mr-4 h-16 w-16 rounded-md object-cover"
-                          loading="lazy"
-                        />
-                        <div>
-                          <h4 class="text-sm font-medium">Jabon de arroz</h4>
-                          <p class="mt-1 text-xs text-gray-500"></p>
-                          <p class="mt-1 text-sm font-medium">$</p>
-                          <p class="mt-1 text-xs text-gray-500">Cantidad: 1</p>
-                          <p class="mt-1 text-xs">Precio:</p>
+                    <div class="p-6">
+                      <section>
+                        <div class="space-y-4">
+                          <!-- Iterar sobre cada producto de la venta -->
+                          @for (item of venta.productos; track item._id) {
+                            @if (item.producto_id) {
+                              <section
+                                class="flex items-start border-b border-gray-100 pb-4"
+                              >
+                                <img
+                                  src="logo.png"
+                                  class="mr-4 h-16 w-16 rounded-md object-cover"
+                                  loading="lazy"
+                                  [alt]="item.producto_id.nombre"
+                                />
+                                <div class="flex-grow">
+                                  <h4 class="text-sm font-medium ">
+                                    {{ item.producto_id.nombre | titlecase }}
+                                  </h4>
+                                  <p
+                                    class="mt-1 line-clamp-2 text-xs text-gray-500"
+                                  >
+                                    {{ item.producto_id.descripcion }}
+                                  </p>
+                                  <div
+                                    class="mt-2 flex items-center gap-4 text-sm"
+                                  >
+                                    <span class="text-gray-600">
+                                      Cantidad: {{ item.cantidad }}
+                                    </span>
+                                    <span class="text-gray-600">
+                                      Precio unit.:
+                                      {{ item.producto_id.precio.toFixed(2) }}
+                                    </span>
+                                    <span class="font-medium">
+                                      Subtotal: {{ item.subtotal.toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                              </section>
+                            } @else {
+                              <section
+                                class="flex items-start border-b border-gray-100 pb-4 last:border-b-0"
+                              >
+                                <div
+                                  class="mr-4 flex h-16 w-16 items-center justify-center rounded-md bg-gray-200"
+                                >
+                                  <span class="text-xs text-gray-400">N/A</span>
+                                </div>
+                                <div class="flex-grow">
+                                  <h4 class="text-sm font-medium text-red-600">
+                                    Producto no disponible
+                                  </h4>
+                                  <p class="mt-1 text-xs text-gray-500">
+                                    Este producto ya no está disponible en
+                                    nuestro catálogo
+                                  </p>
+                                  <div
+                                    class="mt-2 flex items-center gap-4 text-sm"
+                                  >
+                                    <span class="text-gray-600">
+                                      Cantidad: {{ item.cantidad }}
+                                    </span>
+                                    <span class="font-medium">
+                                      Subtotal: {{ item.subtotal.toFixed(2) }}
+                                    </span>
+                                  </div>
+                                </div>
+                              </section>
+                            }
+                          }
                         </div>
                       </section>
                     </div>
-                  </section>
-                </div>
-              </article>
-              <div class="ml-auto flex items-center">
-                <span>Subtotal</span>
-                <span>Impuestos</span>
-              </div>
+                  </article>
+                }
+              }
             </section>
           </article>
         }
@@ -385,16 +459,14 @@ import { Headers } from '../components/header.component';
   `,
 })
 export class ProfilePage {
-  //variables para la navegacion perfil
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
-
   public router = inject(Router);
   public servicioPerfil = inject(AuthService);
+  public servicioFacturas = inject(FacturaService);
   public imagenPersonalizada = signal<string>('');
+  public pedidos: any[] = [];
   public carga = signal<boolean>(true);
-
-  public serviceVentas = inject(VentasService);
 
   public perfil = new FormGroup({
     nombre: new FormControl(''),
@@ -407,38 +479,63 @@ export class ProfilePage {
     fecha_nacimiento: new FormControl(''),
     imagen: new FormControl(''),
   });
+
+  // public passwordForm = new FormGroup({
+  //   currentPassword: new FormControl(''),
+  //   newPassword: new FormControl(''),
+  //   confirmPassword: new FormControl(''),
+  // });
+
   constructor() {
-    this.cargarPerfil();
-    // Cargar imagen personalizada del localStorage si existe
-    const imagenGuardada = localStorage.getItem('imagenPerfil');
-    if (imagenGuardada) {
-      this.imagenPersonalizada.set(imagenGuardada);
-    }
-    this.serviceVentas.obtener().subscribe({
-      next: (respuesta) => {
-        console.log('Ventas recibidas:', respuesta);
-      },
-      error: (error) => {
-        console.error('Error al obtener ventas:', error);
-      },
+    effect(() => {
+      const datosUsuario = this.servicioPerfil.datosUsuario();
+      datosUsuario.genero = datosUsuario.genero?.toLowerCase() ?? '';
+      this.perfil.patchValue(datosUsuario, { emitEvent: false });
     });
+    this.obtenerFacturas();
   }
-
-  cargarPerfil() {
-    this.servicioPerfil.obtenerPerfil().subscribe({
-      next: (respuesta) => {
-        this.perfil.patchValue(respuesta.cliente);
-        console.log('Cliente recibido:', respuesta.cliente);
-      },
-    });
-  }
-
-  obtenerImagenPerfil() {}
 
   cerrarSesion() {
     localStorage.removeItem('token');
     this.router.navigate(['/inicio']).then(() => {
       window.location.reload();
+    });
+  }
+
+  onSubmit() {
+    this.servicioPerfil.actualizarPerfil(this.perfil.value).subscribe({
+      next: (respuesta) => {
+        console.log('Perfil actualizado:', respuesta);
+      },
+      error: (error) => {
+        console.error('Error al actualizar perfil:', error);
+      },
+    });
+  }
+
+  public imagePreview: string | ArrayBuffer | null = null;
+  public onFileChange(event: any) {
+    if (event.target.files && event.target.files.length) {
+      const [file] = event.target.files;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => (this.imagePreview = reader.result);
+      this.perfil.patchValue({
+        imagen: file,
+      });
+    }
+  }
+  obtenerFacturas() {
+    this.servicioFacturas.obtenerFacturas().subscribe({
+      next: (respuesta: any) => {
+        console.log('Facturas obtenidas:', respuesta);
+        this.pedidos = respuesta.ventas;
+        this.carga.set(false);
+      },
+      error: (error) => {
+        console.error('Error al obtener facturas:', error);
+        this.carga.set(false);
+      },
     });
   }
 }

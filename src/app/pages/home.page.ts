@@ -7,13 +7,12 @@ import { Card } from '../components/card.component';
 import { Footeer } from '../components/footer.component';
 import { Headers } from '../components/header.component';
 import { producto } from '../interfaces/producto.interface';
-import { PromocionesService } from '../../services/admin/promociones.service';
 
 @Component({
   imports: [Headers, Footeer, Card, RouterLink],
 
   template: `
-    <headers ></headers>
+    <headers></headers>
     <main class="flex flex-col">
       <!--Seccion banner -->
       <section class="relative w-full">
@@ -25,7 +24,9 @@ import { PromocionesService } from '../../services/admin/promociones.service';
           data-carousel="slide"
         >
           <!-- Carousel wrapper -->
-          <div class="relative aspect-[21/9] w-full overflow-hidden rounded-lg md:h-96">
+          <div
+            class="relative aspect-[21/9] w-full overflow-hidden rounded-lg md:h-96"
+          >
             <!-- Item 1 -->
             <div class="duration-700 ease-in-out">
               <img src="banner1.png" alt="Banner description" class="w-full" />
@@ -213,8 +214,8 @@ import { PromocionesService } from '../../services/admin/promociones.service';
           <div
             class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
-            @for (producto of productos; track producto._id) {
-              <card [producto]="producto" (emitirCantidad)="recibirCantidad($event)"></card>
+            @for (producto of serviceProductos.productosPorCantidad(4); track producto._id) {
+              <card [producto]="producto"></card>
             }
           </div>
         </div>
@@ -470,26 +471,11 @@ import { PromocionesService } from '../../services/admin/promociones.service';
 })
 export class HomePage {
   public serviceProductos = inject(ProductosService);
-  public productos: producto[] = [];
   public cantidadProducto = signal(0);
-  ngOnInit() {
-    this.obtenerProductos(1);
-  }
-  obtenerProductos(numeroPagina: number) {
-    this.serviceProductos.obtener(numeroPagina).subscribe({
-      next: (respuesta: any) => {
-        this.productos = respuesta.productos;
-      },
-    });
-  }
+
   public promocionesResource = httpResource<any>(
     () => `${environment.urlApi}/api/promociones`,
   );
 
-  recibirCantidad(cantidad: number) {
-    this.cantidadProducto.set(cantidad)
-  }
-  //metodo para el boton de siguientes
-  siguienteBotonBanner(){
-  }
+  siguienteBotonBanner() {}
 }

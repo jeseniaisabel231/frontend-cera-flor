@@ -41,7 +41,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
               ) {
                 @let item = producto.producto;
                 <article
-                  class="flex items-center justify-between border-b border-gray-100 p-4 last:border-b-0 hover:bg-gray-50"
+                  class="flex items-center justify-between border-b border-gray-100 p-4 wrap-anywhere last:border-b-0 hover:bg-gray-50"
                 >
                   <div class="flex items-center gap-4">
                     <img
@@ -62,7 +62,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small
-                          class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs"
+                          class="max-w-30 overflow-hidden rounded-full bg-[#9ffedb] px-3 py-1 text-xs text-ellipsis whitespace-nowrap"
                         >
                           <strong>Aroma:</strong>
                           {{ item.aroma }}
@@ -84,7 +84,12 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                       >
                         <button
                           class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
-                          (click)="decrementarCantidad(producto)"
+                          (click)="
+                            decrementarCantidad(
+                              producto,
+                              producto.tipo_producto
+                            )
+                          "
                           title="Disminuir cantidad"
                           [disabled]="producto.cantidad <= 1"
                           [class.text-gray-400]="producto.cantidad <= 1"
@@ -97,7 +102,12 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         </span>
                         <button
                           class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
-                          (click)="incrementarCantidad(producto.producto_id)"
+                          (click)="
+                            incrementarCantidad(
+                              producto.producto_id,
+                              producto.tipo_producto
+                            )
+                          "
                           title="Aumentar cantidad"
                         >
                           +
@@ -111,7 +121,12 @@ import { carritoProducto } from '../interfaces/carrito.interface';
 
                     <button
                       class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
-                      (click)="mostrarModalEliminar(producto.producto_id, producto.tipo_producto)"
+                      (click)="
+                        mostrarModalEliminar(
+                          producto.producto_id,
+                          producto.tipo_producto
+                        )
+                      "
                       title="Eliminar producto"
                     >
                       <svg
@@ -209,9 +224,13 @@ export class ShoppingCardPage {
   public tipoProductoEliminar = signal('');
   public imagenPersonalizado = localStorage.getItem('personalizacion') ?? '';
 
-  actualizarCantidadEnCarrito(producto_id: string, cantidad: number = 1) {
+  actualizarCantidadEnCarrito(
+    producto_id: string,
+    cantidad: number = 1,
+    tipo_producto: string,
+  ) {
     this.serviceCarrito
-      .modificarCantidadCarrito(producto_id, cantidad)
+      .modificarCantidadCarrito(producto_id, cantidad, tipo_producto)
       .subscribe();
   }
 
@@ -224,20 +243,22 @@ export class ShoppingCardPage {
     return this.serviceCarrito.carrito().total - this.calcularImpuestos();
   }
 
-  incrementarCantidad(producto_id: string) {
-    this.actualizarCantidadEnCarrito(producto_id);
+  incrementarCantidad(producto_id: string, tipo_producto: string) {
+    this.actualizarCantidadEnCarrito(producto_id, 1, tipo_producto);
   }
 
-  decrementarCantidad(producto: carritoProducto) {
+  decrementarCantidad(producto: carritoProducto, tipo_producto: string) {
     if (producto.cantidad > 1) {
-      this.actualizarCantidadEnCarrito(producto.producto_id, -1);
+      this.actualizarCantidadEnCarrito(producto.producto_id, -1, tipo_producto);
     }
   }
 
   desicionModal(decision: boolean) {
     this.desicionProducto.set(decision);
     if (decision) {
-      this.serviceCarrito.eliminarCarrito(this.idEliminar(), this.tipoProductoEliminar()).subscribe();
+      this.serviceCarrito
+        .eliminarCarrito(this.idEliminar(), this.tipoProductoEliminar())
+        .subscribe();
     }
   }
 

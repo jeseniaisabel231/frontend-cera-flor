@@ -24,7 +24,6 @@ export class CarritoService {
   });
 
   constructor() {
-    console.log(this.estaAutenticado);
     this.obtenerCarrito()
       .subscribe()
       .add(() => this.carga.set(false));
@@ -55,41 +54,45 @@ export class CarritoService {
       })
       .pipe(
         tap(({ carrito }) => {
-          console.log('Carrito obtenido del backend:', carrito);
-          this.carrito.set(carrito); // Actualiza el carrito con la respuesta del backend
+          this.carrito.set(carrito);
           this.cantidadProductos.set(carrito?.productos?.length ?? 0);
         }),
       );
   }
 
-  agregarCarrito(producto: any, cantidad: number = 1, estaAutenticado: boolean = this.estaAutenticado, tipo_producto: string = 'normal') {
-    if (!estaAutenticado) {
-      const productoExistente = this.carrito().productos.find(
-        (item: any) => item.producto_id === producto._id,
-      );
+  agregarCarrito(
+    producto: any,
+    cantidad: number = 1,
+    estaAutenticado: boolean = this.estaAutenticado,
+    tipo_producto: string = 'normal',
+  ) {
+    const productoExistente = this.carrito().productos.find(
+      (item: any) => item.producto_id === producto._id,
+    );
 
-      if (productoExistente) {
-        productoExistente.cantidad += cantidad;
-      } else {
-        this.carrito.update((carrito) => ({
-          ...carrito,
-          productos: [
-            ...carrito.productos,
-            {
-              producto_id: producto._id,
-              cantidad,
-              precio_unitario: producto.precio,
-              producto,
-            } as carritoProducto,
-          ],
-        }));
-        this.cantidadProductos.update((count) => count + 1); // Incrementa la cantidad de productos en el carrito
-      }
+    if (productoExistente) {
+      productoExistente.cantidad += cantidad;
+    } else {
       this.carrito.update((carrito) => ({
         ...carrito,
-        total: carrito.total + producto.precio * cantidad, // Actualiza el total del carrito
+        productos: [
+          ...carrito.productos,
+          {
+            producto_id: producto._id,
+            cantidad,
+            precio_unitario: producto.precio,
+            producto,
+          } as carritoProducto,
+        ],
       }));
+      this.cantidadProductos.update((count) => count + 1); // Incrementa la cantidad de productos en el carrito
+    }
+    this.carrito.update((carrito) => ({
+      ...carrito,
+      total: carrito.total + producto.precio * cantidad, // Actualiza el total del carrito
+    }));
 
+    if (!estaAutenticado) {
       localStorage.setItem(
         'cantidadProductos',
         this.cantidadProductos().toString(),
@@ -103,27 +106,20 @@ export class CarritoService {
       });
     }
 
-    return this.http
-      .put<any>(
-        `${this.urlBackend}/api/carritos/agregar`,
-        {
-          producto_id: producto._id,
-          cantidad,
-          tipo_producto,
+    return this.http.put<any>(
+      `${this.urlBackend}/api/carritos/agregar`,
+      {
+        producto_id: producto._id,
+        cantidad,
+        tipo_producto,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      )
-      .pipe(
-        tap(({ carrito }) => {
-          this.carrito.set(carrito);
-          this.cantidadProductos.set(carrito?.productos?.length ?? 0);
-        }),
-      );
+      },
+    );
   }
   vaciarCarrito() {
     if (!this.estaAutenticado) {
@@ -214,7 +210,11 @@ export class CarritoService {
       );
   }
 
-  modificarCantidadCarrito(producto_id: string, cantidad: number) {
+  modificarCantidadCarrito(
+    producto_id: string,
+    cantidad: number,
+    tipo_producto: string = 'normal',
+  ) {
     if (!this.estaAutenticado) {
       const producto = this.carrito().productos.find(
         (producto: any) => producto.producto_id === producto_id,
@@ -229,6 +229,7 @@ export class CarritoService {
                   ...item,
                   cantidad: item.cantidad + cantidad,
                   precio_unitario: item.precio_unitario,
+                  tipo_producto,
                 }
               : item,
           ),
@@ -246,7 +247,7 @@ export class CarritoService {
     return this.http
       .put<any>(
         `${this.urlBackend}/api/carritos/modificar-cantidad`,
-        { producto_id, cantidad },
+        { producto_id, cantidad, tipo_producto },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

@@ -12,7 +12,7 @@ import type { producto } from '../interfaces/producto.interface';
     <article
       class="flex h-106 cursor-pointer flex-col rounded-xl border border-gray-300 bg-white"
     >
-      <div class="" [routerLink]="['/detalle-producto', producto()._id]">
+      <div [routerLink]="['/detalle-producto', producto()._id]">
         <img
           [src]="producto().imagen"
           [alt]="producto().nombre"
@@ -26,17 +26,17 @@ import type { producto } from '../interfaces/producto.interface';
                 : 'Velas Artesanales'
             }}
           </div>
-          <div class="text-[17px] font-bold text-gray-800">
+          <div class="text-[17px] font-bold text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap">
             {{ producto().nombre | titlecase }}
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center gap-2 w-full">
             <small
-              class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold"
+              class="rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold overflow-hidden text-ellipsis whitespace-nowrap"
             >
               {{ producto().aroma | titlecase }}
             </small>
             <small
-              class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs font-bold"
+              class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs font-bold overflow-hidden text-ellipsis whitespace-nowrap"
             >
               {{ producto().tipo | titlecase }}
             </small>
@@ -51,7 +51,7 @@ import type { producto } from '../interfaces/producto.interface';
         <div class="flex items-center rounded-full border border-gray-300">
           <button
             class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
-            (click)="decrementarCantidad()"
+            (click)="decrementarCantidad(); $event.stopPropagation()"
             title="Disminuir cantidad"
           >
             -
@@ -59,7 +59,7 @@ import type { producto } from '../interfaces/producto.interface';
           <span class="px-2">{{ cantidad() }}</span>
           <button
             class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
-            (click)="incrementarCantidad()"
+            (click)="incrementarCantidad(); $event.stopPropagation()"
             title="Aumentar cantidad"
           >
             +
@@ -69,7 +69,22 @@ import type { producto } from '../interfaces/producto.interface';
           (click)="agregarAlCarrito()"
           class="bg-morado-600 hover:bg-morado-700 w-full rounded-2xl py-2 font-bold text-white transition"
         >
-          Comprar
+          @if (carga()) {
+            <svg
+              class="animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 -960 960 960"
+              width="24"
+              fill="#434343"
+            >
+              <path
+                d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+              />
+            </svg>
+          } @else {
+            Comprar
+          }
         </button>
       </div>
     </article>
@@ -86,8 +101,8 @@ export class Card {
   public producto = input.required<producto>();
   public serviceCarrito = inject(CarritoService);
   public cantidad = signal(1);
-  public emitirCantidad = output<number>();
   public mostrarMensajeExito = signal(false);
+  public carga = signal(false);
 
   //metodo para incrementar
   incrementarCantidad() {
@@ -105,9 +120,10 @@ export class Card {
   //metodo para agregar al carrito
   agregarAlCarrito() {
     this.serviceCarrito
-      .agregarCarrito(this.producto(), this.cantidad())
-      .subscribe({
-        next: ({ carrito }: any) => {
+    .agregarCarrito(this.producto(), this.cantidad())
+    .subscribe({
+      next: ({ carrito }: any) => {
+          this.cantidad.set(1);
           this.mostrarMensajeExito.set(true);
           setTimeout(() => {
             this.mostrarMensajeExito.set(false);

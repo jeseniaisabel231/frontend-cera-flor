@@ -1,4 +1,4 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
@@ -125,7 +125,7 @@ import { decodificarToken } from '../utils/decodificarToken';
               </div>
             }
             <button
-              class="group flex flex-row items-center gap-2 pr-3 cursor-pointer"
+              class="group flex cursor-pointer flex-row items-center gap-2 pr-3"
               (click)="verMenu()"
             >
               <svg
@@ -146,10 +146,10 @@ import { decodificarToken } from '../utils/decodificarToken';
               <span
                 class="hidden whitespace-nowrap text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
               >
-                @if (serviceAuth.estaAutenticado) {
+                @if (serviceAuth.clienteAutenticado()) {
                   <span>Hola,</span>
                   <span class="font-bold">
-                    {{ obtenerNombre() }}
+                    {{ serviceAuth.datosUsuario().nombre }}
                   </span>
                 } @else {
                   <div class="font-semibold">Iniciar sesión/Registrarse</div>
@@ -158,7 +158,10 @@ import { decodificarToken } from '../utils/decodificarToken';
             </button>
             <div class="h-10 border-[1px] border-[#a0a0a0]"></div>
 
-            <a class="group relative flex flex-row items-center gap-1 pl-3" routerLink="/carrito">
+            <a
+              class="group relative flex flex-row items-center gap-1 pl-3"
+              routerLink="/carrito"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="26"
@@ -175,12 +178,12 @@ import { decodificarToken } from '../utils/decodificarToken';
               >
                 Compras
               </span>
-              @if(serviceCarrito.cantidadProductos()){
+              @if (serviceCarrito.cantidadProductos()) {
                 <span
-                class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors duration-300 ease-in-out group-hover:bg-red-600"
-              >
-                {{ this.serviceCarrito.cantidadProductos() }}
-              </span>
+                  class="absolute -top-4 -right-6 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white transition-colors duration-300 ease-in-out group-hover:bg-red-600"
+                >
+                  {{ this.serviceCarrito.cantidadProductos() }}
+                </span>
               }
             </a>
           </div>
@@ -193,10 +196,10 @@ import { decodificarToken } from '../utils/decodificarToken';
           <li class="relative">
             <a
               routerLink="/inicio"
-              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
-              [class.active]="rutaActiva() === 'inicio'"
-              [class.font-medium]="rutaActiva() === 'inicio'"
-              [class.text-opacity-80]="rutaActiva() !== 'inicio'"
+              class="disney-link block px-4 py-2 text-white"
+              [class.active]="rutaActiva === 'inicio'"
+              [class.font-medium]="rutaActiva === 'inicio'"
+              [class.text-opacity-80]="rutaActiva !== 'inicio'"
             >
               Inicio
             </a>
@@ -205,10 +208,10 @@ import { decodificarToken } from '../utils/decodificarToken';
             <a
               routerLink="/catalogo"
               [queryParams]="{ categoria: 'jabones-artesanales' }"
-              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
-              [class.active]="rutaActiva() === 'catalogo'"
-              [class.font-medium]="rutaActiva() === 'catalogo'"
-              [class.text-opacity-80]="rutaActiva() !== 'catalogo'"
+              class="disney-link block px-4 py-2 text-white"
+              [class.active]="rutaActiva === 'catalogo'"
+              [class.font-medium]="rutaActiva === 'catalogo'"
+              [class.text-opacity-80]="rutaActiva !== 'catalogo'"
             >
               Catálogo
             </a>
@@ -217,11 +220,11 @@ import { decodificarToken } from '../utils/decodificarToken';
           <li>
             <a
               routerLink="/personalizacion-producto"
-              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
-              [class.active]="rutaActiva() === 'personalizacion-producto'"
-              [class.font-medium]="rutaActiva() === 'personalizacion-producto'"
+              class="disney-link block px-4 py-2 text-white"
+              [class.active]="rutaActiva === 'personalizacion-producto'"
+              [class.font-medium]="rutaActiva === 'personalizacion-producto'"
               [class.text-opacity-80]="
-                rutaActiva() !== 'personalizacion-producto'
+                rutaActiva !== 'personalizacion-producto'
               "
             >
               Personalización
@@ -230,10 +233,10 @@ import { decodificarToken } from '../utils/decodificarToken';
           <li>
             <a
               routerLink="/sobre-nosotros"
-              class="disney-link block px-4 py-2 text-white transition-colors duration-300"
-              [class.active]="rutaActiva() === 'sobre-nosotros'"
-              [class.font-medium]="rutaActiva() === 'sobre-nosotros'"
-              [class.text-opacity-80]="rutaActiva() !== 'sobre-nosotros'"
+              class="disney-link block px-4 py-2 text-white"
+              [class.active]="rutaActiva === 'sobre-nosotros'"
+              [class.font-medium]="rutaActiva === 'sobre-nosotros'"
+              [class.text-opacity-80]="rutaActiva !== 'sobre-nosotros'"
             >
               Sobre nosotros
             </a>
@@ -250,24 +253,8 @@ export class Headers {
   public router = inject(Router);
   public serviceCarrito = inject(CarritoService);
   public servicioRuta = inject(ActivatedRoute);
-  public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
-  public obtenerNombre = signal('');
+  public rutaActiva = this.servicioRuta.snapshot.url[0].path;
 
-  constructor() {
-    const tokenDecodificado = decodificarToken();
-    this.serviceCarrito.obtenerCarrito().subscribe()
-    
-
-    if (tokenDecodificado && tokenDecodificado?.rol !== 'admin') {
-      this.serviceAuth.obtenerPerfil().subscribe({
-        next: ({ cliente }: any) => {
-          this.obtenerNombre.set(cliente.nombre);
-        },
-      });
-    }
-  }
-
-  //metodo para ver modal
   verMenu() {
     if (this.usuarioAutenticado) {
       this.menuVisible.set(!this.menuVisible());
@@ -275,6 +262,7 @@ export class Headers {
       this.router.navigate(['/iniciar-sesion']);
     }
   }
+
   cerrarSesion() {
     localStorage.removeItem('token');
     this.menuVisible.set(false);

@@ -180,7 +180,7 @@
   left: 50%;
   width: 0;
   height: 2px;
-  background: currentColor;
+  background: #fff;
   transform: translateX(-50%);
   transition: all 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
 }

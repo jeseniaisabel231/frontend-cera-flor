@@ -15,7 +15,7 @@ interface Filtro {
 export class ProductosService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  private productos = signal<producto[]>([]);
+  public productos = signal<producto[]>([]);
 
   public carga = signal<boolean>(true);
   public busqueda = signal<string>('');
@@ -23,6 +23,7 @@ export class ProductosService {
     clave: 'nombre', // En este caso no importa la clave porque no se va a filtrar cuando se seleccione "todos"
     valor: '',
   });
+
   public datosFiltrados = computed(() => {
     // El computed se ejecuta cuando cambia alguno de estos signals
     const { clave, valor } = this.filtro();
@@ -50,6 +51,10 @@ export class ProductosService {
     }
     return datos; // Si no hay búsqueda, retorna los datos filtrados
   });
+
+  public productosPorCantidad(cantidad: number = 4) {
+    return this.productos().slice(0, cantidad);
+  }
 
   constructor() {
     this.obtener()

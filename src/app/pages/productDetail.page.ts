@@ -1,52 +1,55 @@
+import { httpResource } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
   inject,
   input,
   linkedSignal,
-  OnInit,
   signal,
 } from '@angular/core';
-import { Headers } from '../components/header.component';
-import { Footeer } from '../components/footer.component';
-import { Card } from '../components/card.component';
-import { ProductosService } from '../../services/admin/productos.service';
-import { producto } from '../interfaces/producto.interface';
-import { BarranavComponent } from '../components/barranav.component';
-import { ProductDetailsComponent } from '../components/productDetails.component';
 import { environment } from '../../environments/environment';
-import { httpResource } from '@angular/common/http';
+import { ProductosService } from '../../services/admin/productos.service';
+import { BarranavComponent } from '../components/barranav.component';
+import { Card } from '../components/card.component';
+import { Footeer } from '../components/footer.component';
+import { Headers } from '../components/header.component';
+import { ProductDetailsComponent } from '../components/productDetails.component';
+import { producto } from '../interfaces/producto.interface';
 
 @Component({
   imports: [Headers, Footeer, Card, BarranavComponent, ProductDetailsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <headers ></headers>
+    <headers></headers>
     <main class="flex flex-col">
-      <barranav rutaSeccionSeleccionada="catalogo"
-        [rutaCategoriaSeleccionada]="productoResource.value()?.producto?.id_categoria.nombre"
+      <barranav
+        rutaSeccionSeleccionada="catalogo"
+        [rutaCategoriaSeleccionada]="
+          productoResource.value()?.producto?.id_categoria.nombre
+        "
         [rutaProductoSeleccionado]="productoResource.value()?.producto?.nombre"
         class="mb-4"
       ></barranav>
       <!-- Producto principal -->
-      <section class="bg-green-100 rounded-2xl  py-10 ">
-        <product-details [productoResource]="productoResource"></product-details>
+      <section class="rounded-2xl bg-green-100 py-10">
+        <product-details
+          [productoResource]="productoResource"
+        ></product-details>
       </section>
 
       <!-- Productos recomendados -->
       <section class="py-10">
-        <div class="max-w-6xl mx-auto px-4">
+        <div class="mx-auto max-w-6xl px-4">
           <h2
-            class="text-center text-[20px] sm:text-2xl font-semibold mb-8 font-playfair"
+            class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
           >
             Productos Recomendados
           </h2>
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
-            @for(producto of productos(); track producto._id){
-
-            <card [producto]="producto" (emitirCantidad)="recibirCantidad($event)"></card>
+            @for (producto of recomendados(); track producto._id) {
+              <card [producto]="producto"></card>
             }
           </div>
         </div>
@@ -57,29 +60,29 @@ import { httpResource } from '@angular/common/http';
 })
 export class ProductDetailPage {
   public id = input.required(); //debe ser igual al param de la ruta
-  public producto_id = linkedSignal(() => this.id());
   public cantidadProducto = signal(0);
-
   public serviceProductos = inject(ProductosService);
-  public productos = signal<producto[]>([]);
-  ngOnInit() {
-    this.obtenerProductos(1);
-  }
-  private obtenerProductos(numeroPagina: number) {
-    this.serviceProductos.obtener(numeroPagina).subscribe({
-      next: (respuesta: any) => {
-        this.productos.set(respuesta.productos);
-      },
-    });
-  }
+  public recomendados = linkedSignal(() => {
+    const id = this.id();
+    if (id) {
+      return this.serviceProductos
+        .productos()
+        .sort(
+          () => Math.random() - 0.5, // Mezcla los productos aleatoriamente
+        )
+        .slice(0, 4);
+    }
+    return [];
+  });
+
   public productoResource = httpResource<any>(
     () => `${environment.urlApi}/api/productos/${this.id()}`,
-
     {
       defaultValue: {} as producto,
-    }
+    },
   );
+
   recibirCantidad(cantidad: number) {
-    this.cantidadProducto.set(cantidad)
+    this.cantidadProducto.set(cantidad);
   }
 }

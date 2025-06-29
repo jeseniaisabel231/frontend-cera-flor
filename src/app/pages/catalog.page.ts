@@ -124,7 +124,7 @@ import { producto } from '../interfaces/producto.interface';
               class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
               @for (producto of productos; track producto._id) {
-                <card [producto]="producto" (emitirCantidad)="recibirCantidad($event)"></card>
+                <card [producto]="producto" ></card>
               } @empty {
                 <p class="col-span-full text-center">
                   No se encontraron productos

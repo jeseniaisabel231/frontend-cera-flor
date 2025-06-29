@@ -15,227 +15,214 @@ import { InteligenciaArtificialService } from '../../services/inteligenciaArtifi
 import { PersonalizationService } from '../../services/personalization.service';
 import { RecolorImageComponent } from '../components/coloredIcon.component';
 import { Headers } from '../components/header.component';
+import { ModaIAComponent } from '../components/modaIA.component';
 import { ModalJuegoComponent } from '../components/modalJuego.component';
-import { ModaIAComponent } from "../components/modaIA.component";
 
 @Component({
   template: `
     <headers></headers>
+    <div class="flex items-center justify-between bg-gray-300 px-6 py-4">
+      <!-- Botón de volver -->
+      <a
+        class="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
+        routerLink="/personalizacion-producto"
+      >
+        <span class="relative z-10 flex items-center gap-2">
+          <svg
+            class="h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            ></path>
+          </svg>
+          Volver
+        </span>
+        <span
+          class="absolute inset-0 z-0 h-full w-full bg-gradient-to-r from-pink-500 to-purple-700 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        ></span>
+      </a>
+
+      <span class="text-xl font-bold">Taller de Personalizacion</span>
+
+      <!-- Botón de ayuda rápida -->
+      <button
+        (click)="mostrarInstrucciones()"
+        class="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-400 to-teal-600 px-4 py-2 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
+      >
+        <span class="relative z-10 flex items-center gap-2">
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+            ></path>
+          </svg>
+          Ayuda Rápida
+        </span>
+        <span
+          class="absolute inset-0 z-0 h-full w-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.8),transparent)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        ></span>
+      </button>
+    </div>
     <main
-      class="from-celeste-200 via-morado-200 flex flex-col bg-gradient-to-b to-pink-200 text-center"
+      class="from-celeste-200 via-morado-200 relative flex h-[79.2dvh] items-start bg-gradient-to-b to-pink-200"
     >
-      <div class="relative h-[82vh] w-full overflow-hidden">
-        <a
-          class="group absolute top-0 left-4 z-10"
-          routerLink="/personalizacion-producto"
-        >
-          <button
-            class="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
-          >
-            <span class="relative z-10 flex items-center gap-2">
-              <svg
-                class="h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                ></path>
-              </svg>
-              Volver
-            </span>
-            <span
-              class="absolute inset-0 z-0 h-full w-full bg-gradient-to-r from-pink-500 to-purple-700 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-            ></span>
-          </button>
-        </a>
-        <a class="group absolute top-0 right-10 z-10">
-          <button
-            (click)="mostrarInstrucciones()"
-            class="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-400 to-teal-600 px-6 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
-          >
-            <span class="relative z-10 flex items-center gap-2">
-              <svg
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                ></path>
-              </svg>
-              Ayuda Rápida
-            </span>
-            <span
-              class="absolute inset-0 z-0 h-full w-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.8),transparent)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-            ></span>
-          </button>
-        </a>
+      @if (mostrarAyuda()) {
+        <app-confirmation-dialog
+          (confirm)="mostrarAyuda.set(false)"
+          [text]="instruccionesJuego"
+        />
+      }
 
+      <div
+        cdkDropListGroup
+        class="grid h-full w-full grid-cols-7 grid-rows-5 p-4"
+      >
+        <!-- Contenedor colores -->
         <div
-          cdkDropListGroup
-          class="absolute inset-0 grid grid-cols-5 grid-rows-5 gap-12 px-8 py-4 pl-12"
+          class="col-span-5 col-start-2 row-start-1 flex items-center justify-center"
         >
           <div
-            class="bg-opacity-70 row-span-5 overflow-y-auto rounded-lg bg-white"
+            id="colores"
+            cdkDropListOrientation="horizontal"
+            cdkDropList
+            [cdkDropListData]="colores"
+            class="bg-opacity-70 flex justify-center gap-4 overflow-x-auto overflow-y-hidden rounded-lg bg-white p-4"
+            (cdkDropListDropped)="dropColores($event)"
           >
-            <div
-              id="moldes"
-              class="bg-opacity-80 m-auto min-h-15 w-full p-2"
-              cdkDropList
-              [cdkDropListData]="moldes"
-              (cdkDropListDropped)="dropMoldes($event)"
-            >
-              @for (item of moldes; track $index) {
-                <div
-                  class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
-                >
-                  <p
-                    class="bg-morado-600 group-hover:border-morado-300 group-hover:bg-morado-700 mx-auto mt-2 w-3/4 rounded-2xl border-2 p-1 text-center text-sm font-semibold text-white transition-colors"
-                  >
-                    {{ item.nombre | titlecase }}
-                  </p>
-                  <img
-                    class="mx-auto flex size-32 cursor-grab object-contain p-2"
-                    [src]="item.imagen"
-                    [title]="item.nombre"
-                    cdkDrag
-                  />
-                </div>
-              }
-            </div>
+            @for (item of colores; track item) {
+              <img
+                class="size-14 cursor-grab rounded-full border hover:scale-105"
+                [src]="item.imagen"
+                cdkDrag
+                [title]="item.nombre"
+              />
+            }
           </div>
+        </div>
 
-          <!-- Contenedor colores -->
+        <!-- Contenedor moldes -->
+        <div
+          class="col-start-1 row-span-5 row-start-1 flex items-start justify-center"
+        >
           <div
-            class="bg-opacity-70 col-span-3 col-start-2 h-[120%] overflow-x-auto rounded-lg bg-white"
+            id="moldes"
+            class="bg-opacity-70 max-h-full w-3/4 overflow-x-hidden overflow-y-auto rounded-lg bg-white p-2"
+            cdkDropList
+            [cdkDropListData]="moldes"
+            (cdkDropListDropped)="dropMoldes($event)"
           >
-            <div
-              id="colores"
-              cdkDropListOrientation="horizontal"
-              cdkDropList
-              [cdkDropListData]="colores"
-              class="bg-opacity-80 m-auto flex flex-wrap justify-center gap-1"
-              (cdkDropListDropped)="dropColores($event)"
-            >
-              @for (item of colores; track item) {
-                <div
-                  class="group flex cursor-pointer flex-col items-center transition-transform hover:scale-110"
+            @for (item of moldes; track $index) {
+              <div
+                class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
+              >
+                <p
+                  class="bg-morado-600 group-hover:border-morado-300 group-hover:bg-morado-700 mx-auto mt-2 w-3/4 overflow-hidden rounded-2xl border-2 p-1 text-center text-sm font-semibold text-ellipsis whitespace-nowrap text-white transition-colors"
                 >
-                  <img
-                    class="flex size-14 transform cursor-grab rounded-lg p-1"
-                    [src]="item.imagen"
-                    cdkDrag
-                    [title]="item.nombre"
-                  />
-                </div>
-              }
-            </div>
+                  {{ item.nombre | titlecase }}
+                </p>
+                <img
+                  class="mx-auto flex size-32 cursor-grab object-contain p-2"
+                  [src]="item.imagen"
+                  [title]="item.nombre"
+                  cdkDrag
+                />
+              </div>
+            }
           </div>
+        </div>
 
-          <!-- Contenedor mesa -->
-
-          @if (mostrarDialogo()) {
-            <app-confirmation-dialog
-              (confirm)="mostrarDialogo.set(false)"
-              [text]="instruccionesJuego"
-            />
-          }
-          @if (mostrarAyuda()) {
-            <app-confirmation-dialog
-              (confirm)="mostrarAyuda.set(false)"
-              [text]="instruccionesJuego"
-            />
-          }
-
-          <div class="bg-opacity-70 relative col-span-3 row-span-3">
-            <p
-              class="bg-morado-600 relative left-[36%] w-[200px] -translate-x-1/2 rounded-lg p-1 font-semibold text-white"
+        <!-- Contenedor mesa de trabajo -->
+        <div
+          class="col-span-5 col-start-2 row-span-3 row-start-2 flex items-center justify-center"
+        >
+          <div class="flex gap-4 rounded-lg bg-white p-4">
+            <section
+              id="mesa-trabajo"
+              class="grid h-[30dvh] w-[30dvw] grid-cols-4 grid-rows-3 border-gray-300"
             >
-              Coloca un molde y color
-            </p>
-            <p
-              class="absolute top-0 right-56 w-[130px] rounded-lg bg-amber-600 p-1 font-semibold text-white"
-            >
-              Coloca un aroma
-            </p>
-            <p
-              class="absolute top-48 right-50 rounded-lg bg-blue-400 p-1 font-semibold text-white"
-            >
-              Coloca dos esencias
-            </p>
-            <div class="mx-auto flex h-40 justify-center">
-              <section
-                id="mesa-trabajo"
-                class="grid w-100 grid-cols-4 grid-rows-3 border-gray-300"
+              <div
+                class="relative col-span-3 row-span-3"
+                id="moldesMesa"
+                cdkDropList
+                [cdkDropListData]="moldesSeleccionados"
+                (cdkDropListDropped)="dropMoldes($event)"
               >
                 <div
-                  class="relative col-span-3 row-span-3"
-                  id="moldesMesa"
+                  class="bg-morado-200 flex h-full w-full items-center justify-center border-2 border-dashed"
                   cdkDropList
-                  [cdkDropListData]="moldesSeleccionados"
-                  (cdkDropListDropped)="dropMoldes($event)"
+                  [cdkDropListData]="coloresSeleccionados"
+                  (cdkDropListDropped)="dropColores($event)"
                 >
-                  <div
-                    class="bg-morado-200 flex h-full w-full items-center justify-center border-2 border-dashed"
-                    cdkDropList
-                    [cdkDropListData]="coloresSeleccionados"
-                    (cdkDropListDropped)="dropColores($event)"
-                  >
-                    @for (item of moldesSeleccionados; track item) {
-                      <app-recolor-image
-                        [src]="item.imagen"
-                        [fill]="coloresSeleccionados[0]?.imagen"
-                        cdkDrag
-                      ></app-recolor-image>
-                    }
-                  </div>
+                  @for (item of moldesSeleccionados; track item) {
+                    <app-recolor-image
+                      [src]="item.imagen"
+                      [fill]="coloresSeleccionados[0]?.imagen"
+                      cdkDrag
+                    ></app-recolor-image>
+                  } @empty {
+                    <p class="text-center text-gray-500">
+                      Arrastra un molde y un color aquí
+                    </p>
+                  }
                 </div>
+              </div>
 
-                <div
-                  class="col-start-4 flex items-center justify-center border-2 border-dashed bg-amber-200"
-                  id="aromasMesa"
-                  cdkDropList
-                  [cdkDropListData]="aromasSeleccionados"
-                  (cdkDropListDropped)="dropAromas($event)"
-                >
-                  @for (item of aromasSeleccionados; track item) {
-                    <img
-                      class="mx-auto flex size-12 cursor-grab p-1"
-                      [src]="item.imagen"
-                      cdkDrag
-                    />
-                  }
-                </div>
-                <div
-                  class="col-start-4 row-span-2 flex flex-col items-center justify-center border-2 border-dashed bg-blue-200"
-                  id="esenciasMesa"
-                  cdkDropList
-                  [cdkDropListData]="esenciasSeleccionadas"
-                  (cdkDropListDropped)="dropEsencias($event)"
-                >
-                  @for (item of esenciasSeleccionadas; track item) {
-                    <img
-                      class="mx-auto flex size-12 cursor-grab p-1"
-                      [src]="item.imagen"
-                      cdkDrag
-                    />
-                  }
-                </div>
-              </section>
-            </div>
-            <div class="mt-10 flex justify-center gap-4">
+              <div
+                class="col-start-4 flex items-center justify-center border-2 border-dashed bg-amber-200"
+                id="aromasMesa"
+                cdkDropList
+                [cdkDropListData]="aromasSeleccionados"
+                (cdkDropListDropped)="dropAromas($event)"
+              >
+                @for (item of aromasSeleccionados; track item) {
+                  <img
+                    class="mx-auto flex size-12 cursor-grab p-1"
+                    [src]="item.imagen"
+                    cdkDrag
+                  />
+                } @empty {
+                  <p class="text-center text-gray-500">
+                    Arrastra un aroma aquí
+                  </p>
+                }
+              </div>
+              <div
+                class="col-start-4 row-span-2 flex flex-col items-center justify-center border-2 border-dashed bg-blue-200"
+                id="esenciasMesa"
+                cdkDropList
+                [cdkDropListData]="esenciasSeleccionadas"
+                (cdkDropListDropped)="dropEsencias($event)"
+              >
+                @for (item of esenciasSeleccionadas; track item) {
+                  <img
+                    class="mx-auto flex size-12 cursor-grab p-1"
+                    [src]="item.imagen"
+                    cdkDrag
+                  />
+                } @empty {
+                  <p class="text-center text-gray-500">
+                    Arrastra hasta 2 esencias aquí
+                  </p>
+                }
+              </div>
+            </section>
+            <div class="flex flex-col justify-center gap-4">
               <button
                 (click)="OnsubmitProductoPersonalizado()"
-                class="rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+                class="cursor-pointer rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-103 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
               >
                 Finalizar Creación
               </button>
@@ -250,87 +237,81 @@ import { ModaIAComponent } from "../components/modaIA.component";
               }
 
               <button
-                class="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:from-purple-700 hover:to-blue-600 hover:shadow-lg hover:shadow-purple-500/30 focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+                class="cursor-pointer rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-103 hover:from-purple-700 hover:to-blue-600 hover:shadow-lg hover:shadow-purple-500/30 focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:outline-none active:scale-95"
                 (click)="obtenerRecomendacionesIA()"
               >
                 <span class="flex items-center justify-center gap-2">
-                  <span class="text-xl">🤖</span>
-                  Personalizar con IA
+                  Recomendación de IA
                   <span class="text-xl">✨</span>
                 </span>
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Contenedor esencias -->
+        <!-- Contenedor aromas -->
+        <div
+          class="col-start-7 row-span-5 row-start-1 flex items-start justify-center"
+        >
           <div
-            class="bg-opacity-70 relative bottom-8 col-span-3 col-start-2 row-start-5 h-[200%]  rounded-lg bg-white"
+            id="aromas"
+            cdkDropList
+            [cdkDropListData]="aromas"
+            (cdkDropListDropped)="dropAromas($event)"
+            class="bg-opacity-80 max-h-full w-3/4 overflow-x-hidden overflow-y-auto rounded-lg bg-white p-2"
           >
-            <div
-              id="esencias"
-              cdkDropListOrientation="horizontal"
-              cdkDropList
-              [cdkDropListData]="esencias"
-              (cdkDropListDropped)="dropEsencias($event)"
-              class="bg-opacity-80 m-auto flex min-h-40 w-full justify-start gap-8 p-2 overflow-x-auto overflow-y-hidden whitespace-nowrap"
-              style="scrollbar-width: thin;"
-            >
-              @for (item of esencias; track $index) {
-                <div
-                  class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105 flex-shrink-0"
+            @for (item of aromas; track $index) {
+              <div
+                class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
+              >
+                <!-- Texto con colores para aromas -->
+                <p
+                  class="mx-auto mt-2 w-1/2 overflow-hidden rounded-lg border-2 border-amber-500 bg-amber-600 p-1 text-center text-sm font-semibold text-ellipsis whitespace-nowrap text-white"
                 >
-                  <p
-                    class="bg-celeste-600 mx-auto w-full rounded-lg p-1 text-center text-sm font-semibold text-white whitespace-nowrap"
-                  >
-                    {{ item.nombre | titlecase }}
-                  </p>
-                  <img
-                    class="flex size-16 cursor-grab"
-                    [src]="item.imagen"
-                    cdkDrag
-                  />
-                </div>
-              }
-            </div>
+                  {{ item.nombre | titlecase }}
+                </p>
+
+                <img
+                  class="mx-auto flex size-22 cursor-grab object-contain p-2"
+                  [src]="item.imagen"
+                  cdkDrag
+                />
+              </div>
+            }
           </div>
+        </div>
 
-          <!-- Contenedor aromas -->
+        <!-- Contenedor esencias -->
+        <div
+          class="col-span-5 col-start-2 row-start-5 flex items-start justify-center"
+        >
           <div
-            class="bg-opacity-70 col-start-5 row-span-5 row-start-1 overflow-y-auto rounded-lg bg-white p-2"
+            id="esencias"
+            cdkDropListOrientation="horizontal"
+            cdkDropList
+            [cdkDropListData]="esencias"
+            (cdkDropListDropped)="dropEsencias($event)"
+            class="bg-opacity-70 flex justify-center gap-x-8 overflow-x-auto overflow-y-hidden rounded-lg bg-white p-1"
           >
-            <div
-              id="aromas"
-              cdkDropList
-              [cdkDropListData]="aromas"
-              (cdkDropListDropped)="dropAromas($event)"
-              class="bg-opacity-80 m-auto min-h-40 w-full p-2"
-            >
-              @for (item of aromas; track $index) {
-                <div
-                  class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
+            @for (item of esencias; track $index) {
+              <div class="group flex cursor-pointer flex-col gap-y-2">
+                <p
+                  class="bg-celeste-600 mx-auto w-full overflow-hidden rounded-lg p-1 text-center text-sm font-semibold text-ellipsis whitespace-nowrap text-white"
                 >
-                  <!-- Texto con colores para aromas -->
-                  <p
-                    class="mx-auto mt-2 w-1/2 rounded-lg border-2 border-amber-500 bg-amber-600 p-1 text-center text-sm font-semibold text-white"
-                  >
-                    {{ item.nombre | titlecase }}
-                  </p>
-
-                  <img
-                    class="rounded-lgp-2 mx-auto flex size-22 cursor-grab"
-                    [src]="item.imagen"
-                    cdkDrag
-                  />
-                </div>
-              }
-            </div>
+                  {{ item.nombre | titlecase }}
+                </p>
+                <img
+                  class="flex size-16 cursor-grab object-contain"
+                  [src]="item.imagen"
+                  cdkDrag
+                />
+              </div>
+            }
           </div>
         </div>
       </div>
     </main>
-    <app-modal-ia
-      [(mostrarModal)]="mostrarModalIA"
-    />
+    <app-modal-ia [(mostrarModal)]="mostrarModalIA" />
   `,
   imports: [
     Headers,
@@ -342,8 +323,8 @@ import { ModaIAComponent } from "../components/modaIA.component";
     RouterLink,
     CommonModule,
     ModalJuegoComponent,
-    ModaIAComponent
-],
+    ModaIAComponent,
+  ],
 })
 export class WorkshopGamePage {
   public imgIngredientes: any[] = [];
@@ -421,7 +402,10 @@ export class WorkshopGamePage {
 
   // Método para obtener recomendaciones de IA
   obtenerRecomendacionesIA() {
-const tipo = this.categoria() === '680fd248f613dc80267ba5d7' ? 'piel seca' : 'aromatizante';
+    const tipo =
+      this.categoria() === '680fd248f613dc80267ba5d7'
+        ? 'piel seca'
+        : 'aromatizante';
 
     this.mostrarModalIA.set(true);
     this.serviceInteligencia
@@ -435,38 +419,43 @@ const tipo = this.categoria() === '680fd248f613dc80267ba5d7' ? 'piel seca' : 'ar
           this.aromasSeleccionados = [producto_personalizado.aroma];
           this.esenciasSeleccionadas = producto_personalizado.esencias;
         },
-      }).add(() => this.mostrarModalIA.set(false));
+      })
+      .add(() => this.mostrarModalIA.set(false));
   }
 
   async OnsubmitProductoPersonalizado() {
-const tipo = this.categoria() === '680fd248f613dc80267ba5d7' ? 'piel seca' : 'aromatizante';
-
     this.formularioPersonalizado.ingredientes = [
       ...this.moldesSeleccionados,
       ...this.coloresSeleccionados,
       ...this.aromasSeleccionados,
       ...this.esenciasSeleccionadas,
     ];
-    this.formularioPersonalizado.tipo_producto = tipo;
+
     this.formularioPersonalizado.id_categoria = this.categoria() as string;
-    await this.capturarSeccion(); // Captura la sección antes de enviar el formulario
-    this.servicePersonalizacion
-      .registrarPersonalizacion(this.formularioPersonalizado as any)
-      .subscribe({
-        next: (respuesta: any) => {
-          console.log('Respuesta del servidor:', respuesta);
-          this.mostrarDialogoConfirmacion.set(true);
-          this.mensajeProductoPersonalizado.set(respuesta.msg);
-          this.producto_id.set(respuesta.producto_personalizado._id);
-        },
-        error: (error: any) => {
-          this.mostrarDialogoConfirmacion.set(true);
-          this.mensajeProductoPersonalizado.set(
-            error.error.msg || 'Error al registrar el producto personalizado',
-          );
-          this.imagenPersonalizada.set('');
-        },
-      });
+
+    const imagen = await this.capturarSeccion(); // Captura la sección antes de enviar el formulario
+
+    if (imagen) {
+      this.servicePersonalizacion
+        .registrarPersonalizacion(this.formularioPersonalizado)
+        .subscribe({
+          next: ({ producto_personalizado, msg }: any) => {
+            this.producto_id.set(producto_personalizado._id);
+            this.mensajeProductoPersonalizado.set(msg);
+
+            this.servicePersonalizacion
+              .subirFotoPersonalizacion(this.producto_id(), imagen)
+              .subscribe();
+          },
+          error: (error: any) => {
+            this.mensajeProductoPersonalizado.set(
+              error.error.msg || 'Error al registrar el producto personalizado',
+            );
+            this.imagenPersonalizada.set('');
+          },
+        })
+        .add(() => this.mostrarDialogoConfirmacion.set(true));
+    }
   }
 
   dropMoldes(event: CdkDragDrop<any[]>) {
@@ -600,11 +589,33 @@ const tipo = this.categoria() === '680fd248f613dc80267ba5d7' ? 'piel seca' : 'ar
   async capturarSeccion() {
     const elemento = document.getElementById('mesa-trabajo');
     if (elemento) {
-      const captura = await htmlToImage.toJpeg(elemento);
+      try {
+        // Obtener el blob de la imagen
+        const blob = await htmlToImage.toBlob(elemento, {
+          quality: 0.95,
+          pixelRatio: 2, // Para mejor calidad
+          backgroundColor: '#ffffff', // Fondo blanco por defecto
+        });
 
-      this.imagenPersonalizada.set(captura);
-      localStorage.setItem('personalizacion', captura);
+        if (blob) {
+          // Crear un File a partir del blob
+          const file = new File([blob], 'personalizacion.png', {
+            type: 'image/png',
+            lastModified: Date.now(),
+          });
+
+          // Opcional: también puedes guardarlo en localStorage como base64
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.imagenPersonalizada.set(reader.result as string);
+          };
+          reader.readAsDataURL(file);
+
+          return file;
+        }
+      } catch {}
     }
+    return null;
   }
 
   mostrarInstrucciones() {

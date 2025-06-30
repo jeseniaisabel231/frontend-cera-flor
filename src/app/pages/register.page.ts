@@ -387,7 +387,7 @@ import { Headers } from '../components/header.component';
             </div>
           </div>
           <button
-            class="relative mt-4 inline-flex h-12 w-[300px] overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none md:w-1/3"
+            class="relative mt-4 inline-flex h-12 w-[300px] overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none md:w-1/3 cursor-pointer"
           >
             <span
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"

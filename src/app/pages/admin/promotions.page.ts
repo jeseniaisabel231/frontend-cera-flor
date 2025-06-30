@@ -66,7 +66,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
              
             </div>
             <button
-              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
+              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 cursor-pointer"
               (click)="registrarPromociones()"
             >
               <svg
@@ -119,7 +119,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
                   </div>
                   <div class="flex items-center justify-center gap-2">
                     <button
-                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
+                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500 cursor-pointer"
                       (click)="editarPromociones(item)"
                       title="Editar promoción"
                     >
@@ -138,7 +138,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
                       </svg>
                     </button>
                     <button
-                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500"
+                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500 cursor-pointer"
                       title="Eliminar promoción"
                       (click)="eliminarPromociones(item._id)"
                     >

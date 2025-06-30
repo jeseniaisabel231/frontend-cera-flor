@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { personalizacion } from '../app/interfaces/personalizacion.interface';
+import { type productoPersonalizado } from '../app/interfaces/personalizacion.interface';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -11,7 +11,7 @@ export class PersonalizationService {
   private urlBackend: string = environment.urlApi;
   private http = inject(HttpClient);
   public carga = signal<boolean>(true);
-  public productosPersonalizados = signal<personalizacion[]>([]);
+  public productosPersonalizados = signal<productoPersonalizado[]>([]);
 
   constructor() {
     this.obtenerPersonalizaciones()
@@ -36,30 +36,28 @@ export class PersonalizationService {
       .get<any>(`${this.urlBackend}/api/productos-personalizados/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
-      .pipe(tap((respuesta: any) => {}));
   }
 
-  subirFotoPersonalizacion(id: string, filename: File) {
+  subirFotoPersonalizacion(id: string, imagen: File) {
     const formData = new FormData();
-    formData.append('foto', filename);
+    formData.append('imagen', imagen);
 
-    return this.http.post<any>(
-      `${this.urlBackend}/api/productos-personalizados/${id}/foto`,
+    return this.http.put<any>(
+      `${this.urlBackend}/api/productos-personalizados/${id}/imagen`,
       formData,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'multipart/form-data',
         },
       },
     );
   }
 
-  editarPersonalizacion(id: string, datos: any) {
+  editarPersonalizacion(id: string, ingredientes: any) {
     return this.http
       .put<any>(
         `${this.urlBackend}/api/productos-personalizados/${id}`,
-        datos,
+        { ingredientes },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         },
@@ -80,19 +78,41 @@ export class PersonalizationService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) => {
-          this.productosPersonalizados.set([
-            ...this.productosPersonalizados(),
-            respuesta.producto_personalizado,
+        tap(({ producto_personalizado }: any) => {
+          this.productosPersonalizados.update((productos) => [
+            ...productos,
+            producto_personalizado,
           ]);
         }),
       );
   }
+
   eliminarPersonalizacion(id: string) {
     return this.http
       .delete(`${this.urlBackend}/api/productos-personalizados/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
-      .pipe(tap(() => {}));
+      .pipe(
+        tap(() =>
+          this.productosPersonalizados.update((productos) =>
+            productos.filter((p) => p._id !== id),
+          ),
+        ),
+      );
+  }
+
+  obtenerRecomendacion(id_categoria: string) {
+    return this.http.post(
+      `${this.urlBackend}/api/productos/recomendacion`,
+      {
+        id_categoria,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
   }
 }

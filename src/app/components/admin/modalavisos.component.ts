@@ -88,35 +88,34 @@ import {
         <div class="flex gap-4">
           @if (tipo() === 'confirmacion') {
             <button
-              (click)="confirmar.emit(); close()"
-              class="rounded-[10px] bg-red-500 px-5 py-2 font-bold text-white transition-colors hover:bg-red-600"
+              (click)="confirmar.emit(); close();realizarDecision(true)"
+              class="cursor-pointer rounded-[10px] bg-red-500 px-5 py-2 font-bold text-white transition-colors hover:bg-red-600"
             >
               Eliminar
             </button>
             <button
               (click)="close()"
-              class="rounded-[10px] bg-gray-400 px-5 py-2 font-bold text-white transition-colors hover:bg-gray-500"
+              class="cursor-pointer rounded-[10px] bg-gray-400 px-5 py-2 font-bold text-white transition-colors hover:bg-gray-500"
             >
               Cancelar
             </button>
           } @else if (tipo() === 'decidir') {
-
             <button
               (click)="realizarDecision(true)"
-              class="rounded-[10px] bg-green-400 px-5 py-2 font-bold text-white transition-colors hover:bg-green-500"
+              class="cursor-pointer rounded-[10px] bg-green-400 px-5 py-2 font-bold text-white transition-colors hover:bg-green-500"
             >
               Aceptar
             </button>
             <button
               (click)="realizarDecision(false)"
-              class="rounded-[10px] bg-gray-400 px-5 py-2 font-bold text-white transition-colors hover:bg-gray-500"
+              class="cursor-pointer rounded-[10px] bg-gray-400 px-5 py-2 font-bold text-white transition-colors hover:bg-gray-500"
             >
               Cancelar
             </button>
           } @else {
             <button
               (click)="close()"
-              class="rounded-[10px] bg-[#9F93E7] px-5 py-2 font-bold text-white transition-colors hover:bg-[#8a7cd8]"
+              class="cursor-pointer rounded-[10px] bg-[#9F93E7] px-5 py-2 font-bold text-white transition-colors hover:bg-[#8a7cd8]"
             >
               OK
             </button>

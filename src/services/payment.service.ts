@@ -25,7 +25,7 @@ export class PaymentService {
   }
 
   async inicializarStripe(): Promise<void> {
-    const appearance:any ={
+    const appearance: any = {
       theme: 'stripe',
       variables: {
         fontFamily: 'Arial, sans-serif',
@@ -34,10 +34,22 @@ export class PaymentService {
         colorPrimary: '#32325d',
         colorBackground: '#f6f9fc',
       },
-    }
+    };
     this.stripe = (await loadStripe(this.stripeApiKey))!;
-    this.elements = this.stripe.elements({appearance});
-    this.card = this.elements.create('card');
+    this.elements = this.stripe.elements({ appearance });
+    this.card = this.elements.create('card', {
+      style: {
+        base: {
+          color: 'black',
+          fontSize: '16px',
+          fontSmoothing: 'antialiased',
+          padding: '10px 12px',
+          ':-webkit-autofill': {
+            color: '#fce883',
+          },
+        },
+      },
+    });
     this.card.mount('#formulariopago');
   }
   async crearMetodoPago(): Promise<string> {
@@ -56,7 +68,7 @@ export class PaymentService {
       `${this.urlBackend}/api/carritos/pagar`,
       {
         paymentMethodId,
-        isTest:true, // Cambia a false en producción
+        isTest: true, // Cambia a false en producción
       },
       {
         headers: {

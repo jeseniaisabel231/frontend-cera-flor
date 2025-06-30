@@ -67,7 +67,7 @@ import { ColumnasUsuario } from '../../interfaces/usuario.interface';
               Filtrar por:
             </span>
             <button
-              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
               [class]="
                 !serviceUsuarios.filtro().valor
                   ? 'bg-[#806bff] font-semibold text-white'
@@ -80,7 +80,7 @@ import { ColumnasUsuario } from '../../interfaces/usuario.interface';
               <span>Todos</span>
             </button>
             <button
-              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
               [class]="
                 serviceUsuarios.filtro().valor === 'activo'
                   ? 'bg-[#806bff] font-semibold text-white'
@@ -93,7 +93,7 @@ import { ColumnasUsuario } from '../../interfaces/usuario.interface';
               <span>Activo</span>
             </button>
             <button
-              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
               [class]="
                 serviceUsuarios.filtro().valor === 'inactivo'
                   ? 'bg-[#806bff] font-semibold text-white'
@@ -109,7 +109,7 @@ import { ColumnasUsuario } from '../../interfaces/usuario.interface';
               <span>Inactivo</span>
             </button>
             <button
-              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
               [class]="
                 serviceUsuarios.filtro().valor === 'femenino'
                   ? 'bg-[#806bff] font-semibold text-white'
@@ -125,7 +125,7 @@ import { ColumnasUsuario } from '../../interfaces/usuario.interface';
               <span>Femenino</span>
             </button>
             <button
-              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
               [class]="
                 serviceUsuarios.filtro().valor === 'masculino'
                   ? 'bg-[#806bff] font-semibold text-white'

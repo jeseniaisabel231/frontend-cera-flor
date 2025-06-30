@@ -67,7 +67,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
                 Filtrar por:
               </span>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   !serviceVentas.filtro() ? 'bg-[#806bff] text-white' : 'text-[#3B3D3E]'
                 "
@@ -76,7 +76,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
                 <span>Todos</span>
               </button>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   serviceVentas.filtro() === 'finalizado'
                     ? 'bg-[#806bff] text-white'
@@ -87,7 +87,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
                 <span>Finalizado</span>
               </button>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   serviceVentas.filtro() === 'pendiente'
                     ? 'bg-[#806bff] text-white'

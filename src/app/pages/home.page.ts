@@ -50,35 +50,35 @@ import { producto } from '../interfaces/producto.interface';
             >
               <button
                 type="button"
-                class="h-3 w-3 rounded-full"
+                class="h-3 w-3 rounded-full cursor-pointer"
                 aria-current="true"
                 aria-label="Slide 1"
                 data-carousel-slide-to="0"
               ></button>
               <button
                 type="button"
-                class="h-3 w-3 rounded-full"
+                class="h-3 w-3 rounded-full cursor-pointer"
                 aria-current="false"
                 aria-label="Slide 2"
                 data-carousel-slide-to="1"
               ></button>
               <button
                 type="button"
-                class="h-3 w-3 rounded-full"
+                class="h-3 w-3 rounded-full cursor-pointer"
                 aria-current="false"
                 aria-label="Slide 3"
                 data-carousel-slide-to="2"
               ></button>
               <button
                 type="button"
-                class="h-3 w-3 rounded-full"
+                class="h-3 w-3 rounded-full cursor-pointer"
                 aria-current="false"
                 aria-label="Slide 4"
                 data-carousel-slide-to="3"
               ></button>
               <button
                 type="button"
-                class="h-3 w-3 rounded-full"
+                class="h-3 w-3 rounded-full cursor-pointer"
                 aria-current="false"
                 aria-label="Slide 5"
                 data-carousel-slide-to="4"
@@ -87,7 +87,7 @@ import { producto } from '../interfaces/producto.interface';
             <!-- Slider controls -->
             <button
               type="button"
-              class="group absolute start-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none"
+              class="group absolute start-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none "
               data-carousel-prev
             >
               <span

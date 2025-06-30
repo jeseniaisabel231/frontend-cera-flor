@@ -7,11 +7,10 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { Component, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, effect, inject, input, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import * as htmlToImage from 'html-to-image';
 import { IngredientesService } from '../../services/admin/ingredients.service';
-import { InteligenciaArtificialService } from '../../services/inteligenciaArtificial.service';
 import { PersonalizationService } from '../../services/personalization.service';
 import { RecolorImageComponent } from '../components/coloredIcon.component';
 import { Headers } from '../components/header.component';
@@ -53,7 +52,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
       <!-- Botón de ayuda rápida -->
       <button
         (click)="mostrarInstrucciones()"
-        class="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-400 to-teal-600 px-4 py-2 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
+        class="group relative cursor-pointer overflow-hidden rounded-full bg-gradient-to-r from-emerald-400 to-teal-600 px-4 py-2 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
       >
         <span class="relative z-10 flex items-center gap-2">
           <svg
@@ -327,9 +326,8 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
   ],
 })
 export class WorkshopGamePage {
-  public imgIngredientes: any[] = [];
-  public ingredientesSeleccionados: any[] = [];
   public servicioIngredientes = inject(IngredientesService);
+
   public aromas: any[] = [];
   public moldes: any[] = [];
   public colores: any[] = [];
@@ -338,12 +336,17 @@ export class WorkshopGamePage {
   public esenciasSeleccionadas: any[] = [];
   public coloresSeleccionados: any[] = [];
   public aromasSeleccionados: any[] = [];
-  public mostrarDialogo = signal(true);
+
   public mostrarDialogoConfirmacion = signal(false);
   public mostrarModalIA = signal(false);
   public servicePersonalizacion = inject(PersonalizationService);
   public categoria = input.required();
-  public mostrarAyuda = signal(false);
+  public rutaActiva = inject(ActivatedRoute);
+  public editarProducto = signal<string>('');
+
+  public imagenCreada = signal<File | null>(null);
+
+  public mostrarAyuda = signal(true);
   public instruccionesJuego = `
     <ol class="list-decimal list-inside space-y-2 text-left">
       <li class="font-semibold text-gray-800">
@@ -367,11 +370,10 @@ export class WorkshopGamePage {
   public mensajeProductoPersonalizado = signal('');
   public imagenPersonalizada = signal('');
   public producto_id = signal('');
-  public serviceInteligencia = inject(InteligenciaArtificialService);
 
   constructor() {
-    this.servicioIngredientes.obtener().subscribe(({ ingredientes }) => {
-      this.imgIngredientes = ingredientes;
+    effect(() => {
+      const ingredientes = this.servicioIngredientes.ingredientes();
 
       ingredientes.forEach((ingrediente: any) => {
         if (ingrediente.id_categoria.includes(this.categoria())) {
@@ -392,6 +394,37 @@ export class WorkshopGamePage {
         }
       });
     });
+
+    this.rutaActiva.queryParams.subscribe((params) => {
+      const producto = params['producto'];
+
+      if (producto) {
+        this.editarProducto.set(producto);
+
+        this.servicePersonalizacion.obtenerPersonalizacion(producto).subscribe({
+          next: ({ producto }: any) => {
+            const { ingredientes = [] } = producto;
+
+            ingredientes.forEach((ingrediente: any) => {
+              switch (ingrediente.tipo) {
+                case 'molde':
+                  this.moldesSeleccionados.push(ingrediente);
+                  break;
+                case 'color':
+                  this.coloresSeleccionados.push(ingrediente);
+                  break;
+                case 'aroma':
+                  this.aromasSeleccionados.push(ingrediente);
+                  break;
+                case 'esencia':
+                  this.esenciasSeleccionadas.push(ingrediente);
+                  break;
+              }
+            });
+          },
+        });
+      }
+    });
   }
 
   public formularioPersonalizado = {
@@ -402,18 +435,11 @@ export class WorkshopGamePage {
 
   // Método para obtener recomendaciones de IA
   obtenerRecomendacionesIA() {
-    const tipo =
-      this.categoria() === '680fd248f613dc80267ba5d7'
-        ? 'piel seca'
-        : 'aromatizante';
-
     this.mostrarModalIA.set(true);
-    this.serviceInteligencia
-      .obtenerRecomendacion(tipo, this.categoria() as string)
+    this.servicePersonalizacion
+      .obtenerRecomendacion(this.categoria() as string)
       .subscribe({
-        next: (respuesta: any) => {
-          const { producto_personalizado } = respuesta;
-
+        next: ({ producto_personalizado }: any) => {
           this.moldesSeleccionados = [producto_personalizado.molde];
           this.coloresSeleccionados = [producto_personalizado.color];
           this.aromasSeleccionados = [producto_personalizado.aroma];
@@ -424,6 +450,11 @@ export class WorkshopGamePage {
   }
 
   async OnsubmitProductoPersonalizado() {
+    await this.capturarSeccion();
+
+    if (!this.imagenCreada()) return;
+
+    this.formularioPersonalizado.id_categoria = this.categoria() as string;
     this.formularioPersonalizado.ingredientes = [
       ...this.moldesSeleccionados,
       ...this.coloresSeleccionados,
@@ -431,28 +462,20 @@ export class WorkshopGamePage {
       ...this.esenciasSeleccionadas,
     ];
 
-    this.formularioPersonalizado.id_categoria = this.categoria() as string;
-
-    const imagen = await this.capturarSeccion(); // Captura la sección antes de enviar el formulario
-
-    if (imagen) {
+    if (this.editarProducto()) {
+      this.servicePersonalizacion
+        .editarPersonalizacion(this.editarProducto(), this.formularioPersonalizado.ingredientes)
+        .subscribe({
+          next: this.peticionExitosa,
+          error: this.peticionErronea,
+        })
+        .add(() => this.mostrarDialogoConfirmacion.set(true));
+    } else {
       this.servicePersonalizacion
         .registrarPersonalizacion(this.formularioPersonalizado)
         .subscribe({
-          next: ({ producto_personalizado, msg }: any) => {
-            this.producto_id.set(producto_personalizado._id);
-            this.mensajeProductoPersonalizado.set(msg);
-
-            this.servicePersonalizacion
-              .subirFotoPersonalizacion(this.producto_id(), imagen)
-              .subscribe();
-          },
-          error: (error: any) => {
-            this.mensajeProductoPersonalizado.set(
-              error.error.msg || 'Error al registrar el producto personalizado',
-            );
-            this.imagenPersonalizada.set('');
-          },
+          next: this.peticionExitosa,
+          error: this.peticionErronea,
         })
         .add(() => this.mostrarDialogoConfirmacion.set(true));
     }
@@ -489,6 +512,7 @@ export class WorkshopGamePage {
       );
     }
   }
+
   dropAromas(event: CdkDragDrop<any[]>) {
     if (
       event.previousContainer === event.container ||
@@ -519,6 +543,7 @@ export class WorkshopGamePage {
       );
     }
   }
+
   dropColores(event: CdkDragDrop<any[]>) {
     if (
       event.previousContainer === event.container ||
@@ -547,6 +572,7 @@ export class WorkshopGamePage {
       this.colores.splice(event.previousIndex, 1);
     }
   }
+
   dropEsencias(event: CdkDragDrop<any[]>) {
     if (
       event.previousContainer === event.container ||
@@ -578,47 +604,46 @@ export class WorkshopGamePage {
     }
   }
 
-  finalizarCreacion() {
-    this.mostrarDialogo.set(true);
-  }
-
-  confirmar() {
-    this.mostrarDialogo.set(false);
-  }
-
   async capturarSeccion() {
     const elemento = document.getElementById('mesa-trabajo');
     if (elemento) {
       try {
-        // Obtener el blob de la imagen
         const blob = await htmlToImage.toBlob(elemento, {
-          quality: 0.95,
-          pixelRatio: 2, // Para mejor calidad
-          backgroundColor: '#ffffff', // Fondo blanco por defecto
+          quality: 1,
+          pixelRatio: 2,
         });
 
-        if (blob) {
-          // Crear un File a partir del blob
-          const file = new File([blob], 'personalizacion.png', {
-            type: 'image/png',
-            lastModified: Date.now(),
-          });
+        if (!blob) return;
 
-          // Opcional: también puedes guardarlo en localStorage como base64
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            this.imagenPersonalizada.set(reader.result as string);
-          };
-          reader.readAsDataURL(file);
+        const file = new File([blob], 'captura.png', {
+          type: blob.type,
+          lastModified: Date.now(),
+        });
 
-          return file;
-        }
+        this.imagenPersonalizada.set(URL.createObjectURL(file));
+
+        this.imagenCreada.set(file);
       } catch {}
     }
-    return null;
   }
 
   mostrarInstrucciones() {
     this.mostrarAyuda.set(true);
   }
+
+  private peticionExitosa = ({ producto_personalizado, msg }: any) => {
+    this.producto_id.set(producto_personalizado._id);
+    this.mensajeProductoPersonalizado.set(msg);
+
+    this.servicePersonalizacion
+      .subirFotoPersonalizacion(this.producto_id(), this.imagenCreada()!)
+      .subscribe();
+  };
+
+  private peticionErronea = ({ error }: any) => {
+    this.mensajeProductoPersonalizado.set(
+      error.msg || 'Error al registrar el producto personalizado',
+    );
+    this.imagenPersonalizada.set('');
+  };
 }

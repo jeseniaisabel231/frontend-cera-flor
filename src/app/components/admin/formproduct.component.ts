@@ -47,7 +47,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             </small>
           }
         </div>
-        <button (click)="close()" class="focus:outline-none">
+        <button (click)="close()" class="focus:outline-none cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -186,7 +186,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   ? 'border-red-500 focus:ring-0 focus:outline-none'
                   : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
               "
-              placeholder="Describe 3 de sus beneficios (separados por coma)..."
+              placeholder="Describe 3 de sus beneficios (separados por punto y coma (;))..."
               rows="4"
               class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="beneficios"
@@ -199,7 +199,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 </small>
               } @else if (beneficiosInvalido) {
                 <small class="text-red-600">
-                  Los beneficios deben estar separados por coma y contener 3
+                  Los beneficios deben estar separados por punto y coma (;) y contener 3
                   beneficios de entre 10 y 100 caracteres.
                 </small>
               }
@@ -506,7 +506,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           @if (acciones() !== 'Visualizar') {
             <button
-              class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+              class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500 cursor-pointer"
             >
               @if (carga()) {
                 <svg
@@ -529,7 +529,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
           <button
             type="button"
-            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
+            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400 cursor-pointer"
             (click)="close()"
           >
             @if (acciones() === 'Visualizar') {
@@ -598,7 +598,7 @@ export class FormProducto {
     ]),
     beneficios: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^[^,]{10,100},\s*[^,]{10,100},\s*[^,]{10,100}$/),
+      Validators.pattern(/^[^;]{10,100};\s*[^;]{10,100};\s*[^;]{10,100}$/),
     ]),
     precio: new FormControl('', [
       Validators.required,
@@ -642,7 +642,7 @@ export class FormProducto {
       } else if (key === 'beneficios' && typeof value === 'string') {
         value
           .trim()
-          .split(',')
+          .split(';')
           .forEach((item) => {
             const beneficio = item.trim();
 
@@ -740,7 +740,7 @@ export class FormProducto {
           imagen: datos.imagen,
           nombre: datos.nombre,
           descripcion: datos.descripcion,
-          beneficios: datos.beneficios,
+          beneficios: datos.beneficios.join(';'),
           precio: datos.precio.toString(),
           stock: datos.stock.toString(),
           id_categoria: datos.id_categoria?._id ?? datos.id_categoria, //?? verifica si es null o indefinido, y si es asi asigna lo de la derecha

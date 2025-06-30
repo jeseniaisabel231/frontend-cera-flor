@@ -53,7 +53,7 @@ import { CarritoService } from '../../services/carrito.service';
                 class="flex items-center rounded-full border border-gray-600"
               >
                 <button
-                  class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+                  class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200 cursor-pointer"
                   (click)="decrementarCantidad()"
                   title="Disminuir cantidad"
                 >
@@ -61,7 +61,7 @@ import { CarritoService } from '../../services/carrito.service';
                 </button>
                 <span class="px-2">{{ cantidad() }}</span>
                 <button
-                  class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+                  class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200 cursor-pointer"
                   (click)="incrementarCantidad()"
                   title="Aumentar cantidad"
                 >
@@ -71,7 +71,7 @@ import { CarritoService } from '../../services/carrito.service';
             </div>
 
             <button
-              class="bg-morado-600 hover:bg-morado-700 rounded-2xl px-8 py-3 font-bold text-white transition"
+              class="bg-morado-600 hover:bg-morado-700 rounded-2xl px-8 py-3 font-bold text-white transition cursor-pointer"
               (click)="agregarAlCarrito(producto)"
             >
               Agregar al carrito

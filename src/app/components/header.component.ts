@@ -3,9 +3,10 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
 import { decodificarToken } from '../utils/decodificarToken';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, TitleCasePipe],
   selector: 'headers',
   template: `
     <header class="sticky top-0 z-50 flex flex-col shadow-md">
@@ -45,7 +46,7 @@ import { decodificarToken } from '../utils/decodificarToken';
           <div class="flex flex-row items-center">
             @if (usuarioAutenticado && menuVisible()) {
               <div
-                class="absolute right-55 -bottom-14 z-50 w-48 rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-200"
+                class="absolute right-55 -bottom-22 z-50 w-60 rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-200"
               >
                 <ul class="py-1 text-sm text-gray-700">
                   <li routerLink="/perfil">
@@ -68,6 +69,26 @@ import { decodificarToken } from '../utils/decodificarToken';
                           />
                         </svg>
                         Mi perfil
+                      </div>
+                    </a>
+                  </li>
+
+                  <li routerLink="/productos-personalizados">
+                    <a
+                      class="block px-4 py-2 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
+                    >
+                      <div class="flex items-center gap-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-4"
+                          viewBox="0 0 32 32"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="m16.408 2.421l1.85 3.15a3.048 3.048 0 0 1-1.78 4.55V11.5H20.5a2 2 0 0 1 1.937 1.5h.063v6.75a1.75 1.75 0 0 1-1.5 1.732v6.106A2.41 2.41 0 0 1 18.588 30h-6.176A2.41 2.41 0 0 1 10 27.589v-8.673A1.5 1.5 0 0 1 9 17.5V13h.063A2 2 0 0 1 11 11.5h3.866v-1.38c-1.245-.347-2.188-1.477-2.24-2.818A3.04 3.04 0 0 1 13 5.717l.01-.017l.07-.12l1.856-3.159a.854.854 0 0 1 1.472 0M19 15h-.5v1a1.5 1.5 0 0 1-3 0v-1H12v12.588c0 .228.184.412.412.412h6.176a.41.41 0 0 0 .412-.412zm-1.664-7.627a1.663 1.663 0 1 0-3.326 0a1.663 1.663 0 0 0 3.326 0"
+                          />
+                        </svg>
+                        Mis productos personalizados
                       </div>
                     </a>
                   </li>
@@ -102,7 +123,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                   <li>
                     <button
                       (click)="cerrarSesion()"
-                      class="flex w-full items-center gap-2 px-4 py-2 text-left text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
+                      class="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-left text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +170,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                 @if (serviceAuth.clienteAutenticado()) {
                   <span>Hola,</span>
                   <span class="font-bold">
-                    {{ serviceAuth.datosUsuario().nombre }}
+                    {{ serviceAuth.datosUsuario().nombre | titlecase }}
                   </span>
                 } @else {
                   <div class="font-semibold">Iniciar sesión/Registrarse</div>

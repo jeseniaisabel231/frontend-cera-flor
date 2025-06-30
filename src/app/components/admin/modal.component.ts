@@ -28,7 +28,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
         </h1>
         <button
           (click)="close()"
-          class="text-gray-500 transition-colors hover:text-gray-700 focus:outline-none"
+          class="text-gray-500 transition-colors hover:text-gray-700 focus:outline-none cursor-pointer"
           aria-label="Cerrar modal"
         >
           <svg
@@ -128,7 +128,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
   `,
 })
 export class ModalComponent {
-  public verDatos = input<any>(); //devuelve un objeto con los datos del formulario
+  public verDatos = input<any>();
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public mostrarModal = model<boolean>(false);
   public titulo = input.required<TituloForms>();
@@ -182,6 +182,10 @@ export class ModalComponent {
   }
 
   constructor() {
+    effect(() => {
+      console.log(this.verDatos().productos)
+    })
+    
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();

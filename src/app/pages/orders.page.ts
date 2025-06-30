@@ -155,24 +155,24 @@ import { Headers } from '../components/header.component';
             </p>
             <div class="flex space-x-2">
               <button
-                class="rounded-md border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                class="rounded-md border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
                 disabled
               >
                 Anterior
               </button>
               <button
-                class="rounded-md border border-amber-600 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700"
+                class="rounded-md border border-amber-600 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 cursor-pointer"
                 aria-current="page"
               >
                 1
               </button>
               <button
-                class="rounded-md border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                class="rounded-md border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
               >
                 2
               </button>
               <button
-                class="rounded-md border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                class="rounded-md border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
               >
                 Siguiente
               </button>

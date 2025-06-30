@@ -22,20 +22,20 @@ import { CarritoService } from '../../services/carrito.service';
           @if (imagen()) {
             <button
               (click)="guardarProductoCarrito()"
-              class="rounded-full bg-gray-100 px-6 py-2.5 font-medium text-gray-800 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none"
+              class="rounded-full bg-gray-100 px-6 py-2.5 font-medium text-gray-800 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none cursor-pointer"
             >
               Añadir carrito
             </button>
             <button
               (click)="confirm.emit()"
-              class="rounded-full bg-gray-100 px-6 py-2.5 font-medium text-gray-800 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none"
+              class="rounded-full bg-gray-100 px-6 py-2.5 font-medium text-gray-800 transition-all duration-200 hover:scale-[1.02] hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none cursor-pointer"
             >
               Cancelar
             </button>
           } @else {
             <button
               (click)="confirm.emit()"
-              class="rounded-full bg-[#806bff] px-6 py-2.5 font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:bg-[#816bffc6] focus:ring-2 focus:ring-gray-300 focus:outline-none"
+              class="rounded-full bg-[#806bff] px-6 py-2.5 font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:bg-[#816bffc6] focus:ring-2 focus:ring-gray-300 focus:outline-none cursor-pointer"
             >
               Aceptar
             </button>

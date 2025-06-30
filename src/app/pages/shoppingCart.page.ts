@@ -22,7 +22,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
     <main class="flex min-h-screen flex-col bg-gray-50">
       <barranav rutaSeccionSeleccionada="carrito"></barranav>
 
-      <div class="mt-10 px-6 pt-8 sm:px-40">
+      <div class="mt-10 flex flex-col px-6 pt-8 sm:px-40">
         <h1 class="text-[24px] font-bold">Carrito de Compras</h1>
         <p class="mt-1">Revisa y gestiona tus productos antes de pagar</p>
       </div>
@@ -83,7 +83,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         class="flex items-center rounded-full border border-gray-200"
                       >
                         <button
-                          class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+                          class="cursor-pointer rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
                           (click)="
                             decrementarCantidad(
                               producto,
@@ -101,7 +101,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                           {{ producto.cantidad }}
                         </span>
                         <button
-                          class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+                          class="cursor-pointer rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
                           (click)="
                             incrementarCantidad(
                               producto.producto_id,
@@ -120,7 +120,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                     </div>
 
                     <button
-                      class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
+                      class="group flex cursor-pointer items-center gap-1 text-sm text-gray-500 hover:text-red-600"
                       (click)="
                         mostrarModalEliminar(
                           producto.producto_id,
@@ -150,7 +150,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                   <button
                     routerLink="/catalogo"
                     [queryParams]="{ categoria: 'jabones-artesanales' }"
-                    class="mt-4 rounded-full bg-[#9810fa] px-6 py-2 font-medium text-white hover:bg-[#7a0dc7]"
+                    class="mt-4 cursor-pointer rounded-full bg-[#9810fa] px-6 py-2 font-medium text-white hover:bg-[#7a0dc7]"
                   >
                     Explorar productos
                   </button>
@@ -195,21 +195,36 @@ import { carritoProducto } from '../interfaces/carrito.interface';
             </ul>
 
             <button
-              class="mt-6 w-full rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+              class="mt-6 w-full cursor-pointer rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
               routerLink="/informacion-pago"
               [disabled]="serviceCarrito.carrito().productos.length === 0"
             >
               Proceder al pago
             </button>
+            <button
+              class="mt-2 w-full cursor-pointer rounded-[12px] bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600 disabled:bg-gray-400"
+              (click)="this.mostrarModalVaciar.set(true)"
+              [disabled]="serviceCarrito.carrito().productos.length === 0"
+            >
+              Vaciar Carrito
+            </button>
           </div>
         </aside>
       </div>
       <app-modal
-        tipo="decidir"
+        tipo="confirmacion"
         [titulo]="'Eliminar producto'"
         [mensaje]="'¿Está seguro/a de eliminar este producto del carrito?'"
         [(mostrarModal)]="mostrarModal"
         (decision)="desicionModal($event)"
+      ></app-modal>
+
+      <app-modal
+        tipo="confirmacion"
+        [titulo]="'Eliminar carrito'"
+        [mensaje]="'¿Está seguro/a de eliminar todos los productos del carrito?'"
+        [(mostrarModal)]="mostrarModalVaciar"
+        (decision)="desicionModalVaciar($event)"
       ></app-modal>
     </main>
   `,
@@ -223,6 +238,7 @@ export class ShoppingCardPage {
   public idEliminar = signal('');
   public tipoProductoEliminar = signal('');
   public imagenPersonalizado = localStorage.getItem('personalizacion') ?? '';
+  public mostrarModalVaciar = signal(false);
 
   actualizarCantidadEnCarrito(
     producto_id: string,
@@ -259,6 +275,12 @@ export class ShoppingCardPage {
       this.serviceCarrito
         .eliminarCarrito(this.idEliminar(), this.tipoProductoEliminar())
         .subscribe();
+    }
+  }
+
+  desicionModalVaciar(decision: boolean) {
+    if (decision) {
+      this.serviceCarrito.vaciarCarrito().subscribe();
     }
   }
 

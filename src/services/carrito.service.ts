@@ -244,6 +244,7 @@ export class CarritoService {
         msg: 'Cantidad modificada en el carrito local',
       });
     }
+
     return this.http
       .put<any>(
         `${this.urlBackend}/api/carritos/modificar-cantidad`,

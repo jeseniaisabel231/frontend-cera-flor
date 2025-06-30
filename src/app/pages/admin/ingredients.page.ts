@@ -68,7 +68,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 />
               </div>
               <button
-                class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
+                class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 cursor-pointer"
                 (click)="verFormulario()"
               >
                 <svg
@@ -103,7 +103,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 Filtrar por:
               </span>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   !servicioIngredientes.filtro().valor
                     ? 'bg-[#806bff] font-semibold text-white'
@@ -116,7 +116,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 <span>Todos</span>
               </button>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   servicioIngredientes.filtro().valor === 'molde'
                     ? 'bg-[#806bff] font-semibold text-white'
@@ -132,7 +132,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 <span>Moldes</span>
               </button>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   servicioIngredientes.filtro().valor === 'color'
                     ? 'bg-[#806bff] font-semibold text-white'
@@ -148,7 +148,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 <span>Colores</span>
               </button>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   servicioIngredientes.filtro().valor === 'esencia'
                     ? 'bg-[#806bff] font-semibold text-white'
@@ -164,7 +164,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                 <span>Esencias</span>
               </button>
               <button
-                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                 [class]="
                   servicioIngredientes.filtro().valor === 'aroma'
                     ? 'bg-[#806bff] font-semibold text-white'
@@ -181,7 +181,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
               </button>
               @for (categoria of categorias; track $index) {
                 <button
-                  class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                  class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                   [class]="
                     servicioIngredientes.filtro().valor === categoria._id
                       ? 'bg-[#806bff] font-semibold text-white'
@@ -263,7 +263,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                   </div>
                   <div class="flex items-center justify-center gap-2 px-4 pb-4">
                     <button
-                      class="h-10 rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500"
+                      class="h-10 rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500 cursor-pointer"
                       (click)="abrirFormulario(item)"
                       title="Visualizar ingrediente"
                     >
@@ -281,7 +281,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                       </svg>
                     </button>
                     <button
-                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
+                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500 cursor-pointer"
                       (click)="editarIngrediente(item)"
                       title="Editar ingrediente"
                     >
@@ -300,7 +300,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                       </svg>
                     </button>
                     <button
-                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500"
+                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500 cursor-pointer"
                       (click)="eliminarIngrediente(item._id)"
                       title="Eliminar ingrediente"
                     >

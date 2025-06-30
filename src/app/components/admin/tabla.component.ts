@@ -65,6 +65,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
               <td class="p-3">
                 <div class="flex items-center justify-center gap-3">
                   <button
+                    class="cursor-pointer"
                     (click)="confirmarCambioEstado(fila)"
                     [title]="
                       verificarTipo(fila) === 'venta'
@@ -76,7 +77,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                   </button>
 
                   <button
-                    class="brounded-[8px] mr-[3px] flex h-6 w-[36px] items-center justify-center rounded-[9px] bg-green-400 px-2 text-white hover:bg-green-500"
+                    class="cursor-pointer mr-[3px] flex h-6 w-[36px] items-center justify-center rounded-[9px] bg-green-400 px-2 text-white hover:bg-green-500"
                     (click)="verFormulario(fila)"
                     title="Visualizar información"
                   >
@@ -145,7 +146,6 @@ export class TablaComponent {
     });
   }
 
-  //visualizado
   public verFormulario(datos: DatosTabla) {
     this.datosMostrar.set(datos);
     this.mostrarModal.set(true);

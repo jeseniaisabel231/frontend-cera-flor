@@ -34,7 +34,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 : 'Detalles de la promoción'
           }}
         </h1>
-        <button (click)="close()" class="mb-6 focus:outline-none">
+        <button (click)="close()" class="mb-6 focus:outline-none cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -150,7 +150,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <!-- Botón -->
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           <button
-            class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+            class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500 cursor-pointer"
           >
             @if (carga()) {
               <svg
@@ -171,7 +171,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
           </button>
           <button
             type="button"
-            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
+            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400 cursor-pointer"
             (click)="close()"
           >
             Cancelar

@@ -22,7 +22,7 @@ import { Headers } from '../components/header.component';
             class="h-80 w-80 transform transition-transform duration-200 hover:scale-110"
           />
           <button
-            class="absolute top-110 left-20 rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+            class="absolute top-110 left-20 rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95 cursor-pointer"
           >
             ✨ Seleccionar Vela
           </button>
@@ -37,7 +37,7 @@ import { Headers } from '../components/header.component';
             class="h-80 w-80 transform transition-transform duration-200 hover:scale-110"
           />
           <button
-            class="absolute top-95 left-50 rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+            class="absolute top-95 left-50 rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95 cursor-pointer"
           >
             🧼 Seleccionar Jabón
           </button>

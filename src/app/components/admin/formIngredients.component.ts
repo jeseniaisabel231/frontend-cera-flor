@@ -46,7 +46,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             </small>
           }
         </div>
-        <button (click)="close()" class="focus:outline-none">
+        <button (click)="close()" class="cursor-pointer focus:outline-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -253,12 +253,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
               <small class="text-red-600">
                 {{ errores().precio }}
               </small>
-            } @else if (
-              precioInvalido || formulario.get('precio')?.value == '0'
-            ) {
+            } @else if (precioInvalido) {
               <small class="text-red-600">
-                El precio debe ser un número entre 1 y 100, con un máximo de dos
-                decimales.
+                El precio debe estar entre 50 centavos y 20 dolares (0.50 -
+                20.00).
               </small>
             }
           </div>
@@ -336,7 +334,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           @if (acciones() !== 'Visualizar') {
             <button
-              class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+              class="h-10 w-auto cursor-pointer rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
             >
               @if (carga()) {
                 <svg
@@ -359,7 +357,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
           <button
             type="button"
-            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
+            class="cursor-pointer rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="close()"
           >
             @if (acciones() === 'Visualizar') {
@@ -408,7 +406,9 @@ export class FormIngredientsComponent {
     ]),
     precio: new FormControl('', [
       Validators.required,
-      Validators.pattern(/^(?:[1-9]\d?(?:\.\d{1,2})?|100(?:\.0{1,2})?)$/),
+      Validators.pattern(
+        /^(?:0\.(?:4[9]|[5-9]\d?)|1?\d(?:\.\d{1,2})?|20(?:\.00?)?)$/,
+      ),
     ]),
     stock: new FormControl(57, Validators.required),
     tipo: new FormControl('', Validators.required),

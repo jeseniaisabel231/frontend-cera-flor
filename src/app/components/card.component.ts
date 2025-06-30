@@ -50,7 +50,7 @@ import type { producto } from '../interfaces/producto.interface';
       <div class="flex gap-4 px-4">
         <div class="flex items-center rounded-full border border-gray-300">
           <button
-            class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+            class="rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200 cursor-pointer"
             (click)="decrementarCantidad(); $event.stopPropagation()"
             title="Disminuir cantidad"
           >
@@ -58,7 +58,7 @@ import type { producto } from '../interfaces/producto.interface';
           </button>
           <span class="px-2">{{ cantidad() }}</span>
           <button
-            class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+            class="rounded-r-full px-3 py-1 text-lg transition-colors hover:bg-gray-200 cursor-pointer"
             (click)="incrementarCantidad(); $event.stopPropagation()"
             title="Aumentar cantidad"
           >
@@ -67,7 +67,7 @@ import type { producto } from '../interfaces/producto.interface';
         </div>
         <button
           (click)="agregarAlCarrito()"
-          class="bg-morado-600 hover:bg-morado-700 w-full rounded-2xl py-2 font-bold text-white transition"
+          class="bg-morado-600 hover:bg-morado-700 w-full rounded-2xl py-2 font-bold text-white transition cursor-pointer"
         >
           @if (carga()) {
             <svg

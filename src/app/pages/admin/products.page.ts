@@ -81,7 +81,7 @@ import { producto } from '../../interfaces/producto.interface';
                   Filtrar por:
                 </span>
                 <button
-                  class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                  class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                   [class]="
                     !productosService.filtro().valor
                       ? 'bg-[#806bff] font-semibold text-white'
@@ -96,7 +96,7 @@ import { producto } from '../../interfaces/producto.interface';
 
                 @for (categoria of categorias(); track $index) {
                   <button
-                    class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                    class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
                     [class]="
                       productosService.filtro().valor === categoria._id
                         ? 'bg-[#806bff] font-semibold text-white'
@@ -140,7 +140,7 @@ import { producto } from '../../interfaces/producto.interface';
               </div>
             </div>
             <button
-              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
+              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 cursor-pointer"
               (click)="abrirFormRegistrar()"
             >
               <svg
@@ -213,7 +213,7 @@ import { producto } from '../../interfaces/producto.interface';
                   </div>
                   <div class="flex items-center justify-center gap-2 px-4 pb-4">
                     <button
-                      class="h-10 rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500"
+                      class="h-10 rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500 cursor-pointer"
                       (click)="abrirFormVisualizar(item)"
                       title="Visualizar producto"
                     >
@@ -231,7 +231,7 @@ import { producto } from '../../interfaces/producto.interface';
                       </svg>
                     </button>
                     <button
-                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
+                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500 cursor-pointer"
                       (click)="abrirFormEditar(item)"
                       title="Editar producto"
                     >
@@ -250,7 +250,7 @@ import { producto } from '../../interfaces/producto.interface';
                       </svg>
                     </button>
                     <button
-                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500"
+                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500 cursor-pointer"
                       (click)="abrirModalEliminacion(item._id)"
                       title="Eliminar producto"
                     >

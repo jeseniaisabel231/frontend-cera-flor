@@ -14,7 +14,7 @@ import { Headers } from '../components/header.component';
     ReactiveFormsModule,
     CommonModule,
     RouterLink,
-    TitleCasePipe
+    TitleCasePipe,
   ],
 
   template: `
@@ -61,7 +61,7 @@ import { Headers } from '../components/header.component';
               }
               <button
                 type="button"
-                class="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#9810fa] text-white hover:bg-[#7a0dc7] focus:ring-2 focus:ring-[#9810fa] focus:ring-offset-2 focus:outline-none"
+                class="absolute -right-1 -bottom-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#9810fa] text-white hover:bg-[#7a0dc7] focus:ring-2 focus:ring-[#9810fa] focus:ring-offset-2 focus:outline-none"
                 title="Cambiar foto"
               >
                 <svg
@@ -304,13 +304,13 @@ import { Headers } from '../components/header.component';
               <div class="mt-8 flex justify-end">
                 <button
                   type="button"
-                  class="focus:ring-morado-400 mr-4 rounded-[15px] border border-gray-300 px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  class="focus:ring-morado-400 mr-4 cursor-pointer rounded-[15px] border border-gray-300 px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  class="focus:ring-morado-400 rounded-[15px] border border-transparent bg-[#806bff] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#806bff] focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  class="focus:ring-morado-400 cursor-pointer rounded-[15px] border border-transparent bg-[#806bff] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#806bff] focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 >
                   Guardar cambios
                 </button>
@@ -351,7 +351,7 @@ import { Headers } from '../components/header.component';
                 <!-- Iterar sobre cada venta/pedido -->
                 @for (venta of pedidos; track venta._id) {
                   <article
-                    class="mb-6 overflow-hidden rounded-lg  bg-white shadow-sm"
+                    class="mb-6 overflow-hidden rounded-lg bg-white shadow-sm"
                   >
                     <header
                       class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
@@ -370,7 +370,7 @@ import { Headers } from '../components/header.component';
                         </time>
                       </div>
                       <span class="text-lg font-semibold">
-                        {{ venta.total.toFixed(2) }}
+                        {{ venta.total | currency: 'USD' : 'symbol' }}
                       </span>
                     </header>
 
@@ -390,7 +390,7 @@ import { Headers } from '../components/header.component';
                                   [alt]="item.producto_id.nombre"
                                 />
                                 <div class="flex-grow">
-                                  <h4 class="text-sm font-medium ">
+                                  <h4 class="text-sm font-medium">
                                     {{ item.producto_id.nombre | titlecase }}
                                   </h4>
                                   <p
@@ -406,10 +406,17 @@ import { Headers } from '../components/header.component';
                                     </span>
                                     <span class="text-gray-600">
                                       Precio unit.:
-                                      {{ item.producto_id.precio.toFixed(2) }}
+                                      {{
+                                        item.producto_id.precio
+                                          | currency: 'USD' : 'symbol'
+                                      }}
                                     </span>
                                     <span class="font-medium">
-                                      Subtotal: {{ item.subtotal.toFixed(2) }}
+                                      Subtotal:
+                                      {{
+                                        item.subtotal
+                                          | currency: 'USD' : 'symbol'
+                                      }}
                                     </span>
                                   </div>
                                 </div>
@@ -438,7 +445,11 @@ import { Headers } from '../components/header.component';
                                       Cantidad: {{ item.cantidad }}
                                     </span>
                                     <span class="font-medium">
-                                      Subtotal: {{ item.subtotal.toFixed(2) }}
+                                      Subtotal:
+                                      {{
+                                        item.subtotal
+                                          | currency: 'USD' : 'symbol'
+                                      }}
                                     </span>
                                   </div>
                                 </div>

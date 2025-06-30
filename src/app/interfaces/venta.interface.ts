@@ -11,9 +11,11 @@ export interface venta {
   createdAt?: string;
   updatedAt?: string;
 }
+
 export interface productoInformacion {
   _id: string;
-  producto_id: producto;
+  producto_id: string;
+  producto: producto;
   cantidad: number;
   subtotal: number;
 }

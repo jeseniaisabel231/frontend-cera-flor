@@ -63,14 +63,14 @@ import { venta } from '../interfaces/venta.interface';
                   @if (modificarDireccion()) {
                     <button
                       (click)="OnSubmitDireccion()"
-                      class="mt-6 w-full cursor-pointer rounded-[12px] bg-[#9810fa] py-2 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                      class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-2 font-semibold text-white transition-colors disabled:bg-gray-400"
                     >
                       Guardar dirección
                     </button>
                   } @else {
                     <button
                       (click)="modificarDireccion.set(true)"
-                      class="mt-6 w-full cursor-pointer rounded-[12px] bg-[#9810fa] py-2 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                      class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-2 font-semibold text-white transition-colors disabled:bg-gray-400"
                     >
                       Modificar dirección
                     </button>
@@ -93,10 +93,25 @@ import { venta } from '../interfaces/venta.interface';
 
                 <button
                   (click)="OnSubmitPago($event)"
-                  class="mt-6 w-full cursor-pointer rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+                  class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
                   [disabled]="modificarDireccion()"
                 >
-                  Pagar
+                  @if (carga()) {
+                    <svg
+                      class="animate-spin"
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="24"
+                      viewBox="0 -960 960 960"
+                      width="24"
+                      fill="#fff"
+                    >
+                      <path
+                        d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                      />
+                    </svg>
+                  } @else {
+                    Pagar
+                  }
                 </button>
               </form>
               <!-- <app-modal
@@ -154,6 +169,7 @@ import { venta } from '../interfaces/venta.interface';
   `,
 })
 export class PaymentPage {
+  public carga = signal(false);
   public serviceCarrito = inject(CarritoService);
   public servicePerfil = inject(AuthService);
   public servicePayment = inject(PaymentService);
@@ -222,14 +238,17 @@ export class PaymentPage {
   async OnSubmitPago(event: Event) {
     event.preventDefault();
 
+    this.carga.set(true);
     const servicePaymentPromise = await this.servicePayment.pagarCarrito();
     console.log('servicePaymentPromise', servicePaymentPromise);
     servicePaymentPromise.subscribe({
       next: ({ venta }) => {
+        this.carga.set(false);
         this.ventaCreada.set(venta);
         this.mostrarVenta.set(true);
       },
       error: (error) => {
+        this.carga.set(false);
         this.tipoRespuesta.set('error');
         this.mostrarModalExito.set(true);
         this.respuestaBack.set(

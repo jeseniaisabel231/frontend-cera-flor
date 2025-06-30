@@ -41,13 +41,26 @@ import { ModalAvisosComponent } from './modalavisos.component';
             }}
           </h1>
           @if (acciones() !== 'Visualizar') {
-            <small class="text-[#806bff]">
-              Recuerde no dejar espacios en blanco al derecho y al reves de cada
-              campo.
-            </small>
+            <div class="flex items-center gap-2 text-sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill="#806bff"
+                  d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0m1 16H9v-2h2zm0-4H9V4h2z"
+                />
+              </svg>
+              <small class="text-[#806bff] font-bold">
+                Recuerde no dejar espacios en blanco al derecho y al reves de cada
+                campo.
+              </small>
+            </div>
           }
         </div>
-        <button (click)="close()" class="focus:outline-none cursor-pointer">
+        <button (click)="close()" class="cursor-pointer focus:outline-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -199,8 +212,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 </small>
               } @else if (beneficiosInvalido) {
                 <small class="text-red-600">
-                  Los beneficios deben estar separados por punto y coma (;) y contener 3
-                  beneficios de entre 10 y 100 caracteres.
+                  Los beneficios deben estar separados por punto y coma (;) y
+                  contener 3 beneficios de entre 10 y 100 caracteres.
                 </small>
               }
             </div>
@@ -432,7 +445,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
                     @for (aroma of aromas(); track $index) {
                       <option [value]="aroma._id">
-                        {{ aroma.nombre }}
+                        {{ aroma.nombre | titlecase }}
                       </option>
                     }
                   </select>
@@ -506,7 +519,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           @if (acciones() !== 'Visualizar') {
             <button
-              class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500 cursor-pointer"
+              class="h-10 w-auto cursor-pointer rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
             >
               @if (carga()) {
                 <svg
@@ -529,7 +542,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
 
           <button
             type="button"
-            class="rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400 cursor-pointer"
+            class="cursor-pointer rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="close()"
           >
             @if (acciones() === 'Visualizar') {
@@ -822,7 +835,7 @@ export class FormProducto {
       return;
     }
 
-    this.carga.set(true)
+    this.carga.set(true);
     const formData = this.toFormData();
     if (this.acciones() === 'Registrar') {
       this.servicioProductos()

@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
@@ -16,6 +16,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
     RouterLink,
     Loading,
     ModalAvisosComponent,
+    TitleCasePipe,
   ],
   template: `
     <headers></headers>
@@ -58,7 +59,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         }}
                       </small>
                       <h2 class="text-lg font-bold text-gray-800">
-                        {{ item.nombre || 'Producto personalizado' }}
+                        {{ item.nombre || 'Producto personalizado' | titlecase}}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small
@@ -195,7 +196,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
             </ul>
 
             <button
-              class="mt-6 w-full cursor-pointer rounded-[12px] bg-[#9810fa] py-3 font-semibold text-white transition-colors hover:bg-[#7a0dc7] disabled:bg-gray-400"
+              class="mt-6 w-full cursor-pointer rounded-[12px] bg-morado-600 py-3 font-semibold text-white transition-colors hover:bg-morado-700 disabled:bg-gray-400"
               routerLink="/informacion-pago"
               [disabled]="serviceCarrito.carrito().productos.length === 0"
             >

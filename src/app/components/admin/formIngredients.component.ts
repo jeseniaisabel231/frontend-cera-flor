@@ -40,10 +40,23 @@ import { ModalAvisosComponent } from './modalavisos.component';
             }}
           </h1>
           @if (acciones() !== 'Visualizar') {
-            <small class="text-[#806bff]">
-              Recuerde no dejar espacios en blanco al derecho y al reves de cada
-              campo.
-            </small>
+            <div class="flex items-center gap-2 text-sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="17"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill="#806bff"
+                  d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0m1 16H9v-2h2zm0-4H9V4h2z"
+                />
+              </svg>
+              <small class="font-bold text-[#806bff]">
+                Recuerde no dejar espacios en blanco al derecho y al reves de
+                cada campo.
+              </small>
+            </div>
           }
         </div>
         <button (click)="close()" class="cursor-pointer focus:outline-none">

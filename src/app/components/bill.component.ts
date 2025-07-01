@@ -13,7 +13,6 @@ import {
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import type { usuario } from '../interfaces/usuario.interface';
-import type { venta } from '../interfaces/venta.interface';
 
 @Component({
   selector: 'app-bill',
@@ -50,9 +49,11 @@ import type { venta } from '../interfaces/venta.interface';
             <div class="text-right">
               <p class="text-sm">
                 Factura #:
-                <span class="font-medium uppercase">FC-{{ (verVenta()._id || '').slice(0, 8) }}</span>
+                <span class="font-medium uppercase">
+                  FC-{{ (verVenta()._id || '').slice(0, 8) }}
+                </span>
               </p>
-              <p class="text-sm">Fecha: {{ verVenta().fecha_venta | date: 'dd/MM/yyyy' }}</p>
+              <p class="text-sm">Fecha: {{ now | date: 'dd/MM/yyyy' }}</p>
             </div>
           </div>
 
@@ -80,7 +81,7 @@ import type { venta } from '../interfaces/venta.interface';
           <!-- Tabla de productos -->
           <div class="mb-6 max-w-3xl">
             <h3 class="mb-2 text-lg font-semibold">Detalle de Productos</h3>
-            <table class="border text-sm w-full">
+            <table class="w-full border text-sm">
               <thead class="bg-gray-100 text-left">
                 <tr>
                   <th class="border p-2">Producto</th>
@@ -91,26 +92,29 @@ import type { venta } from '../interfaces/venta.interface';
                 </tr>
               </thead>
               <tbody>
-                @for (producto of verVenta().productos; track producto._id) {
+                @for (item of verVenta().productos; track $index) {
                   <tr>
                     <td
-                      class="overflow-hidden border p-2 text-ellipsis whitespace-nowrap max-w-30"
+                      class="max-w-30 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
                     >
-                      {{ producto.producto_id.nombre }}
+                      {{ item.producto.nombre }}
                     </td>
                     <td
-                      class="overflow-hidden border p-2 text-ellipsis whitespace-nowrap max-w-50"
+                      class="max-w-50 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
                     >
-                      {{ producto.producto_id.descripcion }}
+                      {{
+                        item.producto?.descripcion ??
+                          'Producto personalizado por el cliente'
+                      }}
                     </td>
                     <td class="border p-2 text-center">
-                      {{ producto.cantidad }}
+                      {{ item.cantidad }}
                     </td>
                     <td class="border p-2 text-right">
-                      {{ producto.producto_id.precio | currency: 'USD' }}
+                      {{ item.producto.precio | currency: 'USD' }}
                     </td>
                     <td class="border p-2 text-right">
-                      {{ producto.subtotal | currency: 'USD' }}
+                      {{ item.subtotal | currency: 'USD' }}
                     </td>
                   </tr>
                 }
@@ -186,9 +190,10 @@ import type { venta } from '../interfaces/venta.interface';
 export class BillComponent {
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public factura = viewChild<ElementRef<HTMLDivElement>>('factura');
+  public now = new Date();
 
   public mostrarModal = model<boolean>(false);
-  public verVenta = input.required<venta>();
+  public verVenta = input.required<any>();
   public datosCliente = input.required<usuario>();
   public alCerrar = output<void>();
 

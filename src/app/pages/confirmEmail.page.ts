@@ -125,6 +125,6 @@ import { Headers } from '../components/header.component';
 export class ConfirmEmailPage {
   public token = input.required();
   public respuesta = httpResource(
-    () => `${environment.urlApi}/api/confirmar-email/${this.token()}`,
+    () => `${environment.urlApi}/api/cliente/confirmar-email/${this.token()}`,
   );
 }

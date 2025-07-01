@@ -1,145 +1,52 @@
 import { httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { register } from 'swiper/element/bundle';
 import { environment } from '../../environments/environment';
 import { ProductosService } from '../../services/admin/productos.service';
 import { Card } from '../components/card.component';
 import { Footeer } from '../components/footer.component';
 import { Headers } from '../components/header.component';
-import { producto } from '../interfaces/producto.interface';
+
+register();
 
 @Component({
   imports: [Headers, Footeer, Card, RouterLink],
-
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <headers></headers>
     <main class="flex flex-col">
       <!--Seccion banner -->
-      <section class="relative w-full">
-        <!-- elementos dentro del banner -->
+      <!-- elementos dentro del banner -->
 
-        <div
-          id="default-carousel"
-          class="relative w-full"
-          data-carousel="slide"
-        >
-          <!-- Carousel wrapper -->
-          <div
-            class="relative aspect-[21/9] w-full overflow-hidden rounded-lg md:h-96"
-          >
-            <!-- Item 1 -->
-            <div class="duration-700 ease-in-out">
-              <img src="banner1.png" alt="Banner description" class="w-full" />
-            </div>
-            @for (
-              promocion of promocionesResource.value()?.promociones;
-              track promocion._id
-            ) {
-              <div class="duration-700 ease-in-out">
-                <img
-                  [src]="promocion.imagen"
-                  [alt]="promocion.descripcion"
-                  class="absolute top-1/2 left-1/2 block w-full -translate-x-1/2 -translate-y-1/2"
-                />
-              </div>
-            }
-
-            <!-- Slider indicators -->
-            <div
-              class="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 space-x-3 rtl:space-x-reverse"
-            >
-              <button
-                type="button"
-                class="h-3 w-3 rounded-full cursor-pointer"
-                aria-current="true"
-                aria-label="Slide 1"
-                data-carousel-slide-to="0"
-              ></button>
-              <button
-                type="button"
-                class="h-3 w-3 rounded-full cursor-pointer"
-                aria-current="false"
-                aria-label="Slide 2"
-                data-carousel-slide-to="1"
-              ></button>
-              <button
-                type="button"
-                class="h-3 w-3 rounded-full cursor-pointer"
-                aria-current="false"
-                aria-label="Slide 3"
-                data-carousel-slide-to="2"
-              ></button>
-              <button
-                type="button"
-                class="h-3 w-3 rounded-full cursor-pointer"
-                aria-current="false"
-                aria-label="Slide 4"
-                data-carousel-slide-to="3"
-              ></button>
-              <button
-                type="button"
-                class="h-3 w-3 rounded-full cursor-pointer"
-                aria-current="false"
-                aria-label="Slide 5"
-                data-carousel-slide-to="4"
-              ></button>
-            </div>
-            <!-- Slider controls -->
-            <button
-              type="button"
-              class="group absolute start-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none "
-              data-carousel-prev
-            >
-              <span
-                class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70"
-              >
-                <svg
-                  class="h-4 w-4 text-white rtl:rotate-180 dark:text-gray-800"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 6 10"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 1 1 5l4 4"
-                  />
-                </svg>
-                <span class="sr-only">Previous</span>
-              </span>
-            </button>
-            <button
-              type="button"
-              class="group absolute end-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none"
-              data-carousel-next
-            >
-              <span
-                class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70"
-              >
-                <svg
-                  class="h-4 w-4 text-white rtl:rotate-180 dark:text-gray-800"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 6 10"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 9 4-4-4-4"
-                  />
-                </svg>
-                <span class="sr-only">Next</span>
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
+      <swiper-container
+        [pagination]="{ clickable: true }"
+        speed="500"
+        centered-slides
+        loop
+        init
+        navigation
+        class="mySwiper h-[500px] w-full"
+        effect="cube"
+      >
+        @for (
+          promocion of promocionesResource.value().promociones;
+          track $index
+        ) {
+          <swiper-slide>
+            <img
+              [src]="promocion.imagen"
+              [alt]="promocion.nombre"
+              class="w-full"
+            />
+          </swiper-slide>
+        }
+      </swiper-container>
       <!--Seccion de beneficios -->
       <section class="py-10">
         <div class="mx-auto max-w-6xl px-4">
@@ -214,7 +121,10 @@ import { producto } from '../interfaces/producto.interface';
           <div
             class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
-            @for (producto of serviceProductos.productosPorCantidad(4); track producto._id) {
+            @for (
+              producto of serviceProductos.productosPorCantidad(4);
+              track producto._id
+            ) {
               <card [producto]="producto"></card>
             }
           </div>

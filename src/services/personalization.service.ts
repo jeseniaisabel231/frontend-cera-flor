@@ -26,65 +26,55 @@ export class PersonalizationService {
       })
       .pipe(
         tap(({ productos }) => {
+          console.log(productos);
           this.productosPersonalizados.set(productos);
         }),
       );
   }
 
   obtenerPersonalizacion(id: string) {
-    return this.http
-      .get<any>(`${this.urlBackend}/api/productos-personalizados/${id}`, {
+    return this.http.get<any>(
+      `${this.urlBackend}/api/productos-personalizados/${id}`,
+      {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
+      },
+    );
   }
 
   subirFotoPersonalizacion(id: string, imagen: File) {
     const formData = new FormData();
     formData.append('imagen', imagen);
 
-    return this.http.put<any>(
-      `${this.urlBackend}/api/productos-personalizados/${id}/imagen`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+    return this.http
+      .put<any>(
+        `${this.urlBackend}/api/productos-personalizados/${id}/imagen`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         },
-      },
-    );
+      )
+      .pipe(tap(() => this.obtenerPersonalizaciones().subscribe()));
   }
 
   editarPersonalizacion(id: string, ingredientes: any) {
-    return this.http
-      .put<any>(
-        `${this.urlBackend}/api/productos-personalizados/${id}`,
-        { ingredientes },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        },
-      )
-      .pipe(
-        tap((respuesta: any) => {
-          this.productosPersonalizados.set(
-            this.productosPersonalizados().map((p) =>
-              p._id === id ? respuesta.producto_personalizado : p,
-            ),
-          );
-        }),
-      );
+    return this.http.put<any>(
+      `${this.urlBackend}/api/productos-personalizados/${id}`,
+      { ingredientes },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      },
+    );
   }
   registrarPersonalizacion(datos: any) {
-    return this.http
-      .post<any>(`${this.urlBackend}/api/productos-personalizados`, datos, {
+    return this.http.post<any>(
+      `${this.urlBackend}/api/productos-personalizados`,
+      datos,
+      {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-      .pipe(
-        tap(({ producto_personalizado }: any) => {
-          this.productosPersonalizados.update((productos) => [
-            ...productos,
-            producto_personalizado,
-          ]);
-        }),
-      );
+      },
+    );
   }
 
   eliminarPersonalizacion(id: string) {

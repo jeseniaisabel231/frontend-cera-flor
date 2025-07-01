@@ -9,6 +9,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { FacturaService } from '../../services/facturas.service';
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 
@@ -20,6 +21,7 @@ import { Headers } from '../components/header.component';
     CommonModule,
     RouterLink,
     TitleCasePipe,
+    ModalAvisosComponent,
   ],
 
   template: `
@@ -68,8 +70,7 @@ import { Headers } from '../components/header.component';
                   </svg>
                 </div>
               }
-              <button
-                type="button"
+              <div
                 class="absolute -right-1 -bottom-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#9810fa] text-white hover:bg-[#7a0dc7] focus:ring-2 focus:ring-[#9810fa] focus:ring-offset-2 focus:outline-none"
                 title="Cambiar foto"
               >
@@ -92,7 +93,7 @@ import { Headers } from '../components/header.component';
                     d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
                   ></path>
                 </svg>
-              </button>
+              </div>
               <input
                 type="file"
                 hidden
@@ -528,7 +529,7 @@ import { Headers } from '../components/header.component';
               <h2 class="text-xl font-semibold text-black">Mis pedidos</h2>
             </header>
             <section class="px-6">
-              @if (carga()) {
+              @if (servicioFacturas.carga()) {
                 <div class="flex justify-center p-8">
                   <svg
                     class="h-8 w-8 animate-spin"
@@ -544,38 +545,42 @@ import { Headers } from '../components/header.component';
                   </svg>
                   <span class="ml-2">Cargando pedidos...</span>
                 </div>
-              } @else if (pedidos.length === 0) {
-                <div class="p-8 text-center">
-                  <p class="text-gray-500">No tienes pedidos aún</p>
-                </div>
               } @else {
                 <h2 class="mt-2 text-black">Listado de pedidos recientes</h2>
 
                 <!-- Iterar sobre cada venta/pedido -->
-                @for (venta of pedidos; track venta._id) {
-                  <article
-                    class="mb-6 overflow-hidden rounded-lg bg-white shadow-sm"
+                @for (venta of servicioFacturas.facturas(); track venta._id) {
+                  <details
+                    class="group mb-6 overflow-hidden rounded-lg bg-white shadow-sm"
                   >
-                    <header
-                      class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
+                    <summary
+                      class="group-open:bg-morado-400 flex cursor-pointer items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
                     >
                       <div>
-                        <span class="text-sm font-medium text-gray-500">
+                        <span
+                          class="text-sm font-medium text-gray-500 group-open:text-white"
+                        >
                           Pedido {{ venta._id.slice(-8) }}
                         </span>
                         <span class="mx-2 text-gray-300">•</span>
-                        <span class="text-sm font-medium text-blue-600">
-                          Estado: {{ venta.estado | titlecase }}
+                        <span
+                          class="text-sm font-medium text-green-500 group-open:text-white"
+                        >
+                          Estado de entrega: {{ venta.estado | titlecase }}
                         </span>
                         <span class="mx-2 text-gray-300">•</span>
-                        <time class="text-sm text-gray-500">
+                        <time
+                          class="text-sm text-gray-500 group-open:text-white"
+                        >
                           {{ venta.fecha_venta | date: 'dd/MM/yyyy' }}
                         </time>
                       </div>
-                      <span class="text-lg font-semibold">
+                      <span
+                        class="text-lg font-bold text-gray-800 group-open:text-white"
+                      >
                         {{ venta.total | currency: 'USD' : 'symbol' }}
                       </span>
-                    </header>
+                    </summary>
 
                     <div class="p-6">
                       <section>
@@ -587,7 +592,7 @@ import { Headers } from '../components/header.component';
                                 class="flex items-start border-b border-gray-100 pb-4"
                               >
                                 <img
-                                  src="logo.png"
+                                  [src]="item.producto_id.imagen ?? 'logo.png'"
                                   class="mr-4 h-16 w-16 rounded-md object-cover"
                                   loading="lazy"
                                   [alt]="item.producto_id.nombre"
@@ -662,13 +667,22 @@ import { Headers } from '../components/header.component';
                         </div>
                       </section>
                     </div>
-                  </article>
+                  </details>
+                } @empty {
+                  <div class="p-8 text-center">
+                    <p class="text-gray-500">No tienes pedidos aún</p>
+                  </div>
                 }
               }
             </section>
           </article>
         }
       </section>
+      <app-modal
+        [(mostrarModal)]="mostrarModalPerfil"
+        [mensaje]="mensajePerfil()"
+        [tipo]="tipoModalPerfil()"
+      />
     </main>
   `,
 })
@@ -679,8 +693,11 @@ export class ProfilePage {
   public servicioPerfil = inject(AuthService);
   public servicioFacturas = inject(FacturaService);
   public imagenPersonalizada = signal<string>('');
-  public pedidos: any[] = [];
-  public carga = signal<boolean>(true);
+  public carga = signal<boolean>(false);
+
+  public mostrarModalPerfil = signal<boolean>(false);
+  public mensajePerfil = signal<string>('');
+  public tipoModalPerfil = signal<'error' | 'exito'>('error');
 
   public perfilFormulario = new FormGroup({
     nombre: new FormControl('', [
@@ -692,7 +709,7 @@ export class ProfilePage {
       Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,20}$/),
     ]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    genero: new FormControl('', [Validators.required]),
+    genero: new FormControl('', Validators.required),
     telefono: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\d{10}$/),
@@ -705,12 +722,10 @@ export class ProfilePage {
       Validators.required,
       Validators.pattern(/^\d{10}$/),
     ]),
-    fecha_nacimiento: new FormControl('', [
-      Validators.required,
-      Validators.pattern(/^\d{10}$/),
-    ]),
-    imagen: new FormControl('', [Validators.required]),
+    fecha_nacimiento: new FormControl('', Validators.required),
+    imagen: new FormControl('', Validators.required),
   });
+
   public errores = signal<any>({
     imagen: '',
     nombre: '',
@@ -722,23 +737,20 @@ export class ProfilePage {
     cedula: '',
     fecha_nacimiento: '',
   });
-  borrarError(campo: string) {
+
+  public borrarError(campo: string) {
     this.errores.update((prev) => ({ ...prev, [campo]: '' }));
   }
-
-  // public passwordForm = new FormGroup({
-  //   currentPassword: new FormControl(''),
-  //   newPassword: new FormControl(''),
-  //   confirmPassword: new FormControl(''),
-  // });
 
   constructor() {
     effect(() => {
       const datosUsuario = this.servicioPerfil.datosUsuario();
       datosUsuario.genero = datosUsuario.genero?.toLowerCase() ?? '';
+      datosUsuario.fecha_nacimiento =
+        datosUsuario.fecha_nacimiento?.split('T')[0] ?? '';
       this.perfilFormulario.patchValue(datosUsuario, { emitEvent: false });
+      this.imagePreview = datosUsuario.imagen ?? '';
     });
-    this.obtenerFacturas();
   }
 
   cerrarSesion() {
@@ -749,53 +761,27 @@ export class ProfilePage {
   }
 
   onSubmit() {
-  // Resetear errores previos
-  this.errores.set({
-    imagen: '',
-    nombre: '',
-    apellido: '',
-    email: '',
-    genero: '',
-    telefono: '',
-    direccion: '',
-    cedula: '',
-    fecha_nacimiento: '',
-  });
+    this.carga.set(true);
 
-  // Activar loading siempre que se envíe el formulario
-  this.carga.set(true);
+    const formData = this.toFormData();
 
-  // Verificar si el formulario es válido
-  if (this.perfilFormulario.invalid) {
-    this.carga.set(false);
-    // Marcar todos los campos como touched para mostrar errores de validación
-    this.perfilFormulario.markAllAsTouched();
-    return;
+    this.servicioPerfil
+      .actualizarPerfil(formData)
+      .subscribe({
+        next: ({ msg }) => {
+          this.mensajePerfil.set(msg);
+          this.tipoModalPerfil.set('exito');
+        },
+        error: ({ error }) => {
+          this.mensajePerfil.set(error.msg);
+          this.tipoModalPerfil.set('error');
+        },
+      })
+      .add(() => {
+        this.carga.set(false);
+        this.mostrarModalPerfil.set(true);
+      });
   }
-
-  // Si es válido, proceder con el envío
-  const formData = this.toFormData();
-  
-  this.servicioPerfil.actualizarPerfil(formData).subscribe({
-    next: (respuesta: any) => {
-      // Opcional: mostrar mensaje de éxito
-      // this.mostrarMensajeExito = true;
-      
-      // Solo navegar si es necesario (opcional)
-      // this.router.navigate(['/perfil']);
-    },
-    error: (error) => {
-      this.carga.set(false);
-      
-      // Manejar errores del backend
-      if (error.error && error.error.errors) {
-        this.errores.set(error.error.errors);
-      } else {
-        // Error genérico
-      }
-    },
-  });
-}
 
   public toFormData(): FormData {
     const formData = new FormData();
@@ -818,16 +804,5 @@ export class ProfilePage {
         imagen: file,
       });
     }
-  }
-  obtenerFacturas() {
-    this.servicioFacturas.obtenerFacturas().subscribe({
-      next: (respuesta: any) => {
-        this.pedidos = respuesta.ventas;
-        this.carga.set(false);
-      },
-      error: (error) => {
-        this.carga.set(false);
-      },
-    });
   }
 }

@@ -13,11 +13,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { StripeElementsOptions } from '@stripe/stripe-js';
 import { NgxStripeModule } from 'ngx-stripe';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
 import { PaymentService } from '../../services/payment.service';
+import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
 import { BillComponent } from '../components/bill.component';
 import { Headers } from '../components/header.component';
@@ -32,6 +34,7 @@ import { venta } from '../interfaces/venta.interface';
     ReactiveFormsModule,
     NgxStripeModule,
     BillComponent,
+    ModalAvisosComponent,
   ],
   template: `
     <headers></headers>
@@ -47,7 +50,7 @@ import { venta } from '../interfaces/venta.interface';
             <section class="rounded-lg bg-white p-6 shadow-md lg:w-2/3">
               <fieldset class="mb-8">
                 <legend class="mb-4 text-lg font-medium">
-                  Dirección de Envío
+                  Datos para el envío
                 </legend>
                 <p class="mb-4 text-sm">
                   Recuerda colocar tu dirección de envío. Si necesitas
@@ -58,6 +61,35 @@ import { venta } from '../interfaces/venta.interface';
                   [formGroup]="formularioDireccion"
                 >
                   <div>
+                    @let cedulaInvalida =
+                      (formularioDireccion.get('cedula')?.invalid &&
+                        formularioDireccion.get('cedula')?.value) ||
+                      errores().cedula;
+
+                    <label class="mb-1 block text-sm font-medium">Cédula</label>
+                    <input
+                      type="text"
+                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      placeholder="1711223344"
+                      formControlName="cedula"
+                      (input)="borrarErrores('cedula')"
+                    />
+
+                    @if (cedulaInvalida) {
+                      <p class="mt-1 text-sm text-red-500">
+                        La cédula debe tener 10 dígitos y solo números.
+                      </p>
+                    } @else if (errores().cedula) {
+                      <p class="mt-1 text-sm text-red-500">
+                        {{ errores().cedula }}
+                      </p>
+                    }
+                  </div>
+                  <div>
+                    @let direccionInvalida =
+                      (formularioDireccion.get('direccion')?.invalid &&
+                        formularioDireccion.get('direccion')?.value) ||
+                      errores().direccion;
                     <label class="mb-1 block text-sm font-medium">
                       Dirección
                     </label>
@@ -66,21 +98,56 @@ import { venta } from '../interfaces/venta.interface';
                       class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
                       placeholder="Pichincha, Quito, Av. Amazonas 1234"
                       formControlName="direccion"
+                      (input)="borrarErrores('direccion')"
                     />
+                    @if (direccionInvalida) {
+                      <p class="mt-1 text-sm text-red-500">
+                        La dirección debe tener entre 5 y 30 caracteres.
+                      </p>
+                    } @else if (errores().direccion) {
+                      <p class="mt-1 text-sm text-red-500">
+                        {{ errores().direccion }}
+                      </p>
+                    }
                   </div>
-                  @if (modificarDireccion()) {
+                  <div>
+                    @let telefonoInvalido =
+                      (formularioDireccion.get('telefono')?.invalid &&
+                        formularioDireccion.get('telefono')?.value) ||
+                      errores().telefono;
+                    <label class="mb-1 block text-sm font-medium">
+                      Teléfono
+                    </label>
+                    <input
+                      type="tel"
+                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      placeholder="0991234567"
+                      formControlName="telefono"
+                      (input)="borrarErrores('telefono')"
+                    />
+                    @if (telefonoInvalido) {
+                      <p class="mt-1 text-sm text-red-500">
+                        El teléfono debe tener 10 dígitos y solo números.
+                      </p>
+                    } @else if (errores().telefono) {
+                      <p class="mt-1 text-sm text-red-500">
+                        {{ errores().telefono }}
+                      </p>
+                    }
+                  </div>
+                  @if (modificarDatos()) {
                     <button
-                      (click)="OnSubmitDireccion()"
+                      (click)="onSubmitDatos()"
                       class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-2 font-semibold text-white transition-colors disabled:bg-gray-400"
                     >
-                      Guardar dirección
+                      Guardar datos de envío
                     </button>
                   } @else {
                     <button
-                      (click)="modificarDireccion.set(true)"
+                      (click)="modificarDatos.set(true)"
                       class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-2 font-semibold text-white transition-colors disabled:bg-gray-400"
                     >
-                      Modificar dirección
+                      Modificar datos de envío
                     </button>
                   }
                 </form>
@@ -101,9 +168,9 @@ import { venta } from '../interfaces/venta.interface';
                 ></ngx-stripe-card>
 
                 <button
-                  (click)="OnSubmitPago($event)"
+                  (click)="onSubmitPago($event)"
                   class="bg-morado-600 hover:bg-morado-700 mt-6 flex w-full cursor-pointer items-center justify-center rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
-                  [disabled]="modificarDireccion()"
+                  [disabled]="modificarDatos()"
                 >
                   @if (carga()) {
                     <svg
@@ -123,17 +190,18 @@ import { venta } from '../interfaces/venta.interface';
                   }
                 </button>
               </form>
-              <!-- <app-modal
-                [(mostrarModal)]="mostrarModalExito"
+              <app-modal
+                [(mostrarModal)]="mostrarModalError"
                 [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
                 [mensaje]="respuestaBack()"
                 [tipo]="tipoRespuesta()"
-              ></app-modal> -->
+              ></app-modal>
 
               <app-bill
                 [(mostrarModal)]="mostrarVenta"
                 [verVenta]="ventaCreada()"
                 [datosCliente]="datosCliente()"
+                (alCerrar)="alCerrar()"
               />
             </section>
 
@@ -183,10 +251,11 @@ export class PaymentPage {
   public serviceCarrito = inject(CarritoService);
   public servicePerfil = inject(AuthService);
   public servicePayment = inject(PaymentService);
-  public mostrarModalExito = signal(false);
+  public mostrarModalError = signal(false);
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public respuestaBack = signal<string>('');
-  public modificarDireccion = signal<boolean>(false);
+  public modificarDatos = signal<boolean>(false);
+  public router = inject(Router);
   public formulariopago = viewChild<ElementRef<any>>('formulariopagoref');
 
   public ventaCreada = signal<venta>({} as venta);
@@ -197,26 +266,46 @@ export class PaymentPage {
     locale: 'es',
   };
 
+  public errores = signal<any>({
+    direccion: '',
+    cedula: '',
+    telefono: '',
+  });
+
   public formularioDireccion = new FormGroup({
     direccion: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[A-Za-zÁÉÍÓÚÑáéíóúñ0-9\s\#\-\.,/°]{5,30}$/),
     ]),
+    cedula: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{10}$/),
+    ]),
+    telefono: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{10}$/),
+    ]),
   });
+
+  borrarErrores(clave: string) {
+    this.errores.update((state) => ({
+      ...state,
+      [clave]: '',
+    }));
+  }
 
   constructor() {
     effect(() => {
-      const { direccion } = this.servicePerfil.datosUsuario() ?? {};
-      if (direccion) {
-        this.formularioDireccion.patchValue({ direccion });
-        this.modificarDireccion.set(false);
-      } else {
-        this.modificarDireccion.set(true);
+      const { direccion, cedula, telefono } =
+        this.servicePerfil.datosUsuario() ?? {};
+      if (direccion && cedula && telefono) {
+        this.modificarDatos.set(false);
       }
+      this.formularioDireccion.patchValue({ direccion, cedula, telefono });
     });
 
     effect(() => {
-      if (this.modificarDireccion()) {
+      if (this.modificarDatos()) {
         this.formularioDireccion.enable();
       } else {
         this.formularioDireccion.disable();
@@ -241,39 +330,70 @@ export class PaymentPage {
     return this.serviceCarrito.carrito().total * iva;
   }
 
-  OnSubmitDireccion() {
+  onSubmitDatos() {
+    const { direccion, cedula, telefono } = this.formularioDireccion.value;
     const formData = new FormData();
-    formData.append(
-      'direccion',
-      this.formularioDireccion.value.direccion as string,
-    );
 
-    this.servicePerfil.actualizarPerfil(formData).subscribe(() => {
-      this.modificarDireccion.set(false);
-    });
+    if (!direccion?.trim()) {
+      this.errores.update((state) => ({
+        ...state,
+        direccion: 'La dirección es requerida.',
+      }));
+      return;
+    }
+
+    formData.append('direccion', direccion as string);
+    formData.append('cedula', cedula as string);
+    formData.append('telefono', telefono as string);
+
+    this.servicePerfil
+      .actualizarPerfil(formData)
+      .subscribe({
+        next: () => {
+          this.modificarDatos.set(false);
+          this.tipoRespuesta.set('exito');
+          this.respuestaBack.set('Datos de envío actualizados correctamente.');
+        },
+        error: ({ error }) => {
+          const { details = [] } = error;
+          details.forEach(({ path, msg }: any) => {
+            this.errores.update((state) => ({
+              ...state,
+              [path]: msg,
+            }));
+          });
+          this.tipoRespuesta.set('error');
+          this.respuestaBack.set(error.msg ?? 'Ocurrió un error al actualizar los datos.');
+        },
+      })
+      .add(() => this.mostrarModalError.set(true));
   }
 
-  async OnSubmitPago(event: Event) {
+  public alCerrar() {
+    this.router.navigate(['/pedidos']);
+  }
+
+  async onSubmitPago(event: Event) {
     event.preventDefault();
 
     this.carga.set(true);
     const servicePaymentPromise = await this.servicePayment.pagarCarrito();
-    servicePaymentPromise.subscribe({
-      next: ({ venta, cliente }) => {
-        this.carga.set(false);
-        this.ventaCreada.set(venta);
-        this.datosCliente.set(cliente);
-        this.mostrarVenta.set(true);
-        console.log(venta);
-      },
-      error: (error) => {
-        this.carga.set(false);
-        this.tipoRespuesta.set('error');
-        this.mostrarModalExito.set(true);
-        this.respuestaBack.set(
-          'Error al procesar el pago. Por favor, inténtalo de nuevo.',
-        );
-      },
-    });
+    servicePaymentPromise
+      .subscribe({
+        next: ({ venta, cliente }) => {
+          this.ventaCreada.set(venta);
+          this.datosCliente.set(cliente);
+          this.mostrarVenta.set(true);
+          this.serviceCarrito.vaciarCarrito(true);
+        },
+        error: () => {
+          this.tipoRespuesta.set('error');
+          this.mostrarModalError.set(true);
+          this.respuestaBack.set(
+            'Error al procesar el pago. Por favor, inténtalo de nuevo.',
+          );
+        },
+      })
+      .add(() => this.carga.set(false));
   }
 }

@@ -81,6 +81,7 @@ export class CarritoService {
             producto_id: producto._id,
             cantidad,
             precio_unitario: producto.precio,
+            tipo_producto,
             producto,
           } as carritoProducto,
         ],
@@ -121,8 +122,8 @@ export class CarritoService {
       },
     );
   }
-  vaciarCarrito() {
-    if (!this.estaAutenticado) {
+  vaciarCarrito(payment: boolean = false) {
+    if (!this.estaAutenticado || payment) {
       this.carrito.set({
         _id: '',
         cliente_id: '',

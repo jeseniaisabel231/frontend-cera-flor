@@ -75,9 +75,13 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         ></span>
       </button>
     </div>
-    <main
-      class="from-celeste-200 via-morado-200 relative flex h-[79.2dvh] items-start bg-gradient-to-b to-pink-200"
-    >
+
+    <main class="relative flex h-[79.2dvh] items-start">
+      <img
+        src="fondoJuego.png"
+        alt=""
+        class="absolute inset-0 -z-1 h-full w-full object-cover"
+      />
       @if (mostrarAyuda()) {
         <app-confirmation-dialog
           (confirm)="mostrarAyuda.set(false)"
@@ -98,7 +102,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             cdkDropListOrientation="horizontal"
             cdkDropList
             [cdkDropListData]="colores"
-            class="bg-opacity-70 flex justify-center gap-4 overflow-x-auto overflow-y-hidden rounded-lg bg-white p-4"
+            class="bg-opacity-70 flex justify-center gap-4 overflow-x-auto overflow-y-hidden rounded-lg bg-white/90 p-4"
             (cdkDropListDropped)="dropColores($event)"
           >
             @for (item of colores; track item) {
@@ -118,7 +122,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         >
           <div
             id="moldes"
-            class="bg-opacity-70 max-h-full w-3/4 overflow-x-hidden overflow-y-auto rounded-lg bg-white p-2"
+            class="bg-opacity-70 max-h-full w-3/4 overflow-x-hidden overflow-y-auto rounded-lg bg-white/90 p-2"
             cdkDropList
             [cdkDropListData]="moldes"
             (cdkDropListDropped)="dropMoldes($event)"
@@ -147,7 +151,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         <div
           class="col-span-5 col-start-2 row-span-3 row-start-2 flex items-center justify-center"
         >
-          <div class="flex gap-4 rounded-lg bg-white p-4">
+          <div class="flex gap-4 rounded-lg bg-white/90 p-4">
             <section
               id="mesa-trabajo"
               class="grid h-[30dvh] w-[30dvw] grid-cols-4 grid-rows-3 border-gray-300"
@@ -231,7 +235,6 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                   (confirm)="mostrarDialogoConfirmacion.set(false)"
                   [text]="mensajeProductoPersonalizado()"
                   [imagen]="imagenPersonalizada()"
-                  [producto_id]="producto_id()"
                 />
               }
 
@@ -257,7 +260,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             cdkDropList
             [cdkDropListData]="aromas"
             (cdkDropListDropped)="dropAromas($event)"
-            class="bg-opacity-80 max-h-full w-3/4 overflow-x-hidden overflow-y-auto rounded-lg bg-white p-2"
+            class="bg-opacity-80 max-h-full w-3/4 overflow-x-hidden overflow-y-auto rounded-lg bg-white/90 p-2"
           >
             @for (item of aromas; track $index) {
               <div
@@ -290,7 +293,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             cdkDropList
             [cdkDropListData]="esencias"
             (cdkDropListDropped)="dropEsencias($event)"
-            class="bg-opacity-70 flex justify-center gap-x-8 overflow-x-auto overflow-y-hidden rounded-lg bg-white p-1"
+            class="bg-opacity-70 flex justify-center gap-x-8 overflow-x-auto overflow-y-hidden rounded-lg bg-white/90 p-1"
           >
             @for (item of esencias; track $index) {
               <div class="group flex cursor-pointer flex-col gap-y-2">
@@ -464,7 +467,10 @@ export class WorkshopGamePage {
 
     if (this.editarProducto()) {
       this.servicePersonalizacion
-        .editarPersonalizacion(this.editarProducto(), this.formularioPersonalizado.ingredientes)
+        .editarPersonalizacion(
+          this.editarProducto(),
+          this.formularioPersonalizado.ingredientes,
+        )
         .subscribe({
           next: this.peticionExitosa,
           error: this.peticionErronea,

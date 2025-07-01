@@ -30,12 +30,13 @@ export class AuthService {
     email: '',
     genero: '',
     estado: '',
+    cedula: '',
   });
   public cargaPerfil = signal<boolean>(true);
   public clienteAutenticado = signal<boolean>(false);
 
   constructor() {
-    this.obtenerPerfil().subscribe();
+    this.obtenerPerfil().subscribe().add(() => this.cargaPerfil.set(false));
   }
 
   login(email: string, password: string) {
@@ -131,7 +132,7 @@ export class AuthService {
       );
   }
 
-  actualizarPerfil(datosCliente: any) {
+  actualizarPerfil(datosCliente: FormData) {
     return this.http
       .put<any>(`${this.urlBackend}/api/perfil`, datosCliente, {
         headers: {
@@ -139,12 +140,9 @@ export class AuthService {
         },
       })
       .pipe(
-        tap((response) => {
-          this.datosUsuario = response;
-          localStorage.setItem(
-            'datosUsuario',
-            JSON.stringify(this.datosUsuario),
-          );
+        tap(({ cliente }) => {
+          console.log(cliente);
+          this.datosUsuario.set(cliente)
         }),
       );
   }

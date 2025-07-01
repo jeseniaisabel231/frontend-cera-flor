@@ -7,6 +7,7 @@ import { Headers } from '../components/header.component';
 import { Loading } from '../components/loading.component';
 import { ModalResumenProductoComponent } from '../components/modalResumenProducto.component';
 import type { productoPersonalizado } from '../interfaces/personalizacion.interface';
+import { RouterLink } from '@angular/router';
 
 @Component({
   imports: [
@@ -18,6 +19,7 @@ import type { productoPersonalizado } from '../interfaces/personalizacion.interf
     TitleCasePipe,
     ModalResumenProductoComponent,
     DatePipe,
+    RouterLink
   ],
   template: `
     <headers></headers>

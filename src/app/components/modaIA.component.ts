@@ -11,7 +11,7 @@ import {
   template: `
     <dialog
       #modal
-      class="m-auto h-1/2 w-3/4 max-w-2xl rounded-lg bg-[#190c40] p-4 outline-none backdrop:bg-gray-600/25 backdrop:backdrop-blur-[2px]"
+      class="m-auto h-[45%] w-3/4 max-w-2xl rounded-lg bg-[#190c40] p-4 outline-none backdrop:bg-gray-600/25 backdrop:backdrop-blur-[2px]"
     >
       <div class="flex flex-col items-center justify-center gap-4">
         <h2 class="mb-3 text-xl font-bold text-purple-700">

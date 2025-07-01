@@ -5,6 +5,7 @@ import {
   effect,
   input,
   model,
+  output,
   signal,
   viewChild,
   type ElementRef,
@@ -173,7 +174,7 @@ import type { venta } from '../interfaces/venta.interface';
           </button>
           <button
             class="cursor-pointer rounded-lg bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
-            (click)="mostrarModal.set(false)"
+            (click)="mostrarModal.set(false); alCerrar.emit()"
           >
             Cerrar
           </button>
@@ -189,6 +190,7 @@ export class BillComponent {
   public mostrarModal = model<boolean>(false);
   public verVenta = input.required<venta>();
   public datosCliente = input.required<usuario>();
+  public alCerrar = output<void>();
 
   public iva = computed(() => this.verVenta().total * 0.15);
   public subtotal = computed(() => this.verVenta().total - this.iva());

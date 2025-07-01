@@ -1,6 +1,11 @@
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { FacturaService } from '../../services/facturas.service';
@@ -30,15 +35,19 @@ import { Headers } from '../components/header.component';
         >
           <header class="mb-6 flex flex-col items-center">
             <label for="foto" class="relative mb-3">
-              @if (perfil.value.genero) {
+              @if (perfilFormulario.value.genero) {
                 <img
                   [src]="
                     imagePreview ??
-                    (perfil.value.genero === 'masculino'
+                    (perfilFormulario.value.genero === 'masculino'
                       ? 'perfilHombre.jpg'
                       : 'perfilMujer.jpg')
                   "
-                  [alt]="perfil.value.nombre + ' ' + perfil.value.apellido"
+                  [alt]="
+                    perfilFormulario.value.nombre +
+                    ' ' +
+                    perfilFormulario.value.apellido
+                  "
                   class="h-20 w-20 rounded-full border"
                 />
               } @else {
@@ -94,9 +103,12 @@ import { Headers } from '../components/header.component';
             </label>
 
             <h2 class="text-center font-medium">
-              {{ perfil.value.nombre }} {{ perfil.value.apellido }}
+              {{ perfilFormulario.value.nombre }}
+              {{ perfilFormulario.value.apellido }}
             </h2>
-            <p class="text-sm text-gray-500">{{ perfil.value.email }}</p>
+            <p class="text-sm text-gray-500">
+              {{ perfilFormulario.value.email }}
+            </p>
           </header>
 
           <nav>
@@ -104,7 +116,7 @@ import { Headers } from '../components/header.component';
               <li>
                 <a
                   routerLink="/perfil"
-                  class="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
+                  class="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
                   [ngClass]="{
                     'bg-gray-100 text-[#9810fa]': rutaActiva() === 'perfil',
                     'text-gray-600': rutaActiva() !== 'perfil',
@@ -116,7 +128,7 @@ import { Headers } from '../components/header.component';
               <li>
                 <a
                   routerLink="/pedidos"
-                  class="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
+                  class="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#9810fa]"
                   [ngClass]="{
                     'bg-gray-100 text-[#9810fa]': rutaActiva() === 'pedidos',
                     'text-gray-600': rutaActiva() !== 'pedidos',
@@ -131,7 +143,7 @@ import { Headers } from '../components/header.component';
                 (click)="cerrarSesion()"
               >
                 <a
-                  class="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
+                  class="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
                 >
                   Cerrar sesión
                 </a>
@@ -147,30 +159,78 @@ import { Headers } from '../components/header.component';
               <h2 class="text-xl font-semibold text-black">Mi perfil</h2>
             </header>
 
-            <form class="p-6" [formGroup]="perfil" (ngSubmit)="onSubmit()">
+            <form
+              class="p-6"
+              [formGroup]="perfilFormulario"
+              (ngSubmit)="onSubmit()"
+            >
               <fieldset class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Nombre
                   </label>
+                  @let nombreInvalido =
+                    (perfilFormulario.get('nombre')?.invalid &&
+                      perfilFormulario.get('nombre')?.value) ||
+                    errores().nombre;
                   <input
                     type="text"
                     id="first-name"
                     name="first-name"
                     formControlName="nombre"
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    placeholder="Ej.. John"
+                    [class]="
+                      nombreInvalido
+                        ? 'border-red-600 text-red-600 outline-red-600'
+                        : 'outline-gris-300 border-[#878787]'
+                    "
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    (input)="borrarError('nombre')"
                   />
+                  <div>
+                    @if (errores().nombre) {
+                      <small class="text-red-600">{{ errores().nombre }}</small>
+                    } @else if (nombreInvalido) {
+                      <small class="wrap-break-word text-red-600">
+                        El nombre debe tener entre 3 y 30 caracteres y solo
+                        contener letras y espacios.
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Apellido
                   </label>
+                  @let apellidoInvalido =
+                    (perfilFormulario.get('apellido')?.invalid &&
+                      perfilFormulario.get('apellido')?.value) ||
+                    errores().apellido;
                   <input
                     type="text"
                     name="last-name"
                     formControlName="apellido"
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    placeholder="Ej.. Mata"
+                    [class]="
+                      apellidoInvalido
+                        ? 'border-red-600 text-red-600 outline-red-600'
+                        : 'outline-gris-300 border-[#878787]'
+                    "
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    (input)="borrarError('apellido')"
                   />
+                  <div>
+                    @if (errores().apellido) {
+                      <small class="text-red-600">
+                        {{ errores().apellido }}
+                      </small>
+                    } @else if (apellidoInvalido) {
+                      <small class="wrap-break-word text-red-600">
+                        El apellido debe tener entre 3 y 20 caracteres y solo
+                        contener letras y espacios.
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label
@@ -179,70 +239,186 @@ import { Headers } from '../components/header.component';
                   >
                     Correo electrónico
                   </label>
+                  @let emailInvalido =
+                    (perfilFormulario.get('email')?.invalid &&
+                      perfilFormulario.get('email')?.value) ||
+                    errores().email;
                   <input
                     type="email"
                     id="email"
                     name="email"
+                    placeholder="ejemplo@gmail.com"
                     formControlName="email"
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    [class]="
+                      emailInvalido
+                        ? 'border-red-600 text-red-600 outline-red-600'
+                        : 'outline-gris-300 border-[#878787]'
+                    "
+                    (input)="borrarError('email')"
                   />
+                  <div>
+                    @if (errores().email) {
+                      <small class="text-red-600">{{ errores().email }}</small>
+                    } @else if (emailInvalido) {
+                      <small class="wrap-break-word text-red-600">
+                        El correo electrónico no es válido
+                        (Ej.ejemplo&#64;gmail.com)
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Teléfono
                   </label>
+                  @let telefonoInvalido =
+                    (perfilFormulario.get('telefono')?.invalid &&
+                      perfilFormulario.get('telefono')?.value) ||
+                    errores().telefono;
                   <input
                     type="tel"
                     id="phone"
                     name="phone"
                     formControlName="telefono"
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    placeholder="Ej.. 0999999999"
+                    [class]="
+                      telefonoInvalido
+                        ? 'border-red-600 text-red-600 outline-red-600'
+                        : 'outline-gris-300 border-[#878787]'
+                    "
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    (input)="borrarError('telefono')"
                   />
+                  <div>
+                    @if (errores().telefono) {
+                      <small class="text-red-600">
+                        {{ errores().telefono }}
+                      </small>
+                    } @else if (telefonoInvalido) {
+                      <small class="wrap-break word text-red-600">
+                        El teléfono debe tener 10 dígitos numéricos.
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Cédula
                   </label>
+                  @let cedulaInvalida =
+                    (perfilFormulario.get('cedula')?.invalid &&
+                      perfilFormulario.get('cedula')?.value) ||
+                    errores().cedula;
                   <input
                     type="text"
+                    placeholder="Ej.. 1234567890"
                     formControlName="cedula"
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    [class]="
+                      cedulaInvalida
+                        ? 'border-red-600 text-red-600 outline-red-600'
+                        : 'outline-gris-300 border-[#878787]'
+                    "
+                    (input)="borrarError('cedula')"
                   />
+                  <div>
+                    @if (errores().cedula) {
+                      <small class="text-red-600">{{ errores().cedula }}</small>
+                    } @else if (cedulaInvalida) {
+                      <small class="wrap-break-word text-red-600">
+                        La cédula debe tener 10 dígitos numéricos.
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Fecha de nacimiento
                   </label>
+                  @let fechaInvalida =
+                    (perfilFormulario.get('fecha_nacimiento')?.invalid &&
+                      perfilFormulario.get('fecha_nacimiento')?.value) ||
+                    errores().fecha_nacimiento;
                   <input
                     type="date"
                     formControlName="fecha_nacimiento"
                     name="fechaNacimiento"
                     required
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    [class]="
+                      fechaInvalida
+                        ? 'border-red-600 outline-red-600'
+                        : 'border-[#878787] outline-[#3C3C3B]'
+                    "
+                    (input)="borrarError('fecha_nacimiento')"
                   />
+                  <div>
+                    @if (errores().fecha_nacimiento) {
+                      <small class="text-red-600">
+                        {{ errores().fecha_nacimiento }}
+                      </small>
+                    } @else if (fechaInvalida) {
+                      <small class="wrap-break-word text-red-600">
+                        La fecha de nacimiento es obligatoria y debe ser válida.
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Dirección
                   </label>
+                  @let direccionInvalida =
+                    (perfilFormulario.get('direccion')?.invalid &&
+                      perfilFormulario.get('direccion')?.value) ||
+                    errores().direccion;
                   <input
                     type="text"
                     name="address"
+                    placeholder="Ej.. Calle Falsa 123"
                     formControlName="direccion"
-                    class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
+                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
+                    [class]="
+                      direccionInvalida
+                        ? 'border-red-600 text-red-600 outline-red-600'
+                        : 'outline-gris-300 border-[#878787]'
+                    "
+                    (input)="borrarError('direccion')"
                   />
+                  <div>
+                    @if (errores().direccion) {
+                      <small class="text-red-600">
+                        {{ errores().direccion }}
+                      </small>
+                    } @else if (direccionInvalida) {
+                      <small class="wrap-break-word text-red-600">
+                        La dirección debe tener entre 5 y 30 caracteres.
+                      </small>
+                    }
+                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
                     Género
                   </label>
                   <div class="flex space-x-4">
+                    @let generoInvalido =
+                      (perfilFormulario.get('genero')?.invalid &&
+                        perfilFormulario.get('genero')?.value) ||
+                      errores().genero;
                     <label class="inline-flex items-center">
                       <input
                         formControlName="genero"
                         type="radio"
                         value="masculino"
                         class="focus:ring-morado-400 h-4 w-4 text-indigo-600"
+                        [class]="
+                          generoInvalido
+                            ? 'border-red-600 outline-red-600'
+                            : 'border-[#878787] outline-[#3C3C3B]'
+                        "
+                        (input)="borrarError('genero')"
                       />
                       <span class="ml-2 text-gray-700">Masculino</span>
                     </label>
@@ -250,12 +426,25 @@ import { Headers } from '../components/header.component';
                       <input
                         formControlName="genero"
                         type="radio"
+                        [class]="
+                          generoInvalido
+                            ? 'border-red-600 outline-red-600'
+                            : 'border-[#878787] outline-[#3C3C3B]'
+                        "
                         value="femenino"
-                        class="focus:ring-morado-400 h-4 w-4 text-indigo-600"
+                        class="h-4 w-4 text-indigo-600"
+                        (input)="borrarError('genero')"
                       />
                       <span class="ml-2 text-gray-700">Femenino</span>
                     </label>
                   </div>
+                  @if (errores().genero) {
+                    <small class="text-red-600">
+                      Este campo es obligatorio.
+                    </small>
+                  } @else if (generoInvalido) {
+                    <small class="text-red-600">Selecciona un género</small>
+                  }
                 </div>
               </fieldset>
 
@@ -312,7 +501,21 @@ import { Headers } from '../components/header.component';
                   type="submit"
                   class="focus:ring-morado-400 cursor-pointer rounded-[15px] border border-transparent bg-[#806bff] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#806bff] focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 >
-                  Guardar cambios
+                  @if (carga()) {
+                    <svg
+                      class="m-auto animate-spin fill-[#ffffff]"
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="24"
+                      viewBox="0 -960 960 960"
+                      width="24"
+                    >
+                      <path
+                        d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                      />
+                    </svg>
+                  } @else {
+                    Guardar cambios
+                  }
                 </button>
               </div>
             </form>
@@ -479,17 +682,49 @@ export class ProfilePage {
   public pedidos: any[] = [];
   public carga = signal<boolean>(true);
 
-  public perfil = new FormGroup({
-    nombre: new FormControl(''),
-    apellido: new FormControl(''),
-    email: new FormControl(''),
-    genero: new FormControl(''),
-    telefono: new FormControl(''),
-    direccion: new FormControl(''),
-    cedula: new FormControl(''),
-    fecha_nacimiento: new FormControl(''),
-    imagen: new FormControl(''),
+  public perfilFormulario = new FormGroup({
+    nombre: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,30}$/),
+    ]),
+    apellido: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,20}$/),
+    ]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    genero: new FormControl('', [Validators.required]),
+    telefono: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{10}$/),
+    ]),
+    direccion: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^.{5,30}$/),
+    ]),
+    cedula: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{10}$/),
+    ]),
+    fecha_nacimiento: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{10}$/),
+    ]),
+    imagen: new FormControl('', [Validators.required]),
   });
+  public errores = signal<any>({
+    imagen: '',
+    nombre: '',
+    apellido: '',
+    email: '',
+    genero: '',
+    telefono: '',
+    direccion: '',
+    cedula: '',
+    fecha_nacimiento: '',
+  });
+  borrarError(campo: string) {
+    this.errores.update((prev) => ({ ...prev, [campo]: '' }));
+  }
 
   // public passwordForm = new FormGroup({
   //   currentPassword: new FormControl(''),
@@ -501,7 +736,7 @@ export class ProfilePage {
     effect(() => {
       const datosUsuario = this.servicioPerfil.datosUsuario();
       datosUsuario.genero = datosUsuario.genero?.toLowerCase() ?? '';
-      this.perfil.patchValue(datosUsuario, { emitEvent: false });
+      this.perfilFormulario.patchValue(datosUsuario, { emitEvent: false });
     });
     this.obtenerFacturas();
   }
@@ -514,14 +749,68 @@ export class ProfilePage {
   }
 
   onSubmit() {
-    this.servicioPerfil.actualizarPerfil(this.perfil.value).subscribe({
-      next: (respuesta) => {
-        console.log('Perfil actualizado:', respuesta);
-      },
-      error: (error) => {
-        console.error('Error al actualizar perfil:', error);
-      },
+  // Resetear errores previos
+  this.errores.set({
+    imagen: '',
+    nombre: '',
+    apellido: '',
+    email: '',
+    genero: '',
+    telefono: '',
+    direccion: '',
+    cedula: '',
+    fecha_nacimiento: '',
+  });
+
+  // Activar loading siempre que se envíe el formulario
+  this.carga.set(true);
+
+  // Verificar si el formulario es válido
+  if (this.perfilFormulario.invalid) {
+    this.carga.set(false);
+    // Marcar todos los campos como touched para mostrar errores de validación
+    this.perfilFormulario.markAllAsTouched();
+    console.log('Formulario inválido');
+    return;
+  }
+
+  // Si es válido, proceder con el envío
+  const formData = this.toFormData();
+  
+  this.servicioPerfil.actualizarPerfil(formData).subscribe({
+    next: (respuesta: any) => {
+      console.log('Perfil actualizado:', respuesta);
+      this.carga.set(false);
+      
+      // Opcional: mostrar mensaje de éxito
+      // this.mostrarMensajeExito = true;
+      
+      // Solo navegar si es necesario (opcional)
+      // this.router.navigate(['/perfil']);
+    },
+    error: (error) => {
+      console.error('Error al actualizar perfil:', error);
+      this.carga.set(false);
+      
+      // Manejar errores del backend
+      if (error.error && error.error.errors) {
+        this.errores.set(error.error.errors);
+      } else {
+        // Error genérico
+        console.error('Error del servidor al actualizar perfil');
+      }
+    },
+  });
+}
+
+  public toFormData(): FormData {
+    const formData = new FormData();
+    Object.entries(this.perfilFormulario.value).forEach(([key, value]) => {
+      if (value) {
+        formData.append(key, value as any);
+      }
     });
+    return formData;
   }
 
   public imagePreview: string | ArrayBuffer | null = null;
@@ -531,7 +820,7 @@ export class ProfilePage {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => (this.imagePreview = reader.result);
-      this.perfil.patchValue({
+      this.perfilFormulario.patchValue({
         imagen: file,
       });
     }

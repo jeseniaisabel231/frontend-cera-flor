@@ -34,8 +34,8 @@ export type DatosTabla = usuario | venta; //representacion de la clave
               @for (columna of columnasTabla()?.claves; track $index) {
                 <td class="max-w-[150px] p-3 text-center">
                   <div class="truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                    @if (columna.toString() === 'cliente_id') {
-                      {{ nombreCliente(fila[columna]) }}
+                    @if (columna.toString() === 'cliente') {
+                      {{ nombreCliente(fila['cliente']) }}
                     } @else if (columna.toString() === 'productos') {
                       {{ producto(fila[columna]) }}
                     } @else if (columna.toString() === 'estado') {

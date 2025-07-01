@@ -29,7 +29,7 @@ export const routes: Routes = [
   { path: 'iniciar-sesion', component: LoginPage, canActivate: [NoAuthGuard] },
   { path: 'registro', component: RegisterPage, canActivate: [NoAuthGuard] },
   {
-    path: 'cliente/confirmar-email/:token',
+    path: 'clientes/confirmar-email/:token',
     component: ConfirmEmailPage,
     canActivate: [NoAuthGuard],
   },

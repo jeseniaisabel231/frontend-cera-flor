@@ -3,7 +3,7 @@ import { usuario } from './usuario.interface';
 
 export interface venta {
   _id: string;
-  cliente_id: Pick<usuario, '_id' | 'apellido' | 'email' | 'nombre'>;
+  cliente: Pick<usuario, '_id' | 'apellido' | 'email' | 'nombre'>;
   productos: productoInformacion[];
   total: number;
   fecha_venta: `${number}-${number}-${number}`;

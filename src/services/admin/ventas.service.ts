@@ -31,9 +31,9 @@ export class VentasService {
     const datosFiltrados = this.datosFiltrados();
     if (busqueda) {
       return datosFiltrados.filter(
-        ({ cliente_id }) =>
-          cliente_id.nombre.toLowerCase().includes(busqueda) ||
-          cliente_id.apellido.toLowerCase().includes(busqueda),
+        ({ cliente }) =>
+          cliente.nombre.toLowerCase().includes(busqueda) ||
+          cliente.apellido.toLowerCase().includes(busqueda),
       );
     }
     return datosFiltrados;

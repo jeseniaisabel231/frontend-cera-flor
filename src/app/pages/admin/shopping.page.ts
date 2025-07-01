@@ -142,7 +142,7 @@ export class ShoppingPage {
   public serviceVentas = inject(VentasService);
 
   public columnasTabla: ColumnasVenta = {
-    claves: ['cliente_id', 'productos', 'total', 'fecha_venta', 'estado'],
+    claves: ['cliente', 'productos', 'total', 'fecha_venta', 'estado'],
     nombres: [
       'Cliente',
       'Productos',

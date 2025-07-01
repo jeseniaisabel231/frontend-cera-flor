@@ -73,7 +73,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                 class="space-y-1"
                 [class.col-span-2]="
                   clave.toString() === 'productos' ||
-                  clave.toString() === 'cliente_id'
+                  clave.toString() === 'cliente'
                 "
               >
                 <label
@@ -83,7 +83,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                   {{ inputs[titulo()]['nombres'][$index] }}
                 </label>
 
-                @if (clave.toString() === 'cliente_id') {
+                @if (clave.toString() === 'cliente') {
                   <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-900">
                     {{ nombreCliente(verDatos()[clave]) }}
                   </div>
@@ -101,18 +101,18 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                       <div
                         class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3"
                       >
-                        <div class="flex items-center gap-x-3 max-w-3/4">
+                        <div class="flex max-w-3/4 items-center gap-x-3">
                           <img
-                            [alt]="prod?.producto_id?.nombre"
-                            [src]="prod?.producto_id?.imagen"
+                            [alt]="prod?.nombre"
+                            [src]="prod?.imagen"
                             class="h-16 w-16 rounded-lg object-cover"
                           />
                           <div class="flex flex-col">
                             <h4 class="font-semibold text-gray-900">
-                              {{ prod?.producto_id?.nombre }}
+                              {{ prod?.nombre }}
                             </h4>
                             <p class="text-xs text-gray-600">
-                              {{ prod?.producto_id?.descripcion }}
+                              {{ prod?.descripcion }}
                             </p>
                           </div>
                         </div>
@@ -121,7 +121,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                         >
                           <span class="whitespace-nowrap">
                             {{ prod?.cantidad }} x
-                            {{ prod?.producto_id?.precio | currency: 'USD' }}
+                            {{ prod?.precio | currency: 'USD' }}
                             = {{ prod?.subtotal | currency: 'USD' }}
                           </span>
                         </div>
@@ -183,7 +183,7 @@ export class ModalComponent {
     },
     venta: {
       claves: [
-        'cliente_id',
+        'cliente',
         'productos',
         'total',
         'fecha_venta',

@@ -145,10 +145,7 @@ export class Card {
           }, 2000);
         },
         error: (error) => {
-          // ¡Aquí faltaba desactivar el loading!
           this.carga.set(false);
-          console.error('Error al agregar al carrito:', error);
-          // Opcional: mostrar mensaje de error al usuario
         },
       });
   }

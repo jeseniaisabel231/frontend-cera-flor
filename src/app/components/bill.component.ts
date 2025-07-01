@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   Component,
   computed,
@@ -11,11 +11,12 @@ import {
 } from '@angular/core';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
+import type { usuario } from '../interfaces/usuario.interface';
 import type { venta } from '../interfaces/venta.interface';
 
 @Component({
   selector: 'app-bill',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, DatePipe],
   template: `
     <dialog
       #modal
@@ -48,9 +49,9 @@ import type { venta } from '../interfaces/venta.interface';
             <div class="text-right">
               <p class="text-sm">
                 Factura #:
-                <span class="font-medium">FC-000125</span>
+                <span class="font-medium uppercase">FC-{{ (verVenta()._id || '').slice(0, 8) }}</span>
               </p>
-              <p class="text-sm">Fecha: 28/06/2025</p>
+              <p class="text-sm">Fecha: {{ verVenta().fecha_venta | date: 'dd/MM/yyyy' }}</p>
             </div>
           </div>
 
@@ -59,53 +60,59 @@ import type { venta } from '../interfaces/venta.interface';
             <h3 class="mb-2 text-lg font-semibold">Datos del Cliente</h3>
             <p>
               <span class="font-semibold">Nombre:</span>
-              Jesenia Pazto
+              {{ datosCliente().nombre }}
             </p>
             <p>
               <span class="font-semibold">Dirección:</span>
-              Solanda, Quito - Pichincha
+              {{ datosCliente().direccion }}
             </p>
             <p>
               <span class="font-semibold">Teléfono:</span>
-              0987654321
+              {{ datosCliente().telefono ?? 'No registrado' }}
             </p>
             <p>
               <span class="font-semibold">Correo:</span>
-              jesenia&#64;example.com
+              {{ datosCliente().email }}
             </p>
           </div>
 
           <!-- Tabla de productos -->
-          <div class="mb-6">
+          <div class="mb-6 max-w-3xl">
             <h3 class="mb-2 text-lg font-semibold">Detalle de Productos</h3>
-            <table class="w-full rounded-md border text-sm">
+            <table class="border text-sm w-full">
               <thead class="bg-gray-100 text-left">
                 <tr>
                   <th class="border p-2">Producto</th>
-                  <th class="border p-2">Aroma</th>
-                  <th class="border p-2">Tipo</th>
-                  <th class="border p-2 text-center">Cant.</th>
-                  <th class="border p-2 text-right">P/U</th>
+                  <th class="border p-2">Descripcion</th>
+                  <th class="border p-2 text-center">Cantidad</th>
+                  <th class="border p-2 text-right">Precio Unitario</th>
                   <th class="border p-2 text-right">Total</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="border p-2">Vela oceanica</td>
-                  <td class="border p-2">Océano</td>
-                  <td class="border p-2">Decorativa</td>
-                  <td class="border p-2 text-center">8</td>
-                  <td class="border p-2 text-right">$5.00</td>
-                  <td class="border p-2 text-right">$40.00</td>
-                </tr>
-                <tr>
-                  <td class="border p-2">Vela Relax Nueva</td>
-                  <td class="border p-2">Manzanilla</td>
-                  <td class="border p-2">Piel seca</td>
-                  <td class="border p-2 text-center">1</td>
-                  <td class="border p-2 text-right">$3.00</td>
-                  <td class="border p-2 text-right">$3.00</td>
-                </tr>
+                @for (producto of verVenta().productos; track producto._id) {
+                  <tr>
+                    <td
+                      class="overflow-hidden border p-2 text-ellipsis whitespace-nowrap max-w-30"
+                    >
+                      {{ producto.producto_id.nombre }}
+                    </td>
+                    <td
+                      class="overflow-hidden border p-2 text-ellipsis whitespace-nowrap max-w-50"
+                    >
+                      {{ producto.producto_id.descripcion }}
+                    </td>
+                    <td class="border p-2 text-center">
+                      {{ producto.cantidad }}
+                    </td>
+                    <td class="border p-2 text-right">
+                      {{ producto.producto_id.precio | currency: 'USD' }}
+                    </td>
+                    <td class="border p-2 text-right">
+                      {{ producto.subtotal | currency: 'USD' }}
+                    </td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -146,7 +153,7 @@ import type { venta } from '../interfaces/venta.interface';
         </div>
 
         <!-- Botones -->
-        <div class="flex flex-col gap-4 sm:flex-row justify-end">
+        <div class="flex flex-col justify-end gap-4 sm:flex-row">
           <button
             class="w-full cursor-pointer rounded-lg bg-purple-600 px-6 py-2 text-white hover:bg-purple-700 sm:w-auto"
             (click)="guardarComoPDF()"
@@ -165,7 +172,7 @@ import type { venta } from '../interfaces/venta.interface';
             🖨️ Imprimir
           </button>
           <button
-            class="rounded-lg bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400 cursor-pointer"
+            class="cursor-pointer rounded-lg bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="mostrarModal.set(false)"
           >
             Cerrar
@@ -180,7 +187,8 @@ export class BillComponent {
   public factura = viewChild<ElementRef<HTMLDivElement>>('factura');
 
   public mostrarModal = model<boolean>(false);
-  public verVenta = input<venta>({} as venta)
+  public verVenta = input.required<venta>();
+  public datosCliente = input.required<usuario>();
 
   public iva = computed(() => this.verVenta().total * 0.15);
   public subtotal = computed(() => this.verVenta().total - this.iva());
@@ -199,23 +207,19 @@ export class BillComponent {
     const element = this.factura()?.nativeElement;
 
     if (element) {
-      toPng(element, { quality: 1, pixelRatio: 2 })
-        .then((dataUrl) => {
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const img = new Image();
-          img.src = dataUrl;
+      toPng(element, { quality: 1, pixelRatio: 2 }).then((dataUrl) => {
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const img = new Image();
+        img.src = dataUrl;
 
-          img.onload = () => {
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (img.height * pdfWidth) / img.width;
+        img.onload = () => {
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (img.height * pdfWidth) / img.width;
 
-            pdf.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('factura.pdf');
-          };
-        })
-        .catch((error) => {
-          console.error('Error al generar la imagen:', error);
-        });
+          pdf.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.save('factura.pdf');
+        };
+      });
     }
   }
 

@@ -770,7 +770,6 @@ export class ProfilePage {
     this.carga.set(false);
     // Marcar todos los campos como touched para mostrar errores de validación
     this.perfilFormulario.markAllAsTouched();
-    console.log('Formulario inválido');
     return;
   }
 
@@ -779,9 +778,6 @@ export class ProfilePage {
   
   this.servicioPerfil.actualizarPerfil(formData).subscribe({
     next: (respuesta: any) => {
-      console.log('Perfil actualizado:', respuesta);
-      this.carga.set(false);
-      
       // Opcional: mostrar mensaje de éxito
       // this.mostrarMensajeExito = true;
       
@@ -789,7 +785,6 @@ export class ProfilePage {
       // this.router.navigate(['/perfil']);
     },
     error: (error) => {
-      console.error('Error al actualizar perfil:', error);
       this.carga.set(false);
       
       // Manejar errores del backend
@@ -797,7 +792,6 @@ export class ProfilePage {
         this.errores.set(error.error.errors);
       } else {
         // Error genérico
-        console.error('Error del servidor al actualizar perfil');
       }
     },
   });
@@ -828,12 +822,10 @@ export class ProfilePage {
   obtenerFacturas() {
     this.servicioFacturas.obtenerFacturas().subscribe({
       next: (respuesta: any) => {
-        console.log('Facturas obtenidas:', respuesta);
         this.pedidos = respuesta.ventas;
         this.carga.set(false);
       },
       error: (error) => {
-        console.error('Error al obtener facturas:', error);
         this.carga.set(false);
       },
     });

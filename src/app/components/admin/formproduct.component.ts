@@ -53,9 +53,9 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0m1 16H9v-2h2zm0-4H9V4h2z"
                 />
               </svg>
-              <small class="text-[#806bff] font-bold">
-                Recuerde no dejar espacios en blanco al derecho y al reves de cada
-                campo.
+              <small class="font-bold text-[#806bff]">
+                Recuerde no dejar espacios en blanco al derecho y al reves de
+                cada campo.
               </small>
             </div>
           }
@@ -654,15 +654,8 @@ export class FormProducto {
         });
       } else if (key === 'beneficios' && typeof value === 'string') {
         value
-          .trim()
           .split(';')
-          .forEach((item) => {
-            const beneficio = item.trim();
-
-            if (beneficio.length > 9 && beneficio.length < 100) {
-              formData.append('beneficio[]', beneficio);
-            }
-          });
+          .forEach((item) => formData.append('beneficios[]', item));
       } else if (typeof value === 'string') {
         formData.append(key, value.trim());
       } else if (value) {
@@ -805,11 +798,23 @@ export class FormProducto {
     this.categoriaSeleccionada.set('');
   }
 
-  //funcion que verifica que haciion hace el boton
   onSubmit() {
+    const { beneficios } = this.formulario.value;
+    const beneficiosArray = beneficios?.trim().split(';') || [];
+    let invalidBeneficios = false;
+
+    beneficiosArray.forEach((beneficio) => {
+      const { length } = beneficio.trim();
+
+      if (length < 10 || length > 100) invalidBeneficios = true;
+    });
+
+    const { length: lengthIngredientes } = this.ingredientesSeleccionados();
+
     if (
       this.formulario.invalid ||
-      this.ingredientesSeleccionados().length < 2
+      lengthIngredientes < 2 ||
+      invalidBeneficios
     ) {
       this.errores.update((prev) => {
         const newErrors: any = {};
@@ -821,12 +826,18 @@ export class FormProducto {
           }
         });
 
-        if (this.ingredientesSeleccionados().length === 0) {
+        if (lengthIngredientes === 0) {
           newErrors.ingredientes = 'No has seleccionado ingredientes';
+        }
+
+        if (invalidBeneficios) {
+          newErrors.beneficios =
+            'Los tres beneficios deben tener entre 10 y 100 caracteres.';
         }
 
         return { ...prev, ...newErrors };
       });
+
       this.mostrarModalExito.set(true);
       this.tipoRespuesta.set('error');
       this.respuestaBack.set(

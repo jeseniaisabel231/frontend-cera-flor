@@ -52,6 +52,13 @@ export class PaymentService {
     });
     this.card.mount('#formulariopago');
   }
+
+  public crearElementoTarjeta(): void {
+    if (this.card && this.card.mount) {
+      this.card.mount('#formulariopago');
+    }
+  }
+
   async crearMetodoPago(): Promise<string> {
     const { paymentMethod } = await this.stripe.createPaymentMethod({
       type: 'card',

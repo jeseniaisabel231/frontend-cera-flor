@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { venta } from '../../app/interfaces/venta.interface';
 import { environment } from '../../environments/environment';
@@ -43,6 +43,8 @@ export class VentasService {
     this.obtener()
       .subscribe()
       .add(() => this.carga.set(false));
+
+    effect(() => console.log('Datos filtrados:', this.datosFiltrados()));
   }
 
   obtener() {

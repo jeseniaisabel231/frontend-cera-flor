@@ -1,5 +1,12 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -14,6 +21,7 @@ import { PaymentService } from '../../services/payment.service';
 import { BarranavComponent } from '../components/barranav.component';
 import { BillComponent } from '../components/bill.component';
 import { Headers } from '../components/header.component';
+import type { usuario } from '../interfaces/usuario.interface';
 import { venta } from '../interfaces/venta.interface';
 
 @Component({
@@ -87,13 +95,14 @@ import { venta } from '../interfaces/venta.interface';
 
                 <!-- forma de paago -->
                 <ngx-stripe-card
+                  #formulariopagoref
                   [elementsOptions]="opcionesFormularioPago"
                   id="formulariopago"
                 ></ngx-stripe-card>
 
                 <button
                   (click)="OnSubmitPago($event)"
-                  class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
+                  class="bg-morado-600 hover:bg-morado-700 mt-6 flex w-full cursor-pointer items-center justify-center rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
                   [disabled]="modificarDireccion()"
                 >
                   @if (carga()) {
@@ -124,6 +133,7 @@ import { venta } from '../interfaces/venta.interface';
               <app-bill
                 [(mostrarModal)]="mostrarVenta"
                 [verVenta]="ventaCreada()"
+                [datosCliente]="datosCliente()"
               />
             </section>
 
@@ -175,10 +185,12 @@ export class PaymentPage {
   public servicePayment = inject(PaymentService);
   public mostrarModalExito = signal(false);
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
-  public respuestaBack = signal('');
+  public respuestaBack = signal<string>('');
   public modificarDireccion = signal<boolean>(false);
+  public formulariopago = viewChild<ElementRef<any>>('formulariopagoref');
 
   public ventaCreada = signal<venta>({} as venta);
+  public datosCliente = signal<usuario>({} as usuario);
   public mostrarVenta = signal<boolean>(false);
 
   public opcionesFormularioPago: StripeElementsOptions = {
@@ -208,6 +220,12 @@ export class PaymentPage {
         this.formularioDireccion.enable();
       } else {
         this.formularioDireccion.disable();
+      }
+    });
+
+    effect(() => {
+      if (this.formulariopago()) {
+        this.servicePayment.crearElementoTarjeta();
       }
     });
   }
@@ -240,12 +258,13 @@ export class PaymentPage {
 
     this.carga.set(true);
     const servicePaymentPromise = await this.servicePayment.pagarCarrito();
-    console.log('servicePaymentPromise', servicePaymentPromise);
     servicePaymentPromise.subscribe({
-      next: ({ venta }) => {
+      next: ({ venta, cliente }) => {
         this.carga.set(false);
         this.ventaCreada.set(venta);
+        this.datosCliente.set(cliente);
         this.mostrarVenta.set(true);
+        console.log(venta);
       },
       error: (error) => {
         this.carga.set(false);
@@ -254,7 +273,6 @@ export class PaymentPage {
         this.respuestaBack.set(
           'Error al procesar el pago. Por favor, inténtalo de nuevo.',
         );
-        console.error('Error al procesar el pago:', error);
       },
     });
   }

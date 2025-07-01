@@ -14,8 +14,7 @@ export interface venta {
 
 export interface productoInformacion {
   _id: string;
-  producto_id: string;
-  producto: producto;
+  producto_id: producto;
   cantidad: number;
   subtotal: number;
 }

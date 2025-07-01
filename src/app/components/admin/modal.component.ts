@@ -1,4 +1,4 @@
-import { TitleCasePipe } from '@angular/common';
+import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import {
   Component,
   computed,
@@ -13,7 +13,7 @@ export type TituloForms = 'usuario' | 'venta';
 export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
 @Component({
   selector: 'modal',
-  imports: [TitleCasePipe],
+  imports: [TitleCasePipe, CurrencyPipe],
   template: `
     <dialog
       #modal
@@ -28,7 +28,7 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
         </h1>
         <button
           (click)="close()"
-          class="text-gray-500 transition-colors hover:text-gray-700 focus:outline-none cursor-pointer"
+          class="cursor-pointer text-gray-500 transition-colors hover:text-gray-700 focus:outline-none"
           aria-label="Cerrar modal"
         >
           <svg
@@ -50,36 +50,34 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
 
       <!-- Contenido del formulario -->
       <div class="p-6">
-        <div class="mb-6 flex justify-center">
-          <!-- Contenedor de imagen si existe -->
-          @if (verDatos()['imagen']) {
+        @if (verDatos()['imagen']) {
+          <div class="mb-6 flex justify-center">
+            <!-- Contenedor de imagen si existe -->
+            @let isMale = verDatos()['genero'] === 'Masculino';
             <img
               class="h-40 w-40 rounded-full border-4 border-gray-100 object-cover shadow-sm"
-              [src]="verDatos()['imagen']"
+              [src]="
+                verDatos()['imagen'] ||
+                (isMale ? 'perfilHombre.jpg' : 'perfilMujer.jpg')
+              "
               alt="Imagen de perfil"
             />
-          } @else if (verDatos()['genero'] === 'Femenino') {
-            <img
-              class="h-40 w-40 rounded-full border-4 border-gray-100 object-cover shadow-sm"
-              src="perfilMujer.jpg"
-              alt="Imagen de perfil"
-            />
-          } @else {
-            <img
-              class="h-40 w-40 rounded-full border-4 border-gray-100 object-cover shadow-sm"
-              src="perfilHombre.jpg"
-              alt="Imagen de perfil"
-            />
-          }
-        </div>
+          </div>
+        }
 
         <!-- Grid de campos -->
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           @for (clave of clavesCampos(); track $index) {
             @if (clave.toString() !== 'imagen') {
-              <div class="space-y-1">
+              <div
+                class="space-y-1"
+                [class.col-span-2]="
+                  clave.toString() === 'productos' ||
+                  clave.toString() === 'cliente_id'
+                "
+              >
                 <label
-                  class="block text-sm  text-gray-700 font-bold"
+                  class="block text-sm font-bold text-gray-700"
                   [for]="clave"
                 >
                   {{ inputs[titulo()]['nombres'][$index] }}
@@ -98,21 +96,41 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                     {{ transformaFecha(verDatos()[clave]) }}
                   </div>
                 } @else if (clave.toString() === 'productos') {
-                  <div class="space-y-3">
+                  <div class="flex max-h-80 flex-col gap-y-3 overflow-y-auto">
                     @for (prod of verDatos()[clave]; track $index) {
                       <div
-                        class="rounded-lg border border-gray-200 bg-gray-50 p-3"
+                        class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3"
                       >
-                        <div class="flex items-start justify-between">
-                          <h3 class="font-medium text-gray-900">
-                            Cantidad: {{ prod?.cantidad }}
-                          </h3>
-                          <span class="text-sm font-semibold text-blue-600">
-                            Subtotal: {{ prod?.subtotal }}$
+                        <div class="flex items-center gap-x-3 max-w-3/4">
+                          <img
+                            [alt]="prod?.producto_id?.nombre"
+                            [src]="prod?.producto_id?.imagen"
+                            class="h-16 w-16 rounded-lg object-cover"
+                          />
+                          <div class="flex flex-col">
+                            <h4 class="font-semibold text-gray-900">
+                              {{ prod?.producto_id?.nombre }}
+                            </h4>
+                            <p class="text-xs text-gray-600">
+                              {{ prod?.producto_id?.descripcion }}
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          class="flex w-1/4 justify-end text-xs text-gray-700"
+                        >
+                          <span class="whitespace-nowrap">
+                            {{ prod?.cantidad }} x
+                            {{ prod?.producto_id?.precio | currency: 'USD' }}
+                            = {{ prod?.subtotal | currency: 'USD' }}
                           </span>
                         </div>
                       </div>
                     }
+                  </div>
+                } @else if (clave.toString() === 'total') {
+                  <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-900">
+                    {{ verDatos()[clave] | currency: 'USD' }}
                   </div>
                 } @else {
                   <div class="mt-1 rounded-md bg-gray-50 p-2 text-gray-700">
@@ -163,14 +181,22 @@ export class ModalComponent {
         'Última Actualización',
       ],
     },
-
     venta: {
-      claves: ['cliente_id', 'productos', 'total', 'fecha_venta'],
+      claves: [
+        'cliente_id',
+        'productos',
+        'total',
+        'fecha_venta',
+        'estado',
+        'updatedAt',
+      ],
       nombres: [
         'Cliente',
         'Productos',
         'Total',
         'Fecha de Venta',
+        'Estado de entrega',
+        'Última Actualización',
       ],
     },
   };
@@ -182,10 +208,6 @@ export class ModalComponent {
   }
 
   constructor() {
-    effect(() => {
-      console.log(this.verDatos().productos)
-    })
-    
     effect(() => {
       if (this.mostrarModal()) {
         this.modal()?.nativeElement.showModal();

@@ -125,18 +125,6 @@ import { Headers } from '../components/header.component';
 export class ConfirmEmailPage {
   public token = input.required();
   public respuesta = httpResource(
-    () => `${environment.urlApi}/api/confirmarCliente/${this.token()}`,
+    () => `${environment.urlApi}/api/confirmar-email/${this.token()}`,
   );
-
-  // constructor(){
-  //   console.log(this.token());
-  //   // this.servicioConfirmarEmail.confirmarEmail(this.token()!).subscribe({
-  //   //   next: (response) => {
-  //   //     console.log('Email confirmado exitosamente', response);
-  //   //   },
-  //   //   error: (error) => {
-  //   //     console.error('Error al confirmar el email', error);
-  //   //   }
-  //   // });
-  // }
 }

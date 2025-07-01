@@ -95,11 +95,11 @@ import { transformaFecha } from '../../utils/transformaFecha';
             <loading></loading>
           } @else {
             <div
-              class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto pt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 "
+              class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto pt-6 sm:grid-cols-2 md:grid-cols-3"
             >
               @for (item of servicePromociones.datosBuscados(); track $index) {
                 <div
-                  class="flex h-93 flex-col rounded-xl border border-gray-300"
+                  class="flex flex-col rounded-xl border border-gray-300 h-90"
                 >
                   <div
                     class="flex aspect-video h-56 justify-center border-b-1 border-gray-300"
@@ -111,7 +111,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
                     />
                   </div>
                   <div class="flex flex-col justify-between p-4">
-                    <h2 class="font-semibold">
+                    <h2 class="font-semibold text-ellipsis overflow-hidden whitespace-nowrap text-center">
                       {{ item?.nombre | titlecase }}
                     </h2>
 

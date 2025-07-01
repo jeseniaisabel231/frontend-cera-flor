@@ -141,7 +141,6 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
 export class ShoppingPage {
   public serviceVentas = inject(VentasService);
 
-  //variable que almacena lo que traera del backend
   public columnasTabla: ColumnasVenta = {
     claves: ['cliente_id', 'productos', 'total', 'fecha_venta', 'estado'],
     nombres: [

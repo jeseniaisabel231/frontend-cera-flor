@@ -35,9 +35,8 @@ export class AuthService {
   public clienteAutenticado = signal<boolean>(false);
 
   constructor() {
-    this.obtenerPerfil().subscribe()
+    this.obtenerPerfil().subscribe();
   }
-
 
   login(email: string, password: string) {
     const productos = this.carritoService.carrito().productos;
@@ -55,11 +54,11 @@ export class AuthService {
             const isAdmin = decodificarToken()?.rol === 'admin';
 
             if (!isAdmin && productos.length > 0) {
-              productos.forEach(({ producto, cantidad }: any) => {
+              productos.forEach(({ producto, cantidad }: any) =>
                 this.carritoService
                   .agregarCarrito(producto, cantidad, true)
-                  .subscribe();
-              });
+                  .subscribe(),
+              );
 
               localStorage.removeItem('carrito');
               localStorage.removeItem('cantidadProductos');
@@ -92,7 +91,7 @@ export class AuthService {
         }),
       );
   }
-  
+
   recuperarContrasenia(email: string): Observable<any> {
     return this.http.post<any>(`${this.urlBackend}/api/recuperar-contrasenia`, {
       email,
@@ -112,7 +111,7 @@ export class AuthService {
       },
     );
   }
-  
+
   obtenerPerfil() {
     return this.http
       .get<any>(`${this.urlBackend}/api/perfil`, {
@@ -131,7 +130,7 @@ export class AuthService {
         }),
       );
   }
-  
+
   actualizarPerfil(datosCliente: any) {
     return this.http
       .put<any>(`${this.urlBackend}/api/perfil`, datosCliente, {

@@ -1,12 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Component, inject, linkedSignal, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { environment } from '../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
+import type { producto } from '../interfaces/producto.interface';
 import { decodificarToken } from '../utils/decodificarToken';
-import { TitleCasePipe } from '@angular/common';
 
 @Component({
-  imports: [RouterLink, TitleCasePipe],
+  imports: [RouterLink, TitleCasePipe, FormsModule],
   selector: 'headers',
   template: `
     <header class="sticky top-0 z-50 flex flex-col shadow-md">
@@ -27,6 +31,7 @@ import { TitleCasePipe } from '@angular/common';
               placeholder="Buscar productos...."
               id="search"
               name="search"
+              [(ngModel)]="busqueda"
             />
             <svg
               class="absolute inset-y-0 right-2 my-auto"
@@ -41,6 +46,64 @@ import { TitleCasePipe } from '@angular/common';
                 fill="#3C3C3B"
               />
             </svg>
+            @if (busqueda()) {
+              <div class="absolute top-12 z-50 w-3/4 rounded-lg bg-white shadow-md shadow-black/20 p-2 max-h-100">
+                @if (productosBuscadosResource.isLoading()) {
+                  <div class="flex items-center justify-center gap-x-2">
+                    <svg
+                      class="size-4 animate-spin text-gray-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.243A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3.93-1.695z"
+                      ></path>
+                    </svg>
+                    <span class="text-gray-500">Cargando...</span>
+                  </div>
+                }
+
+                @let status = productosBuscadosResource.statusCode();
+                @if (status === 404 || status === 500) {
+                  <div class="text-center text-gray-500">
+                    No se encontraron productos
+                  </div>
+                }
+
+                @for (
+                  producto of productosBuscadosResource.value().productos;
+                  track $index
+                ) {
+                  <div
+                    class="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-gray-100"
+                    [routerLink]="['/detalle-producto', producto._id]"
+                  >
+                    <img
+                      [src]="producto.imagen"
+                      [alt]="producto.nombre"
+                      class="h-10 w-10 rounded-lg"
+                    />
+                    <div class="flex flex-col">
+                      <small class="text-gray-500">
+                        {{ producto.id_categoria.nombre }}
+                      </small>
+                      <h2 class="font-bold">{{ producto.nombre }}</h2>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
           </div>
 
           <div class="flex flex-row items-center">
@@ -269,12 +332,23 @@ import { TitleCasePipe } from '@angular/common';
 })
 export class Headers {
   public serviceAuth = inject(AuthService);
+  public serviceCarrito = inject(CarritoService);
   public usuarioAutenticado = decodificarToken();
   public menuVisible = signal(false);
   public router = inject(Router);
-  public serviceCarrito = inject(CarritoService);
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = this.servicioRuta.snapshot.url[0].path;
+
+  public busqueda = signal<string>('');
+  public productosBuscadosResource = httpResource<{ productos: producto[] }>(
+    () => `${environment.urlApi}/api/productos?nombre=${this.busqueda()}`,
+    {
+      defaultValue: { productos: [] },
+    },
+  );
+  public loading = linkedSignal(() =>
+    this.productosBuscadosResource.isLoading(),
+  );
 
   verMenu() {
     if (this.usuarioAutenticado) {

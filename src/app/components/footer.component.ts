@@ -36,7 +36,7 @@ import { RouterLink } from '@angular/router';
       </nav>
       <div class="flex flex-col items-center justify-center gap-5 py-5">
         <h2 class="text-[18px] font-semibold text-white">Contáctanos:</h2>
-        <div class="flex flex-row gap-4">
+        <!-- <div class="flex flex-row gap-4">
           <div
             class="flex h-14 w-14 items-center justify-center rounded-full border border-white text-white"
           >
@@ -91,7 +91,7 @@ import { RouterLink } from '@angular/router';
               />
             </svg>
           </div>
-        </div>
+        </div> -->
         <a href="" class="text-[15px] text-[#b6b6b6] lg:hidden">
           © Flor & Cera Todos los derechos reservados.
         </a>

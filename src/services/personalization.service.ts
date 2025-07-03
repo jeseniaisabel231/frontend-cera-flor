@@ -55,11 +55,11 @@ export class PersonalizationService {
       .pipe(tap(() => this.obtenerPersonalizaciones().subscribe()));
   }
 
-  editarPersonalizacion(id: string, ingredientes: any) {
+  editarPersonalizacion(id: string, ingredientes: any, tipo_producto: string) {
     return this.http
       .put<any>(
         `${this.urlBackend}/api/productos-personalizados/${id}`,
-        { ingredientes },
+        { ingredientes, tipo_producto },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         },

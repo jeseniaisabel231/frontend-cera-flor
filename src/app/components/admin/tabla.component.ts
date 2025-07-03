@@ -5,12 +5,13 @@ import { transformaFecha } from '../../utils/transformaFecha';
 import { SwitchComponent } from '../switch.component';
 import { Actions, ModalComponent, TituloForms } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
+import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 
 export type DatosTabla = usuario | venta; //representacion de la clave
 
 @Component({
   selector: 'tabla',
-  imports: [ModalComponent, SwitchComponent, ModalAvisosComponent],
+  imports: [ModalComponent, SwitchComponent, ModalAvisosComponent, CurrencyPipe, TitleCasePipe],
   template: `
     <div class="flex flex-col h-80 overflow-y-auto mt-4 rounded-lg">
       <table
@@ -35,7 +36,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                 <td class="max-w-[150px] p-3 text-center">
                   <div class="truncate whitespace-nowrap overflow-hidden text-ellipsis">
                     @if (columna.toString() === 'cliente') {
-                      {{ nombreCliente(fila['cliente']) }}
+                      {{ nombreCliente(fila['cliente']) | titlecase }}
                     } @else if (columna.toString() === 'productos') {
                       {{ producto(fila[columna]) }}
                     } @else if (columna.toString() === 'estado') {
@@ -55,6 +56,8 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                       </div>
                     } @else if (columna.toString() === 'fecha_venta') {
                       {{ transformaFecha(fila[columna]) }}
+                    } @else if (columna.toString() === 'total') {
+                      {{ fila[columna] | currency }}
                     } @else {
                       {{ fila[columna] }}
                     }

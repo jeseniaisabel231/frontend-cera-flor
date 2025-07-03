@@ -444,7 +444,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                     </option>
 
                     @for (aroma of aromas(); track $index) {
-                      <option [value]="aroma._id">
+                      <option [value]="aroma.nombre">
                         {{ aroma.nombre | titlecase }}
                       </option>
                     }

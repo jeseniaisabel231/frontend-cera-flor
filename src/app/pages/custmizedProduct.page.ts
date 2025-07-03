@@ -66,7 +66,7 @@ import { RouterLink } from '@angular/router';
                         }}
                       </small>
                       <h2 class="text-lg font-bold text-gray-800">
-                        {{ 'Producto personalizado' }}
+                        {{ producto.tipo_producto === 'personalizado' ? 'Producto personalizado' : 'Producto producto con IA' }}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small

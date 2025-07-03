@@ -108,7 +108,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   <img
                     [src]="imagePreview"
                     alt="Imagen del ingrediente"
-                    class="h-full w-full rounded-xl object-cover"
+                    class="h-full w-full rounded-xl object-contain"
                   />
                 } @else {
                   <div class="flex cursor-pointer flex-col items-center gap-2">

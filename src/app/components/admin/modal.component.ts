@@ -109,10 +109,15 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                           />
                           <div class="flex flex-col">
                             <h4 class="font-semibold text-gray-900">
-                              {{ prod?.nombre }}
+                              {{ prod?.nombre ? prod.nombre : prod.tipo === 'ia' ? 'Producto personalizado por IA' : 'Producto personalizado' }}
                             </h4>
                             <p class="text-xs text-gray-600">
-                              {{ prod?.descripcion }}
+                              {{
+                                prod?.descripcion ||
+                                  obtenerDescripcionProductoPersonalizado(
+                                    prod?.ingredientes
+                                  )
+                              }}
                             </p>
                           </div>
                         </div>
@@ -225,5 +230,11 @@ export class ModalComponent {
 
   public transformaFecha(fecha: string): string {
     return transformaFecha(fecha);
+  }
+
+  public obtenerDescripcionProductoPersonalizado(ingredientes: any[]): string {
+    return `Ingredientes utilizados: ${ingredientes
+      .map(({ nombre }) => nombre)
+      .join(', ')}`;
   }
 }

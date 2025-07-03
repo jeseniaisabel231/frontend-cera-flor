@@ -9,5 +9,6 @@ export interface productoPersonalizado {
   aroma: string;
   createdAt: string;
   updatedAt: string;
+  tipo_producto: 'ia' | 'personalizado';
   imagen: string;
 }

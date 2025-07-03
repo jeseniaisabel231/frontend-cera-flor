@@ -32,7 +32,6 @@ register();
         init
         navigation
         class="mySwiper h-[500px] w-full"
-        effect="cube"
       >
         @for (
           promocion of promocionesResource.value().promociones;

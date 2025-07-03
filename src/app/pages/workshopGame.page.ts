@@ -494,6 +494,7 @@ export class WorkshopGamePage {
         .editarPersonalizacion(
           this.editarProducto(),
           this.formularioPersonalizado.ingredientes,
+          this.formularioPersonalizado.tipo_producto,
         )
         .subscribe({
           next: this.peticionExitosa,

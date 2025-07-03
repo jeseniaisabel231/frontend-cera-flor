@@ -21,7 +21,6 @@ import {
         <img
           class="w-1/3"
           src="https://i.pinimg.com/originals/e3/3d/ff/e33dffe14c05041b40e936901320b154.gif"
-          alt=""
         />
 
         <span class="text-white">

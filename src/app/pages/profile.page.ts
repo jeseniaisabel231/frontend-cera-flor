@@ -40,7 +40,7 @@ import { Headers } from '../components/header.component';
               @if (perfilFormulario.value.genero) {
                 <img
                   [src]="
-                    imagePreview ??
+                    imagePreview ||
                     (perfilFormulario.value.genero === 'masculino'
                       ? 'perfilHombre.jpg'
                       : 'perfilMujer.jpg')
@@ -50,7 +50,7 @@ import { Headers } from '../components/header.component';
                     ' ' +
                     perfilFormulario.value.apellido
                   "
-                  class="h-20 w-20 rounded-full border"
+                  class="h-20 w-20 rounded-full border object-cover"
                 />
               } @else {
                 <div
@@ -240,34 +240,15 @@ import { Headers } from '../components/header.component';
                   >
                     Correo electrónico
                   </label>
-                  @let emailInvalido =
-                    (perfilFormulario.get('email')?.invalid &&
-                      perfilFormulario.get('email')?.value) ||
-                    errores().email;
                   <input
                     type="email"
                     id="email"
                     name="email"
                     placeholder="ejemplo@gmail.com"
-                    formControlName="email"
-                    class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
-                    [class]="
-                      emailInvalido
-                        ? 'border-red-600 text-red-600 outline-red-600'
-                        : 'outline-gris-300 border-[#878787]'
-                    "
-                    (input)="borrarError('email')"
+                    [value]="perfilFormulario.value.email"
+                    disabled
+                    class="placeholder-gris-300 w-full rounded-lg border px-3 py-2 outline-gris-300 border-gray-300 disabled:bg-gray-100"
                   />
-                  <div>
-                    @if (errores().email) {
-                      <small class="text-red-600">{{ errores().email }}</small>
-                    } @else if (emailInvalido) {
-                      <small class="wrap-break-word text-red-600">
-                        El correo electrónico no es válido
-                        (Ej.ejemplo&#64;gmail.com)
-                      </small>
-                    }
-                  </div>
                 </div>
                 <div>
                   <label class="mb-1 block text-sm font-bold text-gray-700">
@@ -592,19 +573,19 @@ import { Headers } from '../components/header.component';
                                 class="flex items-start border-b border-gray-100 pb-4"
                               >
                                 <img
-                                  [src]="item.producto_id.imagen ?? 'logo.png'"
+                                  [src]="item.imagen ?? 'logo.png'"
                                   class="mr-4 h-16 w-16 rounded-md object-cover"
                                   loading="lazy"
-                                  [alt]="item.producto_id.nombre"
+                                  [alt]="item.nombre"
                                 />
                                 <div class="flex-grow">
                                   <h4 class="text-sm font-medium">
-                                    {{ item.producto_id.nombre | titlecase }}
+                                    {{ item.tipo === 'normal' ? item.nombre : item.tipo === 'ia' ? 'Producto personalizado por IA' : 'Producto personalizado' }}
                                   </h4>
                                   <p
                                     class="mt-1 line-clamp-2 text-xs text-gray-500"
                                   >
-                                    {{ item.producto_id.descripcion }}
+                                    {{ item.descripcion ?? obtenerDescripcionProductoPersonalizado(item.ingredientes) }}
                                   </p>
                                   <div
                                     class="mt-2 flex items-center gap-4 text-sm"
@@ -615,7 +596,7 @@ import { Headers } from '../components/header.component';
                                     <span class="text-gray-600">
                                       Precio unit.:
                                       {{
-                                        item.producto_id.precio
+                                        item.precio
                                           | currency: 'USD' : 'symbol'
                                       }}
                                     </span>
@@ -748,8 +729,8 @@ export class ProfilePage {
       datosUsuario.genero = datosUsuario.genero?.toLowerCase() ?? '';
       datosUsuario.fecha_nacimiento =
         datosUsuario.fecha_nacimiento?.split('T')[0] ?? '';
-      this.perfilFormulario.patchValue(datosUsuario, { emitEvent: false });
-      this.imagePreview = datosUsuario.imagen ?? '';
+      this.perfilFormulario.patchValue(datosUsuario);
+      this.imagePreview = datosUsuario?.imagen ?? '';
     });
   }
 
@@ -804,5 +785,11 @@ export class ProfilePage {
         imagen: file,
       });
     }
+  }
+
+  public obtenerDescripcionProductoPersonalizado(ingredientes: any[]) {
+    return `Ingredientes utilizados: ${ingredientes
+      .map((ing) => ing.nombre)
+      .join(', ')}`;
   }
 }

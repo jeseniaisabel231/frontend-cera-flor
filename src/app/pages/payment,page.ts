@@ -69,7 +69,7 @@ import { venta } from '../interfaces/venta.interface';
                     <label class="mb-1 block text-sm font-medium">Cédula</label>
                     <input
                       type="text"
-                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none disabled:bg-gray-100"
                       placeholder="1711223344"
                       formControlName="cedula"
                       (input)="borrarErrores('cedula')"
@@ -95,7 +95,7 @@ import { venta } from '../interfaces/venta.interface';
                     </label>
                     <input
                       type="text"
-                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none disabled:bg-gray-100"
                       placeholder="Pichincha, Quito, Av. Amazonas 1234"
                       formControlName="direccion"
                       (input)="borrarErrores('direccion')"
@@ -120,7 +120,7 @@ import { venta } from '../interfaces/venta.interface';
                     </label>
                     <input
                       type="tel"
-                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+                      class="focus:ring-morado-400 placeholder-gris-300 w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none disabled:bg-gray-100"
                       placeholder="0991234567"
                       formControlName="telefono"
                       (input)="borrarErrores('telefono')"
@@ -254,7 +254,7 @@ export class PaymentPage {
   public mostrarModalError = signal(false);
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public respuestaBack = signal<string>('');
-  public modificarDatos = signal<boolean>(false);
+  public modificarDatos = signal<boolean>(true);
   public router = inject(Router);
   public formulariopago = viewChild<ElementRef<any>>('formulariopagoref');
 

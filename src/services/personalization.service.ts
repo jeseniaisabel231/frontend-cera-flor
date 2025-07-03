@@ -25,10 +25,7 @@ export class PersonalizationService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap(({ productos }) => {
-          console.log(productos);
-          this.productosPersonalizados.set(productos);
-        }),
+        tap(({ productos }) => this.productosPersonalizados.set(productos)),
       );
   }
 
@@ -59,13 +56,15 @@ export class PersonalizationService {
   }
 
   editarPersonalizacion(id: string, ingredientes: any) {
-    return this.http.put<any>(
-      `${this.urlBackend}/api/productos-personalizados/${id}`,
-      { ingredientes },
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      },
-    );
+    return this.http
+      .put<any>(
+        `${this.urlBackend}/api/productos-personalizados/${id}`,
+        { ingredientes },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        },
+      )
+      .pipe(tap(() => this.obtenerPersonalizaciones().subscribe()));
   }
   registrarPersonalizacion(datos: any) {
     return this.http.post<any>(
@@ -83,11 +82,11 @@ export class PersonalizationService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap(() =>
+        tap((respuesta) => {
           this.productosPersonalizados.update((productos) =>
             productos.filter((p) => p._id !== id),
-          ),
-        ),
+          );
+        }),
       );
   }
 

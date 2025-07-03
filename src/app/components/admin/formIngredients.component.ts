@@ -17,7 +17,6 @@ import {
 } from '@angular/forms';
 import { IngredientesService } from '../../../services/admin/ingredients.service';
 import { CategoryService } from '../../../services/categorias.service';
-import { categorias } from '../../interfaces/categoria.interface';
 import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
 
@@ -59,7 +58,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
             </div>
           }
         </div>
-        <button (click)="close()" class="cursor-pointer focus:outline-none">
+        <button
+          (click)="this.mostrarModal.set(false)"
+          class="cursor-pointer focus:outline-none"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -150,7 +152,6 @@ import { ModalAvisosComponent } from './modalavisos.component';
               "
               [value]="color()"
               (input)="color.set(inputColor.value); borrarError('imagen')"
-              (change)="generarImagenCircularDesdeColor()"
             />
           }
           @if (errores().imagen) {
@@ -294,7 +295,10 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <option selected value="" disabled hidden>
               Selecciona una categoría
             </option>
-            @for (categoria of categorias; track categoria._id) {
+            @for (
+              categoria of serviceCategorias.categorias();
+              track categoria._id
+            ) {
               <option [value]="categoria._id">
                 {{ categoria.nombre }}
               </option>
@@ -371,7 +375,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
           <button
             type="button"
             class="cursor-pointer rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
-            (click)="close()"
+            (click)="this.mostrarModal.set(false)"
           >
             @if (acciones() === 'Visualizar') {
               Cerrar
@@ -404,8 +408,6 @@ export class FormIngredientsComponent {
   public idRegistro = input<string>();
   public imagePreview: string | ArrayBuffer | null = null;
   public serviceCategorias = inject(CategoryService);
-  public categorias: categorias[] = [];
-  public idsCategorias = signal<string[]>([]);
   public color = signal<string>('');
   public tipoAnterior = signal<'color' | 'otro'>('otro');
   public tipo = signal<string>('');
@@ -439,9 +441,6 @@ export class FormIngredientsComponent {
 
   borrarError(campo: string) {
     this.errores.update((prev) => ({ ...prev, [campo]: '' })); //setea los errores
-  }
-  public close() {
-    this.mostrarModal.set(false);
   }
 
   onSubmit() {
@@ -483,8 +482,8 @@ export class FormIngredientsComponent {
         } else if (key === 'id_categoria') {
           if (value === 'ambas') {
             // Si la categoría es "ambas", agregar los IDs de las categorías
-            this.idsCategorias().forEach((id) => {
-              formData.append('id_categoria[]', id);
+            this.serviceCategorias.categorias().forEach(({ _id }) => {
+              formData.append('id_categoria[]', _id);
             });
           } else if (typeof value === 'string' && value) {
             // Si es un string y no está vacío, agregarlo directamente
@@ -540,21 +539,52 @@ export class FormIngredientsComponent {
     effect(() => {
       const tipoAnterior = this.tipoAnterior();
       if (tipoAnterior === 'color') {
-        this.color.set('#000000');
-      } else if (tipoAnterior === 'otro') {
-        this.generarImagenCircularDesdeColor();
+        this.imagePreview = null;
+        this.formulario.patchValue({
+          imagen: null,
+        });
       }
-      this.imagePreview = null; // Limpiar la imagen preview si el tipo anterior era 'color'
-      this.formulario.patchValue({
-        imagen: null,
-      });
     });
 
     effect(() => {
       const tipo = this.tipo();
       if (tipo === 'color') {
         this.color.set('#000000');
-        this.generarImagenCircularDesdeColor();
+        this.borrarError('imagen');
+      }
+    });
+
+    effect(() => {
+      if (this.color()) {
+        const size = 200; // tamaño del lienzo (ancho y alto)
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Limpia fondo (transparente)
+          ctx.clearRect(0, 0, size, size);
+
+          // Dibuja un círculo relleno con el color seleccionado
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI); // círculo centrado
+          ctx.fillStyle = this.color(); // usa el color seleccionado
+          ctx.fill();
+          ctx.closePath();
+
+          // Convertir a Blob y luego a File
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const file = new File([blob], 'color-circle.png', {
+                type: 'image/png',
+              });
+              this.formulario.patchValue({
+                imagen: file, // Actualiza el campo de imagen con el nuevo archivo
+              });
+            }
+          }, 'image/png');
+        }
       }
     });
 
@@ -582,9 +612,7 @@ export class FormIngredientsComponent {
         if (datos.tipo === 'color') {
           this.servicioIngredientes
             .extraerColorDominante(datos.imagen)
-            .subscribe(({ color }) => {
-              this.color.set(color);
-            });
+            .subscribe(({ color }) => this.color.set(color));
         }
 
         if (this.acciones() === 'Visualizar') {
@@ -618,20 +646,6 @@ export class FormIngredientsComponent {
     this.borrarError('precio');
   }
 
-  ngOnInit() {
-    this.cargarCategorias();
-  }
-
-  cargarCategorias() {
-    this.serviceCategorias.obtener().subscribe({
-      next: (respuesta: any) => {
-        this.categorias = respuesta.categorias;
-        this.idsCategorias.set(
-          this.categorias.map((categoria: categorias) => categoria._id),
-        ); //almacena los ids de las categorias
-      },
-    });
-  }
   public resetearFormulario() {
     this.formulario.setValue({
       nombre: '',
@@ -676,38 +690,4 @@ export class FormIngredientsComponent {
     this.respuestaBack.set(msg);
     this.resetearFormulario();
   };
-
-  generarImagenCircularDesdeColor() {
-    if (this.color()) {
-      const size = 200; // tamaño del lienzo (ancho y alto)
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        // Limpia fondo (transparente)
-        ctx.clearRect(0, 0, size, size);
-
-        // Dibuja un círculo relleno con el color seleccionado
-        ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI); // círculo centrado
-        ctx.fillStyle = this.color(); // usa el color seleccionado
-        ctx.fill();
-        ctx.closePath();
-
-        // Convertir a Blob y luego a File
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const file = new File([blob], 'color-circle.png', {
-              type: 'image/png',
-            });
-            this.formulario.patchValue({
-              imagen: file, // Actualiza el campo de imagen con el nuevo archivo
-            });
-          }
-        }, 'image/png');
-      }
-    }
-  }
 }

@@ -11,6 +11,7 @@ import { Component, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import * as htmlToImage from 'html-to-image';
 import { IngredientesService } from '../../services/admin/ingredients.service';
+import { CategoryService } from '../../services/categorias.service';
 import { PersonalizationService } from '../../services/personalization.service';
 import { RecolorImageComponent } from '../components/coloredIcon.component';
 import { Headers } from '../components/header.component';
@@ -47,7 +48,9 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         ></span>
       </a>
 
-      <span class="text-xl font-bold">Taller de Personalizacion</span>
+      <strong class="text-xl font-bold">
+        Taller de Personalización de {{ nombreCategoria() | titlecase }}
+      </strong>
 
       <!-- Botón de ayuda rápida -->
       <button
@@ -110,7 +113,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                 class="size-14 cursor-grab rounded-full border hover:scale-105"
                 [src]="item.imagen"
                 cdkDrag
-                [title]="item.nombre"
+                [title]="'Colorante ' + item.nombre"
               />
             }
           </div>
@@ -139,7 +142,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                 <img
                   class="mx-auto flex size-32 cursor-grab object-contain p-2"
                   [src]="item.imagen"
-                  [title]="item.nombre"
+                  [title]="'Molde ' + item.nombre"
                   cdkDrag
                 />
               </div>
@@ -173,6 +176,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                     <app-recolor-image
                       [src]="item.imagen"
                       [fill]="coloresSeleccionados[0]?.imagen"
+                      [title]="'Molde ' + item.nombre"
                       cdkDrag
                     ></app-recolor-image>
                   } @empty {
@@ -194,6 +198,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                   <img
                     class="mx-auto flex size-12 cursor-grab p-1"
                     [src]="item.imagen"
+                    [title]="'Aroma ' + item.nombre"
                     cdkDrag
                   />
                 } @empty {
@@ -213,6 +218,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                   <img
                     class="mx-auto flex size-12 cursor-grab p-1"
                     [src]="item.imagen"
+                    [title]="'Esencia de ' + item.nombre"
                     cdkDrag
                   />
                 } @empty {
@@ -276,6 +282,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                 <img
                   class="mx-auto flex size-22 cursor-grab object-contain p-2"
                   [src]="item.imagen"
+                  [title]="'Aroma ' + item.nombre"
                   cdkDrag
                 />
               </div>
@@ -305,6 +312,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                 <img
                   class="flex size-16 cursor-grab object-contain"
                   [src]="item.imagen"
+                  [title]="'Esencia de ' + item.nombre"
                   cdkDrag
                 />
               </div>
@@ -330,6 +338,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
 })
 export class WorkshopGamePage {
   public servicioIngredientes = inject(IngredientesService);
+  public categoriasService = inject(CategoryService);
 
   public aromas: any[] = [];
   public moldes: any[] = [];
@@ -346,6 +355,7 @@ export class WorkshopGamePage {
   public categoria = input.required();
   public rutaActiva = inject(ActivatedRoute);
   public editarProducto = signal<string>('');
+  public nombreCategoria = signal<string>('');
 
   public imagenCreada = signal<File | null>(null);
 
@@ -428,6 +438,17 @@ export class WorkshopGamePage {
         });
       }
     });
+
+    effect(() => {
+      const categorias = this.categoriasService.categorias();
+      const categoriaActual = this.categoria();
+
+      const categoria = categorias.find((cat) => cat._id === categoriaActual);
+
+      if (categoria) {
+        this.nombreCategoria.set(categoria.nombre);
+      }
+    });
   }
 
   public formularioPersonalizado = {
@@ -439,17 +460,20 @@ export class WorkshopGamePage {
   // Método para obtener recomendaciones de IA
   obtenerRecomendacionesIA() {
     this.mostrarModalIA.set(true);
-    this.servicePersonalizacion
-      .obtenerRecomendacion(this.categoria() as string)
-      .subscribe({
-        next: ({ producto_personalizado }: any) => {
-          this.moldesSeleccionados = [producto_personalizado.molde];
-          this.coloresSeleccionados = [producto_personalizado.color];
-          this.aromasSeleccionados = [producto_personalizado.aroma];
-          this.esenciasSeleccionadas = producto_personalizado.esencias;
-        },
-      })
-      .add(() => this.mostrarModalIA.set(false));
+    setTimeout(() => {
+      this.servicePersonalizacion
+        .obtenerRecomendacion(this.categoria() as string)
+        .subscribe({
+          next: ({ producto_personalizado }: any) => {
+            this.moldesSeleccionados = [producto_personalizado.molde];
+            this.coloresSeleccionados = [producto_personalizado.color];
+            this.aromasSeleccionados = [producto_personalizado.aroma];
+            this.esenciasSeleccionadas = producto_personalizado.esencias;
+            this.formularioPersonalizado.tipo_producto = 'ia';
+          },
+        })
+        .add(() => this.mostrarModalIA.set(false));
+    }, 1);
   }
 
   async OnsubmitProductoPersonalizado() {
@@ -516,6 +540,8 @@ export class WorkshopGamePage {
         previousIndex,
         currentIndex,
       );
+
+      this.formularioPersonalizado.tipo_producto = 'personalizado';
     }
   }
 
@@ -547,6 +573,7 @@ export class WorkshopGamePage {
         event.previousIndex,
         event.currentIndex,
       );
+      this.formularioPersonalizado.tipo_producto = 'personalizado';
     }
   }
 
@@ -576,6 +603,7 @@ export class WorkshopGamePage {
         event.previousContainer.data[event.previousIndex],
       );
       this.colores.splice(event.previousIndex, 1);
+      this.formularioPersonalizado.tipo_producto = 'personalizado';
     }
   }
 
@@ -607,6 +635,7 @@ export class WorkshopGamePage {
         event.previousIndex,
         event.currentIndex,
       );
+      this.formularioPersonalizado.tipo_producto = 'personalizado';
     }
   }
 

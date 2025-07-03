@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { environment } from '../environments/environment';
-import { categorias } from '../app/interfaces/categoria.interface';
 import { tap } from 'rxjs';
+import { categorias } from '../app/interfaces/categoria.interface';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,11 @@ import { tap } from 'rxjs';
 export class CategoryService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
-  private categorias = signal<categorias[]>([]);
+  public categorias = signal<categorias[]>([]);
+
+  constructor() {
+    this.obtener().subscribe();
+  }
 
   obtener() {
     return this.http
@@ -18,9 +22,9 @@ export class CategoryService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        // // Sirve para interceptar los datos que llegan de la  y es exitosa
-        // tap((respuesta: any) => this.categorias.set(respuesta.categorias)) // Se guarda la respuesta en la variable usuarios
-        tap((categorias: any) => this.categorias.set(categorias))
+        tap(({ categorias }: any) => {
+          this.categorias.set(categorias);
+        }),
       );
   }
 }

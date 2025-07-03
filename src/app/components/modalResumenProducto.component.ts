@@ -9,7 +9,7 @@ import {
   viewChild,
   type ElementRef,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
 import type { productoPersonalizado } from '../interfaces/personalizacion.interface';
 import { transformaFecha } from '../utils/transformaFecha';
@@ -95,7 +95,10 @@ import { transformaFecha } from '../utils/transformaFecha';
                 </svg>
 
                 <strong class="text-white">
-                  {{ aroma().precio | currency: 'USD' : 'symbol' }}
+                  {{
+                    calcularPrecioSinIVA(aroma().precio)
+                      | currency: 'USD' : 'symbol'
+                  }}
                 </strong>
               </div>
               <div
@@ -119,7 +122,10 @@ import { transformaFecha } from '../utils/transformaFecha';
                 </svg>
 
                 <strong class="text-white">
-                  {{ color().precio | currency: 'USD' : 'symbol' }}
+                  {{
+                    calcularPrecioSinIVA(color().precio)
+                      | currency: 'USD' : 'symbol'
+                  }}
                 </strong>
               </div>
               <div
@@ -143,7 +149,10 @@ import { transformaFecha } from '../utils/transformaFecha';
                 </svg>
 
                 <strong class="text-white">
-                  {{ molde().precio | currency: 'USD' : 'symbol' }}
+                  {{
+                    calcularPrecioSinIVA(molde().precio)
+                      | currency: 'USD' : 'symbol'
+                  }}
                 </strong>
               </div>
               <div class="flex flex-col rounded-lg bg-pink-400 px-4 py-1">
@@ -165,7 +174,10 @@ import { transformaFecha } from '../utils/transformaFecha';
                       </svg>
 
                       <strong class="text-white">
-                        {{ esencia.precio | currency: 'USD' : 'symbol' }}
+                        {{
+                          calcularPrecioSinIVA(esencia.precio)
+                            | currency: 'USD' : 'symbol'
+                        }}
                       </strong>
                     </li>
                   }
@@ -173,21 +185,55 @@ import { transformaFecha } from '../utils/transformaFecha';
               </div>
             </div>
 
-            <!-- Precio total -->
-            <div class="mt-4 flex justify-between border-t pt-2 text-lg">
-              <strong>Precio Total:</strong>
-              <span class="font-bold text-purple-700">
-                {{ datos().precio | currency: 'USD' : 'symbol' }}
-              </span>
+            <!-- Subtotal -->
+            <div>
+              <div class="mt-4 flex justify-between border-t pt-2 text-sm">
+                <span>Subtotal:</span>
+                <span class="text-purple-700">
+                  {{
+                    calcularPrecioSinIVA(datos().precio)
+                      | currency: 'USD' : 'symbol'
+                  }}
+                </span>
+              </div>
+
+              <div class="flex justify-between text-sm">
+                <span>IVA (15%):</span>
+                <span class="text-purple-700">
+                  {{ datos().precio * 0.15 | currency: 'USD' : 'symbol' }}
+                </span>
+              </div>
+
+              <div class="flex justify-between text-lg">
+                <strong>Total:</strong>
+                <span class="font-bold text-purple-700">
+                  {{ datos().precio | currency: 'USD' : 'symbol' }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
         <div class="mt-4 flex w-full items-center justify-end gap-4">
           <button
             class="h-10 w-auto cursor-pointer rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
-            (click)="serviceCarrito.agregarCarrito(this.datos(), 1, undefined, 'personalizado').subscribe()"
+            (click)="anadirCarrito()"
           >
-            Anadir carrito
+            @if (cargando()) {
+              <svg
+                class="animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 -960 960 960"
+                width="24"
+                fill="#fff"
+              >
+                <path
+                  d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                />
+              </svg>
+            } @else {
+              Añadir carrito
+            }
           </button>
           <button
             class="cursor-pointer rounded-[15px] bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
@@ -202,9 +248,11 @@ import { transformaFecha } from '../utils/transformaFecha';
 })
 export class ModalResumenProductoComponent {
   public serviceCarrito = inject(CarritoService);
+  public cargando = signal(false);
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public mostrarModal = model<boolean>(false);
   public datos = input.required<productoPersonalizado>();
+  public router = inject(Router);
 
   public molde = signal<any>({});
   public color = signal<any>({});
@@ -254,5 +302,17 @@ export class ModalResumenProductoComponent {
 
   public formatearFecha(fecha: string): string {
     return transformaFecha(fecha);
+  }
+
+  public calcularPrecioSinIVA(precio: number): number {
+    return precio / 1.15;
+  }
+
+  public anadirCarrito(): void {
+    this.cargando.set(true);
+    this.serviceCarrito
+      .agregarCarrito(this.datos(), 1, undefined, 'personalizado')
+      .subscribe(() => this.router.navigate(['/carrito']))
+      .add(() => this.cargando.set(false));
   }
 }

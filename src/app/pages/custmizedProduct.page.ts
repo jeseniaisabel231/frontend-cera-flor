@@ -159,10 +159,10 @@ import { RouterLink } from '@angular/router';
       <app-modal-resumen [(mostrarModal)]="mostrarResumen" [datos]="datos()" />
 
       <app-modal
-        tipo="decidir"
+        tipo="confirmacion"
         (decision)="recibirDecision($event)"
         [titulo]="'Eliminar producto'"
-        [mensaje]="'¿Está seguro/a de eliminar este producto del carrito?'"
+        [mensaje]="'¿Está seguro/a de eliminar este producto de tus personalizaciones?'"
         [(mostrarModal)]="mostrarModal"
       ></app-modal>
     </main>

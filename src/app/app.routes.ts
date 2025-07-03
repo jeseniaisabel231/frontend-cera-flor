@@ -60,8 +60,9 @@ export const routes: Routes = [
   {
     path: 'taller-juego/:categoria',
     component: WorkshopGamePage,
+    canActivate: [AuthGuard],
   },
-  { path: 'productos-personalizados', component: CustmizedProductPage },
+  { path: 'productos-personalizados', component: CustmizedProductPage, canActivate: [AuthGuard] },
 
   // Rutas de administrador
   {
@@ -88,5 +89,5 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: 'productos-personalizados', pathMatch: 'full' },
+  { path: '**', redirectTo: 'inicio', pathMatch: 'full' },
 ];

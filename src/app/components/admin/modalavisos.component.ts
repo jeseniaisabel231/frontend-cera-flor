@@ -114,7 +114,7 @@ import {
             </button>
           } @else {
             <button
-              (click)="close()"
+              (click)="close(); confirmar.emit()"
               class="cursor-pointer rounded-[10px] bg-[#9F93E7] px-5 py-2 font-bold text-white transition-colors hover:bg-[#8a7cd8]"
             >
               OK

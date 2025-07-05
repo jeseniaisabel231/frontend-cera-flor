@@ -133,7 +133,7 @@ register();
               Personalización
             </h3>
             <p class="text-sm">
-              Los clientes pueden elegir fragancias, formas y colores según sus
+              Los clientes pueden elegir aromas, formas y colores según sus
               preferencias. Esto permite ofrecer productos exclusivos y
               adaptados a cada necesidad.
             </p>
@@ -311,7 +311,7 @@ register();
             class="absolute top-[58%] left-[30%] w-44 transform transition-transform duration-300 hover:scale-120 md:top-[43%] md:left-[38%] md:w-3xs lg:left-[48%]"
           />
           <a
-            class="bg-morado-600 text-amarrillo-500 hover:bg-morado-700 absolute top-[83%] left-[28%] w-50 transform rounded-2xl px-6 py-2 text-center font-bold transition-all duration-300 ease-in-out hover:scale-105 hover:text-white md:top-[45%] md:left-[70%] lg:top-[45%] lg:left-[75%] lg:py-4 xl:w-60"
+            class="bg-morado-600 text-amarrillo-500 hover:bg-morado-700 absolute top-[83%] left-[28%] w-50 transform rounded-2xl px-4 py-2 text-center font-bold transition-all duration-300 ease-in-out hover:scale-105 hover:text-white md:top-[45%] md:left-[70%] lg:top-[45%] lg:left-[75%] lg:py-4 xl:w-60 text-[18px]"
           >
             ¡Comienza a crear ahora!
           </a>

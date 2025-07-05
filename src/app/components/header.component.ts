@@ -47,7 +47,9 @@ import { decodificarToken } from '../utils/decodificarToken';
               />
             </svg>
             @if (busqueda()) {
-              <div class="absolute top-12 z-50 w-3/4 rounded-lg bg-white shadow-md shadow-black/20 p-2 max-h-100">
+              <div
+                class="absolute top-12 z-50 max-h-100 w-3/4 rounded-lg bg-white p-2 shadow-md shadow-black/20"
+              >
                 @if (productosBuscadosResource.isLoading()) {
                   <div class="flex items-center justify-center gap-x-2">
                     <svg
@@ -223,10 +225,11 @@ import { decodificarToken } from '../utils/decodificarToken';
                   fill="none"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  stroke-width="1.5"
+                  stroke-width="1.8"
                   d="M19 20.75a1 1 0 0 0 1-1v-1.246c.004-2.806-3.974-5.004-8-5.004s-8 2.198-8 5.004v1.246a1 1 0 0 0 1 1zM15.604 6.854a3.604 3.604 0 1 1-7.208 0a3.604 3.604 0 0 1 7.208 0"
                 />
               </svg>
+              
               <span
                 class="hidden whitespace-nowrap text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
               >
@@ -250,17 +253,17 @@ import { decodificarToken } from '../utils/decodificarToken';
                 xmlns="http://www.w3.org/2000/svg"
                 width="26"
                 height="26"
-                viewBox="0 0 1024 1024"
+                viewBox="0 0 24 24"
                 class="fill-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:fill-[#7a0dc7]"
               >
                 <path
-                  d="M864 158.704H672.815V97.328c0-52.944-43.056-96-96-96H449.183c-52.944 0-96 43.056-96 96v61.376H159.999c-35.344 0-64 28.656-64 64v735.968c0 35.344 28.656 64 64 64h704c35.344 0 64-28.656 64-64V222.704c0-35.344-28.656-64-64-64zM417.184 97.328c0-17.664 14.336-32 32-32h127.632c17.664 0 32 14.336 32 32v61.376H417.184zM864 958.672H160V222.704h193.184v65.84s-.848 31.967 31.809 31.967c36 0 32.192-31.967 32.192-31.967v-65.84h191.632v65.84s-2.128 32.128 31.872 32.128c32 0 32.128-32.128 32.128-32.128v-65.84h191.184z"
+                  d="M19 20c0 1.11-.89 2-2 2a2 2 0 0 1-2-2c0-1.11.89-2 2-2a2 2 0 0 1 2 2M7 18c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2c1.11 0 2-.89 2-2s-.89-2-2-2m.2-3.37l-.03.12c0 .14.11.25.25.25H19v2H7a2 2 0 0 1-2-2c0-.35.09-.68.24-.96l1.36-2.45L3 4H1V2h3.27l.94 2H20c.55 0 1 .45 1 1c0 .17-.05.34-.12.5l-3.58 6.47c-.34.61-1 1.03-1.75 1.03H8.1zM8.5 11H10V9H7.56zM11 9v2h3V9zm3-1V6h-3v2zm3.11 1H15v2h1zm1.67-3H15v2h2.67zM6.14 6l.94 2H10V6z"
                 />
               </svg>
               <span
                 class="hidden text-[#3C3C3B] transition-colors duration-300 ease-in-out group-hover:text-[#7a0dc7] sm:block"
               >
-                Compras
+                Carrito
               </span>
               @if (serviceCarrito.cantidadProductos()) {
                 <span

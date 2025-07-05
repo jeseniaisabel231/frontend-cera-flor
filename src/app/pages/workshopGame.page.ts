@@ -21,7 +21,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
 @Component({
   template: `
     <headers></headers>
-    <div class="flex items-center justify-between bg-gray-300 px-6 py-4">
+    <div class="flex items-center justify-between bg-[#dad4ff] px-6 py-4 ">
       <!-- Botón de volver -->
       <a
         class="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
@@ -48,8 +48,8 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         ></span>
       </a>
 
-      <strong class="text-xl font-bold">
-        Taller de Personalización de {{ nombreCategoria() | titlecase }}
+      <strong class="text-xl font-bold font-pontano"><span class="text-xl">✨</span>
+        Taller de Personalización de {{ nombreCategoria() | titlecase }}<span class="text-xl">✨</span>
       </strong>
 
       <!-- Botón de ayuda rápida -->

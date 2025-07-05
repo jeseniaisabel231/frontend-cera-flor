@@ -28,7 +28,8 @@ import { Headers } from '../components/header.component';
     <headers></headers>
     <main class="min-h-screen bg-gray-50">
       <barranav rutaSeccionSeleccionada="perfil"></barranav>
-      <div class="bg-gris-200 h-48 w-full"></div>
+      <img class="h-48 w-full object-cover" src="fondoperfil.png" alt="">
+      
       <section
         class="relative mx-auto -mt-24 flex max-w-6xl flex-col gap-8 px-4 sm:px-6 md:flex-row lg:px-8"
       >

@@ -5,10 +5,12 @@ import {
   TestBed,
   type ComponentFixture,
 } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+
+import { vi } from 'vitest';
 import { ProductosService } from '../../services/admin/productos.service';
 import { routes } from '../app.routes';
 import { HomePage } from './home.page';
+import { provideRouter } from '@angular/router';
 
 describe('Página de Inicio', () => {
   let component: HomePage;
@@ -29,6 +31,10 @@ describe('Página de Inicio', () => {
     component = fixture.componentInstance;
 
     productService = TestBed.inject(ProductosService);
+    
+    // Mock para evitar errores de Swiper usando Vitest
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('Debería crearse la página de inicio', () => {

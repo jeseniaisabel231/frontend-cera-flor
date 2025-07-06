@@ -340,7 +340,7 @@ export class Headers {
   public menuVisible = signal(false);
   public router = inject(Router);
   public servicioRuta = inject(ActivatedRoute);
-  public rutaActiva = this.servicioRuta.snapshot.url[0].path;
+  public rutaActiva = this.servicioRuta.snapshot.url[0]?.path;
 
   public busqueda = signal<string>('');
   public productosBuscadosResource = httpResource<{ productos: producto[] }>(

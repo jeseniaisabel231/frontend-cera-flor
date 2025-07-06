@@ -440,7 +440,6 @@ register();
 })
 export class HomePage {
   public serviceProductos = inject(ProductosService);
-  public cantidadProducto = signal(0);
 
   public promocionesResource = httpResource<any>(
     () => `${environment.urlApi}/api/promociones`,

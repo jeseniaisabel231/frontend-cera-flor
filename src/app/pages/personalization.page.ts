@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CategoryService } from '../../services/categorias.service';
 import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
@@ -86,7 +86,7 @@ import { Headers } from '../components/header.component';
           />
         </a>
         <button
-          class="absolute inset-y-0 left-0 my-auto flex items-center"
+          class="group absolute inset-y-0 left-0 my-auto flex items-center"
           (click)="
             authService.clienteAutenticado()
               ? this.router.navigate([
@@ -96,18 +96,21 @@ import { Headers } from '../components/header.component';
               : mostrarModal.set(true)
           "
         >
+          <div
+            class="absolute z-10 hidden h-98 w-98 items-center justify-center rounded-full bg-white/30 backdrop-blur-md transition duration-300 group-hover:flex"
+          ></div>
           <img
             src="velaJuego.png"
-            class="h-80 w-80 transform transition-transform duration-200 hover:scale-110"
+            class="relative z-20 h-80 w-80 transform transition-transform duration-300 group-hover:scale-110"
           />
           <strong
-            class="absolute top-110 left-20 cursor-pointer rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+            class="group absolute top-110 left-20 z-30 cursor-pointer rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
           >
-            ✨ Seleccionar Vela
+            🕯️ Crear Mi Vela
           </strong>
         </button>
         <button
-          class="absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden"
+          class="group absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden"
           (click)="
             authService.clienteAutenticado()
               ? this.router.navigate([
@@ -117,14 +120,19 @@ import { Headers } from '../components/header.component';
               : mostrarModal.set(true)
           "
         >
+          <div
+            class="absolute z-10 hidden h-98 w-98 items-center justify-center rounded-full bg-white/30 backdrop-blur-md transition duration-300 group-hover:flex"
+          >
+            
+          </div>
           <img
             src="jabonJuego.png"
-            class="h-80 w-80 transform transition-transform duration-200 hover:scale-110"
+            class="relative z-20 h-80 w-80 transform transition-transform duration-200 hover:scale-110"
           />
           <strong
-            class="absolute top-95 left-50 cursor-pointer rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+            class="group absolute top-95 left-50 z-30 cursor-pointer rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
           >
-            🧼 Seleccionar Jabón
+            🧼 Crear Mi Jabón
           </strong>
         </button>
       </div>

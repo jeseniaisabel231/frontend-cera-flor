@@ -49,8 +49,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
         />
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
-            <p class="text-[18px] font-bold">Estefanía Sánchez</p>
-            <span class="text-gris-300 text-[14px]">Administradora</span>
+            <p class="text-[18px] font-bold">admin123&#64;yopmail.com</p>
+            <span class="text-gris-300 text-[14px]">Admin</span>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
                   fill="currentColor"
                 />
               </svg>
-              Usuarios
+              Clientes
             </a>
           </li>
           <li class="flex">

@@ -112,7 +112,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
                   fill="currentColor"
                 />
               </svg>
-              Usuarios
+              Clientes
             </a>
           </li>
           <li class="flex">

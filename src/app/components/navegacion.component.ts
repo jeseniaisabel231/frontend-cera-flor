@@ -49,8 +49,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
         />
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
-            <p class="text-[18px] font-bold">admin123&#64;yopmail.com</p>
-            <span class="text-gris-300 text-[14px]">Admin</span>
+            <span class=" text-[18px]">Admin</span>
+            <p class="text-[15px] font-semibold text-gris-300">{{correoAdmin}}</p>
           </div>
         </div>
       </div>
@@ -281,6 +281,7 @@ export class Navegacion {
   //para mantener el color de cada opcion del menu
   //servicio de ruta
   public servicioRuta = inject(ActivatedRoute);
+  public correoAdmin = localStorage.getItem('email') || '';
   public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
   constructor(private router: Router) {}
   // Método para alternar el estado del menú

@@ -56,7 +56,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   //Rutas para el juego
-
   {
     path: 'taller-juego/:categoria',
     component: WorkshopGamePage,

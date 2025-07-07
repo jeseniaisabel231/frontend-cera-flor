@@ -309,6 +309,9 @@ export class LoginPage {
                 ? 'Has iniciado sesión como administrador. Serás redirigido al panel de control.'
                 : 'Has iniciado sesión correctamente. Serás redirigido a la página principal.',
             );
+            if(esAdmin) {
+              localStorage.setItem('email', this.formulario.value.email!);
+            }
             this.tipoRespuesta.set('exito');
             this.mostrarModal.set(true);
             this.carga.set(false);

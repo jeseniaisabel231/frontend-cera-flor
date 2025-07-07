@@ -1,7 +1,7 @@
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { ProductosService } from '../../services/admin/productos.service';
 import { CategoryService } from '../../services/categorias.service';
@@ -10,7 +10,6 @@ import { Card } from '../components/card.component';
 import { Footeer } from '../components/footer.component';
 import { Headers } from '../components/header.component';
 import { Loading } from '../components/loading.component';
-import { categorias } from '../interfaces/categoria.interface';
 import { producto } from '../interfaces/producto.interface';
 
 @Component({
@@ -43,7 +42,10 @@ import { producto } from '../interfaces/producto.interface';
           </h2>
 
           <div class="mt-6 flex flex-wrap justify-evenly">
-            @for (categoria of categorias; track categoria._id) {
+            @for (
+              categoria of serviceCategorias.categorias();
+              track categoria._id
+            ) {
               <article
                 [routerLink]="'/catalogo'"
                 [queryParams]="{
@@ -118,20 +120,23 @@ import { producto } from '../interfaces/producto.interface';
                 Filtrar por:
               </label>
               <select
-                id="filter"
+                #filter
                 class="rounded border border-gray-300 px-3 py-1 text-sm"
+                (change)="
+                  filtroProductos.set(filter.value)
+                "
               >
-              @if (titulo().toLowerCase() === 'jabones-artesanales' ) {
-                <option value="">Todos</option>
-                <option value="piel seca">Piel seca</option>
-                <option value="piel grasa">Piel grasa</option>
-                <option value="piel mixta">Piel mixta</option>
-              } @else if (titulo().toLowerCase() === 'velas-artesanales') {
-                <option value="">Todos</option>
-                <option value="aromatizante">Vela aromatizante</option>
-                <option value="decorativa">Vela decorativa</option>
-                <option value="humidificación">Vela humidificante</option>
-              }
+                @if (titulo().toLowerCase() === 'jabones-artesanales') {
+                  <option value="">Todos</option>
+                  <option value="piel seca">Piel seca</option>
+                  <option value="piel grasa">Piel grasa</option>
+                  <option value="piel mixta">Piel mixta</option>
+                } @else if (titulo().toLowerCase() === 'velas-artesanales') {
+                  <option value="">Todos</option>
+                  <option value="aromatizante">Vela aromatizante</option>
+                  <option value="decorativa">Vela decorativa</option>
+                  <option value="humidificación">Vela humidificante</option>
+                }
               </select>
             </div>
 
@@ -140,8 +145,11 @@ import { producto } from '../interfaces/producto.interface';
                 Ordenar por:
               </label>
               <select
-                id="sort"
+                #sort
                 class="rounded border border-gray-300 px-3 py-1 text-sm"
+                (change)="
+                  filtroPrecio.set(sort.value)"
+
               >
                 <option value="precio_asc">Precio: menor a mayor</option>
                 <option value="precio_desc">Precio: mayor a menor</option>
@@ -150,17 +158,16 @@ import { producto } from '../interfaces/producto.interface';
           </div>
 
           <!-- Grid para los productos-->
-          @if (carga()) {
+          @if (serviceProductos.carga()) {
             <loading></loading>
-          } @else if (errorCarga()) {
-            <div class="text-center text-red-500">
-              Error al cargar los productos
-            </div>
           } @else {
             <div
               class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (producto of productos; track producto._id) {
+              @for (
+                producto of productosTipo();
+                track producto._id
+              ) {
                 <card [producto]="producto"></card>
               } @empty {
                 <p class="col-span-full text-center">
@@ -178,17 +185,57 @@ import { producto } from '../interfaces/producto.interface';
 export class CatalogPage {
   public serviceProductos = inject(ProductosService);
   public serviceCategorias = inject(CategoryService);
-  public productos: producto[] = [];
-  public categorias: categorias[] = [];
-  public productosFiltrados: producto[] = [];
-  public carga = signal<boolean>(true);
-  public errorCarga = signal<boolean>(false);
-  public tipoFiltro: string | null = null;
   public rutaActiva = inject(ActivatedRoute);
+  private router = inject(Router);
+  public productos = signal<producto[]>([]);
+  public filtroProductos = signal('');
+  public productosTipo = signal<producto[]>([]);
+  public filtroPrecio = signal('precio_asc')
   public titulo = toSignal(
     this.rutaActiva.queryParams.pipe(map((params) => params['categoria'])),
   );
-  public cantidadProducto = signal(0);
+  constructor() {
+    if (!this.titulo()) {
+      this.router.navigate(['/catalogo'], {
+        queryParams: { categoria: 'jabones-artesanales' },
+      });
+    }
+    effect(() => {
+      const categoria = this.titulo().toLowerCase().replace('-', ' ');
+      const categoria_id = this.serviceCategorias
+        .categorias()
+        .find((cat) => cat.nombre.toLowerCase() === categoria)?._id;
+
+      const productosFiltrados = this.serviceProductos
+        .productos()
+        .filter((producto) => producto.id_categoria._id === categoria_id);
+
+      this.productos.set(productosFiltrados);
+      this.filtroProductos.set('');
+    });
+    effect(() => {
+      const filtro = this.filtroProductos();
+      if (filtro) {
+        this.productosTipo.set(
+          this.productos().filter((producto) => producto.tipo === filtro),
+        );
+      } else {
+        this.productosTipo.set(this.productos());
+      }
+    });
+    effect(() => {
+      const orden = this.filtroPrecio();
+      if (orden === 'precio_asc') {
+        const productosOrdenados = this.productosTipo().sort((a, b) => a.precio - b.precio);
+        this.productosTipo.set(productosOrdenados);
+        
+      } else if (orden === 'precio_desc') {
+        const productosOrdenados = this.productosTipo().sort((a, b) => b.precio - a.precio);
+        this.productosTipo.set(productosOrdenados);
+
+      }
+    });
+  }
   public banners = {
     'jabones-artesanales': 'bannerJA.png',
     'velas-artesanales': 'bannerVA.png',
@@ -199,27 +246,5 @@ export class CatalogPage {
       this.banners[categoria as keyof typeof this.banners] ||
       this.banners['jabones-artesanales']
     );
-  }
-
-  ngOnInit() {
-    this.rutaActiva.queryParams.subscribe((params) => {
-      const categoria = params['categoria'];
-      if (categoria) {
-        this.obtenerProductos(1, 20); // vuelve a cargar productos cuando cambia la categoría
-      } else {
-        // Manejar caso cuando no hay categoría seleccionada
-        this.carga.set(false);
-      }
-    });
-  }
-
-  recibirCantidad(cantidad: number) {
-    this.cantidadProducto.set(cantidad);
-  }
-
-  filtrarPorTipo(tipo: string) {
-    if(tipo) {
-      
-    }
   }
 }

@@ -2,8 +2,8 @@ import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
-import type { producto } from '../interfaces/producto.interface';
 import { CategoryService } from '../../services/categorias.service';
+import type { producto } from '../interfaces/producto.interface';
 
 @Component({
   imports: [RouterLink, DecimalPipe, TitleCasePipe],
@@ -21,9 +21,7 @@ import { CategoryService } from '../../services/categorias.service';
         />
         <div class="flex w-full flex-col justify-between px-4">
           <div class="text-sm text-gray-500">
-            {{
-              obtenerCategoria() | titlecase
-            }}
+            {{ obtenerCategoria() | titlecase }}
           </div>
           <div
             class="overflow-hidden text-[17px] font-bold text-ellipsis whitespace-nowrap text-gray-800"
@@ -51,9 +49,15 @@ import { CategoryService } from '../../services/categorias.service';
       <div class="flex gap-4 px-4">
         <div class="flex items-center rounded-full border border-gray-300">
           <button
-            class="cursor-pointer rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
+            class=" rounded-l-full px-3 py-1 text-lg transition-colors hover:bg-gray-200"
             (click)="decrementarCantidad(); $event.stopPropagation()"
             title="Disminuir cantidad"
+            [class]="
+              cantidad() <= 1
+                ? 'cursor-not-allowed opacity-50'
+                : 'cursor-pointer'
+            "
+            [disabled]="cantidad() <= 1"
           >
             -
           </button>
@@ -68,7 +72,7 @@ import { CategoryService } from '../../services/categorias.service';
         </div>
         <button
           (click)="agregarAlCarrito()"
-          class="bg-morado-600 hover:bg-morado-700 w-full cursor-pointer rounded-2xl py-2 font-bold text-white transition justify-center items-center flex"
+          class="bg-morado-600 hover:bg-morado-700 flex w-full cursor-pointer items-center justify-center rounded-2xl py-2 font-bold text-white transition"
         >
           @if (carga()) {
             <svg
@@ -91,7 +95,7 @@ import { CategoryService } from '../../services/categorias.service';
     </article>
     @if (mostrarMensajeExito()) {
       <div
-        class="fixed right-0 bottom-0 left-0 z-50 bg-[#9f93e7] p-4 text-center text-white flex justify-center gap-2"
+        class="fixed right-0 bottom-0 left-0 z-50 flex justify-center gap-2 bg-[#9f93e7] p-4 text-center text-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -79,7 +79,10 @@ export class ProductDetailPage {
   });
 
   public productoResource = httpResource<any>(
-    () => `${environment.urlApi}/api/productos/${this.id()}`,
+    () => ({
+      url: `${environment.urlApi}/api/productos/${this.id()}`,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+    }),
     {
       defaultValue: {} as producto,
     },

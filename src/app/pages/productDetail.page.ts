@@ -64,9 +64,12 @@ export class ProductDetailPage {
   public serviceProductos = inject(ProductosService);
   public recomendados = linkedSignal(() => {
     const id = this.id();
+
     if (id) {
-      return this.serviceProductos
+      const productoSinActual = this.serviceProductos
         .productos()
+        .filter((producto) => producto._id !== id);
+      return productoSinActual
         .sort(
           () => Math.random() - 0.5, // Mezcla los productos aleatoriamente
         )

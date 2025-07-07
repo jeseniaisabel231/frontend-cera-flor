@@ -6,7 +6,6 @@ import {
   input,
   model,
   output,
-  signal,
   viewChild,
   type ElementRef,
 } from '@angular/core';
@@ -20,7 +19,7 @@ import type { usuario } from '../interfaces/usuario.interface';
   template: `
     <dialog
       #modal
-      class="m-auto w-11/12 max-w-3xl rounded-lg bg-white p-6 text-gray-800 outline-none backdrop:bg-gray-600/30 backdrop:backdrop-blur-sm"
+      class="m-auto w-11/12 max-w-4xl rounded-lg bg-white p-6 text-gray-800 outline-none backdrop:bg-gray-600/30 backdrop:backdrop-blur-sm"
     >
       <button
         class="absolute top-4 right-4 cursor-pointer focus:outline-none"
@@ -84,6 +83,7 @@ import type { usuario } from '../interfaces/usuario.interface';
             <table class="w-full border text-sm">
               <thead class="bg-gray-100 text-left">
                 <tr>
+                  <th class="border p-2">N.</th>
                   <th class="border p-2">Producto</th>
                   <th class="border p-2">Descripcion</th>
                   <th class="border p-2 text-center">Cantidad</th>
@@ -97,14 +97,23 @@ import type { usuario } from '../interfaces/usuario.interface';
                     <td
                       class="max-w-30 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
                     >
-                      {{ item.producto.nombre }}
+                      {{ $index + 1 }}
+                    </td>
+                    <td
+                      class="max-w-30 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
+                    >
+                      {{
+                        item.producto.nombre ??
+                          (item.producto.tipo === 'ia'
+                            ? 'Recomendación IA'
+                            : 'Producto personalizado')
+                      }}
                     </td>
                     <td
                       class="max-w-50 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
                     >
                       {{
-                        item.producto?.descripcion ??
-                          'Producto personalizado por el cliente'
+                        item.producto?.descripcion ?? ingredientesDescripcion(item.producto)
                       }}
                     </td>
                     <td class="border p-2 text-center">
@@ -228,6 +237,11 @@ export class BillComponent {
         };
       });
     }
+  }
+  public ingredientesDescripcion(producto: any): string {
+    return producto.ingredientes
+      ? 'Ingredientes: ' + producto.ingredientes.map((item: any) => item.nombre).join(', ') + '.'
+      : '';
   }
 
   public imprimirFactura() {

@@ -25,6 +25,7 @@ import { BillComponent } from '../components/bill.component';
 import { Headers } from '../components/header.component';
 import type { usuario } from '../interfaces/usuario.interface';
 import { venta } from '../interfaces/venta.interface';
+import { FacturaService } from '../../services/facturas.service';
 
 @Component({
   imports: [
@@ -257,6 +258,7 @@ export class PaymentPage {
   public modificarDatos = signal<boolean>(true);
   public router = inject(Router);
   public formulariopago = viewChild<ElementRef<any>>('formulariopagoref');
+  public servicioFactura = inject(FacturaService);
 
   public ventaCreada = signal<venta>({} as venta);
   public datosCliente = signal<usuario>({} as usuario);
@@ -265,13 +267,11 @@ export class PaymentPage {
   public opcionesFormularioPago: StripeElementsOptions = {
     locale: 'es',
   };
-
   public errores = signal<any>({
     direccion: '',
     cedula: '',
     telefono: '',
   });
-
   public formularioDireccion = new FormGroup({
     direccion: new FormControl('', [
       Validators.required,
@@ -385,6 +385,7 @@ export class PaymentPage {
           this.datosCliente.set(cliente);
           this.mostrarVenta.set(true);
           this.serviceCarrito.vaciarCarrito(true);
+          this.servicioFactura.obtenerFacturas().subscribe()
         },
         error: () => {
           this.tipoRespuesta.set('error');

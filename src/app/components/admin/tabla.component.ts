@@ -1,3 +1,4 @@
+import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { Component, effect, input, linkedSignal, signal } from '@angular/core';
 import { ColumnasUsuario, usuario } from '../../interfaces/usuario.interface';
 import { ColumnasVenta, venta } from '../../interfaces/venta.interface';
@@ -5,20 +6,25 @@ import { transformaFecha } from '../../utils/transformaFecha';
 import { SwitchComponent } from '../switch.component';
 import { Actions, ModalComponent, TituloForms } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
-import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 
 export type DatosTabla = usuario | venta; //representacion de la clave
 
 @Component({
   selector: 'tabla',
-  imports: [ModalComponent, SwitchComponent, ModalAvisosComponent, CurrencyPipe, TitleCasePipe],
+  imports: [
+    ModalComponent,
+    SwitchComponent,
+    ModalAvisosComponent,
+    CurrencyPipe,
+    TitleCasePipe,
+  ],
   template: `
-    <div class="flex flex-col h-80 overflow-y-auto mt-4 rounded-lg">
-      <table
-        class="w-full table-auto border-collapse text-[14px] shadow-md"
-      >
+    <div class="mt-4 flex h-80 flex-col overflow-y-auto rounded-lg">
+      <table class="w-full table-auto border-collapse text-[14px] shadow-md">
         <thead>
           <tr class="bg-[#c6bcff]">
+            <th class="p-3 text-center font-semibold text-gray-800">Nº</th>
+
             @for (nombre of columnasTabla()?.nombres; track $index) {
               <th class="text-center font-semibold text-gray-800">
                 {{ nombre }}
@@ -32,9 +38,18 @@ export type DatosTabla = usuario | venta; //representacion de la clave
         <tbody class="divide-y divide-gray-200">
           @for (fila of datosTabla(); track $index) {
             <tr class="transition-colors duration-150 hover:bg-gray-50">
+              <td class="p-3 text-center">
+                <div
+                  class="truncate overflow-hidden text-ellipsis whitespace-nowrap"
+                >
+                  {{ $index + 1 }}
+                </div>
+              </td>
               @for (columna of columnasTabla()?.claves; track $index) {
                 <td class="max-w-[150px] p-3 text-center">
-                  <div class="truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                  <div
+                    class="truncate overflow-hidden text-ellipsis whitespace-nowrap"
+                  >
                     @if (columna.toString() === 'cliente') {
                       {{ nombreCliente(fila['cliente']) | titlecase }}
                     } @else if (columna.toString() === 'productos') {
@@ -80,7 +95,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                   </button>
 
                   <button
-                    class="cursor-pointer mr-[3px] flex h-6 w-[36px] items-center justify-center rounded-[9px] bg-green-400 px-2 text-white hover:bg-green-500"
+                    class="mr-[3px] flex h-6 w-[36px] cursor-pointer items-center justify-center rounded-[9px] bg-green-400 px-2 text-white hover:bg-green-500"
                     (click)="verFormulario(fila)"
                     title="Visualizar información"
                   >

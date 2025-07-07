@@ -86,7 +86,7 @@ import { Headers } from '../components/header.component';
           />
         </a>
         <button
-          class="group absolute inset-y-0 left-0 my-auto flex items-center"
+          class="group absolute inset-y-0 left-0 my-auto flex items-center cursor-pointer"
           (click)="
             authService.clienteAutenticado()
               ? this.router.navigate([
@@ -101,7 +101,7 @@ import { Headers } from '../components/header.component';
           ></div>
           <img
             src="velaJuego.png"
-            class="relative z-20 h-80 w-80 transform transition-transform duration-300 group-hover:scale-110"
+            class="relative z-20 h-80 w-80 transform transition-transform duration-300 group-hover:scale-110 "
           />
           <strong
             class="group absolute top-110 left-20 z-30 cursor-pointer rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
@@ -110,7 +110,7 @@ import { Headers } from '../components/header.component';
           </strong>
         </button>
         <button
-          class="group absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden"
+          class="group absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden cursor-pointer"
           (click)="
             authService.clienteAutenticado()
               ? this.router.navigate([

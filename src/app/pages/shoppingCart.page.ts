@@ -2,6 +2,7 @@ import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
+import { CategoryService } from '../../services/categorias.service';
 import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
@@ -53,13 +54,13 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                     <div class="flex h-28 flex-col justify-center">
                       <small class="text-xs font-medium text-gray-500">
                         {{
-                          item.id_categoria._id === '680fd248f613dc80267ba5d7'
-                            ? 'Jabones Artesanales'
-                            : 'Velas Artesanales'
+                          obtenerNombreCategoria(item.id_categoria._id)
                         }}
                       </small>
                       <h2 class="text-lg font-bold text-gray-800">
-                        {{ item.nombre || 'Producto personalizado' | titlecase}}
+                        {{
+                          item.nombre || 'Producto personalizado' | titlecase
+                        }}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small
@@ -196,7 +197,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
             </ul>
 
             <button
-              class="mt-6 w-full cursor-pointer rounded-[12px] bg-morado-600 py-3 font-semibold text-white transition-colors hover:bg-morado-700 disabled:bg-gray-400"
+              class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
               routerLink="/informacion-pago"
               [disabled]="serviceCarrito.carrito().productos.length === 0"
             >
@@ -223,7 +224,9 @@ import { carritoProducto } from '../interfaces/carrito.interface';
       <app-modal
         tipo="confirmacion"
         [titulo]="'Eliminar carrito'"
-        [mensaje]="'¿Está seguro/a de eliminar todos los productos del carrito?'"
+        [mensaje]="
+          '¿Está seguro/a de eliminar todos los productos del carrito?'
+        "
         [(mostrarModal)]="mostrarModalVaciar"
         (decision)="desicionModalVaciar($event)"
       ></app-modal>
@@ -240,6 +243,7 @@ export class ShoppingCardPage {
   public tipoProductoEliminar = signal('');
   public imagenPersonalizado = localStorage.getItem('personalizacion') ?? '';
   public mostrarModalVaciar = signal(false);
+  public servicioCategoria = inject(CategoryService);
 
   actualizarCantidadEnCarrito(
     producto_id: string,
@@ -289,5 +293,12 @@ export class ShoppingCardPage {
     this.idEliminar.set(producto_id);
     this.tipoProductoEliminar.set(tipo_producto);
     this.mostrarModal.set(true);
+  }
+
+  obtenerNombreCategoria(id: string): string {
+    const categoria = this.servicioCategoria
+      .categorias()
+      .find((cat) => cat._id === id);
+    return categoria ? categoria.nombre : 'Categoría desconocida';
   }
 }

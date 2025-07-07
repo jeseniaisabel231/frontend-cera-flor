@@ -12,6 +12,7 @@ import { FacturaService } from '../../services/facturas.service';
 import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
+import { usuario } from '../interfaces/usuario.interface';
 
 @Component({
   imports: [
@@ -28,8 +29,8 @@ import { Headers } from '../components/header.component';
     <headers></headers>
     <main class="min-h-screen bg-gray-50">
       <barranav rutaSeccionSeleccionada="perfil"></barranav>
-      <img class="h-48 w-full object-cover" src="fondoperfil.png" alt="">
-      
+      <img class="h-48 w-full object-cover" src="fondoperfil.png" alt="" />
+
       <section
         class="relative mx-auto -mt-24 flex max-w-6xl flex-col gap-8 px-4 sm:px-6 md:flex-row lg:px-8"
       >
@@ -248,7 +249,7 @@ import { Headers } from '../components/header.component';
                     placeholder="ejemplo@gmail.com"
                     [value]="perfilFormulario.value.email"
                     disabled
-                    class="placeholder-gris-300 w-full rounded-lg border px-3 py-2 outline-gris-300 border-gray-300 disabled:bg-gray-100"
+                    class="placeholder-gris-300 outline-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 disabled:bg-gray-100"
                   />
                 </div>
                 <div>
@@ -431,48 +432,6 @@ import { Headers } from '../components/header.component';
                 </div>
               </fieldset>
 
-              <!-- <section>
-                <h3 class="mb-4 text-lg font-bold text-gray-900">
-                  Cambiar contraseña
-                </h3>
-                <form class="flex flex-col gap-4">
-                  <div>
-                    <label class="mb-1 block text-sm font-bold text-gray-700">
-                      Contraseña actual
-                    </label>
-                    <input
-                      type="password"
-                      name="current-password"
-                      class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="new-password"
-                      class="mb-1 block text-sm font-bold text-gray-700"
-                    >
-                      Nueva contraseña
-                    </label>
-                    <input
-                      type="password"
-                      name="new-password"
-                      class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label class="mb-1 block text-sm font-bold text-gray-700">
-                      Confirmar nueva contraseña
-                    </label>
-                    <input
-                      type="password"
-                      id="confirm-password"
-                      name="confirm-password"
-                      class="focus:ring-morado-400 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:outline-none"
-                    />
-                  </div>
-                </form>
-              </section> -->
-
               <div class="mt-8 flex justify-end">
                 <button
                   type="button"
@@ -581,12 +540,23 @@ import { Headers } from '../components/header.component';
                                 />
                                 <div class="flex-grow">
                                   <h4 class="text-sm font-medium">
-                                    {{ item.tipo === 'normal' ? item.nombre : item.tipo === 'ia' ? 'Producto personalizado por IA' : 'Producto personalizado' }}
+                                    {{
+                                      item.tipo === 'normal'
+                                        ? item.nombre
+                                        : item.tipo === 'ia'
+                                          ? 'Producto personalizado por IA'
+                                          : 'Producto personalizado'
+                                    }}
                                   </h4>
                                   <p
                                     class="mt-1 line-clamp-2 text-xs text-gray-500"
                                   >
-                                    {{ item.descripcion ?? obtenerDescripcionProductoPersonalizado(item.ingredientes) }}
+                                    {{
+                                      item.descripcion ??
+                                        obtenerDescripcionProductoPersonalizado(
+                                          item.ingredientes
+                                        )
+                                    }}
                                   </p>
                                   <div
                                     class="mt-2 flex items-center gap-4 text-sm"
@@ -597,8 +567,7 @@ import { Headers } from '../components/header.component';
                                     <span class="text-gray-600">
                                       Precio unit.:
                                       {{
-                                        item.precio
-                                          | currency: 'USD' : 'symbol'
+                                        item.precio | currency: 'USD' : 'symbol'
                                       }}
                                     </span>
                                     <span class="font-medium">
@@ -743,10 +712,29 @@ export class ProfilePage {
   }
 
   onSubmit() {
+    const datosUsuario = this.servicioPerfil.datosUsuario();
+    Object.entries(this.perfilFormulario.value).forEach(([key , value]) => {
+
+      if ( datosUsuario[key as keyof usuario ] !== value && !value  ) {
+
+        this.errores.update((prev) => ({
+          ...prev,
+          [key]: 'Este campo no debería estar vacío',
+        }));
+      }
+    });
+    const existeErrores = Object.values(this.errores()).some((error) => {
+      return error !== '';
+    });
+    if (existeErrores) {
+      this.mostrarModalPerfil.set(true);
+      this.tipoModalPerfil.set('error');
+      this.mensajePerfil.set('Por favor, corrige los errores del formulario.');
+      return;
+    }
+
     this.carga.set(true);
-
     const formData = this.toFormData();
-
     this.servicioPerfil
       .actualizarPerfil(formData)
       .subscribe({

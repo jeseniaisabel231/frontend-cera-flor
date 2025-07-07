@@ -45,6 +45,10 @@ import { producto } from '../interfaces/producto.interface';
           <div class="mt-6 flex flex-wrap justify-evenly">
             @for (categoria of categorias; track categoria._id) {
               <article
+                [routerLink]="'/catalogo'"
+                [queryParams]="{
+                  categoria: categoria.nombre.replace(' ', '-'),
+                }"
                 class="group flex cursor-pointer flex-col items-center text-center transition-transform duration-300 hover:scale-105"
               >
                 <div
@@ -57,11 +61,7 @@ import { producto } from '../interfaces/producto.interface';
                   />
                 </div>
                 <a
-                  [routerLink]="'/catalogo'"
-                  [queryParams]="{
-                    categoria: categoria.nombre.replace(' ', '-'),
-                  }"
-                  class="mt-4 rounded-full px-5 w-60 gap-2 py-3 font-bold text-white transition-colors duration-300 flex"
+                  class="mt-4 flex w-60 gap-2 rounded-full px-5 py-3 font-bold text-white transition-colors duration-300"
                   [ngClass]="{
                     'bg-morado-500 hover:bg-morado-600': categoria.nombre
                       .toLowerCase()
@@ -112,7 +112,7 @@ import { producto } from '../interfaces/producto.interface';
             {{ titulo().replace('-', ' ') | titlecase }}
           </h2>
           <!-- Filtros de productos-->
-          <!-- <div class="mb-8 flex flex-col items-center gap-14 md:flex-row">
+          <div class="mb-8 flex flex-col items-center gap-14 md:flex-row">
             <div>
               <label for="filter" class="mr-2 font-medium text-gray-700">
                 Filtrar por:
@@ -121,7 +121,17 @@ import { producto } from '../interfaces/producto.interface';
                 id="filter"
                 class="rounded border border-gray-300 px-3 py-1 text-sm"
               >
+              @if (titulo().toLowerCase() === 'jabones-artesanales' ) {
                 <option value="">Todos</option>
+                <option value="piel seca">Piel seca</option>
+                <option value="piel grasa">Piel grasa</option>
+                <option value="piel mixta">Piel mixta</option>
+              } @else if (titulo().toLowerCase() === 'velas-artesanales') {
+                <option value="">Todos</option>
+                <option value="aromatizante">Vela aromatizante</option>
+                <option value="decorativa">Vela decorativa</option>
+                <option value="humidificación">Vela humidificante</option>
+              }
               </select>
             </div>
 
@@ -133,12 +143,11 @@ import { producto } from '../interfaces/producto.interface';
                 id="sort"
                 class="rounded border border-gray-300 px-3 py-1 text-sm"
               >
-                <option value="relevante">Más relevante</option>
                 <option value="precio_asc">Precio: menor a mayor</option>
                 <option value="precio_desc">Precio: mayor a menor</option>
               </select>
             </div>
-          </div> -->
+          </div>
 
           <!-- Grid para los productos-->
           @if (carga()) {
@@ -193,7 +202,6 @@ export class CatalogPage {
   }
 
   ngOnInit() {
-    this.cargarCategorias();
     this.rutaActiva.queryParams.subscribe((params) => {
       const categoria = params['categoria'];
       if (categoria) {
@@ -204,40 +212,14 @@ export class CatalogPage {
       }
     });
   }
-  cargarCategorias() {
-    this.serviceCategorias.obtener().subscribe({
-      next: (respuesta: any) => {
-        this.categorias = respuesta.categorias;
-      },
-    });
-  }
 
-  obtenerProductos(numeroPagina: number, limit: number) {
-    this.carga.set(true);
-    this.errorCarga.set(false);
-    this.serviceProductos
-      .obtener(numeroPagina, limit)
-      .subscribe({
-        next: (respuesta: any) => {
-          this.productos = respuesta.productos.filter(
-            (producto: producto) =>
-              producto.id_categoria.nombre.replace(' ', '-').toLowerCase() ===
-              this.titulo().toLowerCase(),
-          );
-          this.carga.set(false);
-        },
-        error: (err) => {
-          this.errorCarga.set(true);
-          this.carga.set(false);
-        },
-      })
-      .add(() => {
-        this.carga.set(false);
-      });
-  }
   recibirCantidad(cantidad: number) {
     this.cantidadProducto.set(cantidad);
   }
 
-  filtrarPorTipo(event: Event) {}
+  filtrarPorTipo(tipo: string) {
+    if(tipo) {
+      
+    }
+  }
 }

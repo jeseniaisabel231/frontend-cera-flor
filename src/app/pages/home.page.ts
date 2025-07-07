@@ -1,10 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { register } from 'swiper/element/bundle';
 import { environment } from '../../environments/environment';
@@ -311,7 +306,7 @@ register();
             class="absolute top-[58%] left-[30%] w-44 transform transition-transform duration-300 hover:scale-120 md:top-[43%] md:left-[38%] md:w-3xs lg:left-[48%]"
           />
           <a
-            class="bg-morado-600 text-amarrillo-500 hover:bg-morado-700 absolute top-[83%] left-[28%] w-50 transform rounded-2xl px-4 py-2 text-center font-bold transition-all duration-300 ease-in-out hover:scale-105 hover:text-white md:top-[45%] md:left-[70%] lg:top-[45%] lg:left-[75%] lg:py-4 xl:w-60 text-[18px]"
+            class="bg-morado-600 text-amarrillo-500 hover:bg-morado-700 absolute top-[83%] left-[28%] w-50 transform rounded-2xl px-4 py-2 text-center text-[18px] font-bold transition-all duration-300 ease-in-out hover:scale-105 hover:text-white md:top-[45%] md:left-[70%] lg:top-[45%] lg:left-[75%] lg:py-4 xl:w-60"
           >
             ¡Comienza a crear ahora!
           </a>
@@ -342,42 +337,44 @@ register();
             <div class="flex flex-col gap-4">
               <div class="border-morado-400 border-l-4 pl-4">
                 <p class="text-morado-700 font-semibold">
-                  🧠 Funcionamiento de la personalización con inteligencia
-                  artificial
+                  🧠 ¿Como funciona la personalización de productos con
+                  Inteligencia Artificial?
                 </p>
                 <p class="text-sm text-gray-600">
-                  La IA analiza las preferencias del cliente para recomendar y
-                  diseñar productos únicos.
+                  La personalización con Inteligencia Artificial (IA) se basa en
+                  tus preferencias y comportamientos de compra. Cuanto más
+                  interactúas con nuestros productos, mejor se adapta la IA a
+                  tus gustos para sugerirte ingredientes y aromas.
                 </p>
               </div>
               <div class="border-l-4 border-[#FF6EA5] pl-4">
                 <p class="text-morado-700 font-semibold">
-                  🕯️ Selección de aromas y colores
+                  🕯️ ¿Cómo puedo personalizar un producto?
                 </p>
                 <p class="text-sm text-gray-600">
-                  Los clientes pueden elegir personalmente los aromas, colores a
-                  sus productos.
+                  Para personalizar un producto, simplemente selecciona los
+                  ingredientes y aromas que más te gusten. La IA te ayudará a
+                  encontrar la combinación perfecta para ti.
                 </p>
               </div>
               <div class="border-morado-400 border-l-4 pl-4">
                 <p class="text-morado-700 font-semibold">
-                  🧴 Ingredientes utilizados
+                  🌱 ¿Qué beneficios tiene la personalización de productos?
                 </p>
                 <p class="text-sm text-gray-600">
-                  Todos los artículos se elaboran con ingredientes 100%
-                  naturales, veganos y seguros para la piel.
+                  La personalización te permite disfrutar de productos únicos y
+                  adaptados a tus preferencias. Además, contribuyes al cuidado
+                  del medio ambiente al reducir el uso de plástico.
                 </p>
               </div>
 
               <div class="border-l-4 border-[#FF6EA5] pl-4">
                 <p class="text-morado-700 font-semibold">
-                  🧼 Cuidado y mantenimiento
+                  💳 ¿Qué métodos de pago son aceptados?
                 </p>
                 <p class="text-sm text-gray-600">
-                  Se recomienda almacenar los productos en ambientes frescos y
-                  secos, protegidos de la luz solar directa. En el caso de las
-                  velas, deben utilizarse sobre superficies estables y alejadas
-                  de materiales inflamables.
+                  Por el momento, solo estamos aceptando pagos con tarjeta de
+                  crédito y débito. Pronto habilitaremos otras opciones de pago
                 </p>
               </div>
             </div>
@@ -386,47 +383,11 @@ register();
             <div class="flex flex-col gap-4">
               <div class="border-l-4 border-[#FF6EA5] pl-4">
                 <p class="text-morado-700 font-semibold">
-                  🖼️ Visualización previa del diseño
-                </p>
-                <p class="text-sm text-gray-600">
-                  El sistema genera una representación digital del producto
-                  personalizado una vez completado el formulario, permitiendo al
-                  cliente aprobar el diseño antes de confirmar la compra.
-                </p>
-              </div>
-              <div class="border-morado-400 border-l-4 pl-4">
-                <p class="text-morado-700 font-semibold">
-                  📦 Tiempos de entrega
-                </p>
-                <p class="text-sm text-gray-600">
-                  El proceso de fabricación tiene una duración de 2 a 4 días
-                  laborables. Posteriormente, el envío estándar tarda entre 3 y
-                  5 días hábiles, variando según la ubicación del destinatario.
-                </p>
-              </div>
-              <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="text-morado-700 font-semibold">💳 Opciones de pago</p>
-                <p class="text-sm text-gray-600">
-                  Se aceptan tarjetas de crédito/débito y transferencias.
-                </p>
-              </div>
-              <div class="border-morado-400 border-l-4 pl-4">
-                <p class="text-morado-700 font-semibold">
-                  🤖 Flexibilidad en la personalización
-                </p>
-                <p class="text-sm text-gray-600">
-                  Los clientes pueden optar tanto por productos prediseñados
-                  como por creaciones personalizadas asistidas por inteligencia
-                  artificial, según sus preferencias.
-                </p>
-              </div>
-              <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="text-morado-700 font-semibold">
                   📩 Soporte al cliente
                 </p>
                 <p class="text-sm text-gray-600">
                   El equipo de atención al cliente está disponible de lunes a
-                  sábado a través de múltiples canales WhatsApp y Instagram para
+                  sábado a través de múltiples canales WhatsApp e Instagram para
                   resolver cualquier consulta.
                 </p>
               </div>

@@ -17,7 +17,6 @@ export class PaymentService {
   public card!: StripeCardElement;
   private urlBackend: string = environment.urlApi;
   private http = inject(HttpClient);
-
   private stripeApiKey: string = environment.stripeApiKey;
 
   constructor() {

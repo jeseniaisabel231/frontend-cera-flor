@@ -141,18 +141,34 @@ import { ModalAvisosComponent } from './modalavisos.component';
               Seleccione el color
               <span class="text-red-500">*</span>
             </label>
-            <input
-              #inputColor
-              type="color"
-              class="focus:ring-morado-400 h-50 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
-              [class]="
-                imagenInvalida
-                  ? 'border-red-500 focus:ring-0 focus:outline-none'
-                  : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
-              "
-              [value]="color()"
-              (input)="color.set(inputColor.value); borrarError('imagen')"
-            />
+            @if (cargaColor()) {
+              <svg
+                class="animate-spin m-auto h-full"
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 -960 960 960"
+                width="24"
+                fill="#434343"
+                
+              >
+                <path
+                  d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
+                />
+              </svg>
+            } @else {
+              <input
+                #inputColor
+                type="color"
+                class="focus:ring-morado-400 h-50 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
+                [class]="
+                  imagenInvalida
+                    ? 'border-red-500 focus:ring-0 focus:outline-none'
+                    : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
+                "
+                [value]="color()"
+                (input)="color.set(inputColor.value); borrarError('imagen')"
+              />
+            }
           }
           @if (errores().imagen) {
             <small class="text-red-600">
@@ -412,6 +428,7 @@ export class FormIngredientsComponent {
   public tipoAnterior = signal<'color' | 'otro'>('otro');
   public tipo = signal<string>('');
   public carga = signal<boolean>(false);
+  public cargaColor = signal<boolean>(false);
 
   public formulario = new FormGroup({
     imagen: new FormControl<File | null>(null, Validators.required),
@@ -610,9 +627,13 @@ export class FormIngredientsComponent {
         }
 
         if (datos.tipo === 'color') {
+          this.cargaColor.set(true);
           this.servicioIngredientes
             .extraerColorDominante(datos.imagen)
-            .subscribe(({ color }) => this.color.set(color));
+            .subscribe(({ color }) => this.color.set(color))
+            .add(() => {
+              this.cargaColor.set(false);
+            });
         }
 
         if (this.acciones() === 'Visualizar') {

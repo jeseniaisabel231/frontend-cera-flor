@@ -473,7 +473,7 @@ export class WorkshopGamePage {
           },
         })
         .add(() => this.mostrarModalIA.set(false));
-    }, 1);
+    }, 10000);
   }
 
   async OnsubmitProductoPersonalizado() {

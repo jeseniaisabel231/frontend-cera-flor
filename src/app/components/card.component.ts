@@ -3,6 +3,7 @@ import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../services/carrito.service';
 import type { producto } from '../interfaces/producto.interface';
+import { CategoryService } from '../../services/categorias.service';
 
 @Component({
   imports: [RouterLink, DecimalPipe, TitleCasePipe],
@@ -21,9 +22,7 @@ import type { producto } from '../interfaces/producto.interface';
         <div class="flex w-full flex-col justify-between px-4">
           <div class="text-sm text-gray-500">
             {{
-              producto().id_categoria._id === '680fd248f613dc80267ba5d7'
-                ? 'Jabones Artesanales'
-                : 'Velas Artesanales'
+              obtenerCategoria() | titlecase
             }}
           </div>
           <div
@@ -116,10 +115,17 @@ export class Card {
   public cantidad = signal(1);
   public mostrarMensajeExito = signal(false);
   public carga = signal(false);
+  public servicioCategorias = inject(CategoryService);
 
   //metodo para incrementar
   incrementarCantidad() {
     this.cantidad.update((cantidadActual) => cantidadActual + 1);
+  }
+  obtenerCategoria() {
+    const categoria = this.servicioCategorias
+      .categorias()
+      .find((cat) => cat._id === this.producto().id_categoria._id);
+    return categoria ? categoria.nombre : 'Sin categoría';
   }
 
   decrementarCantidad() {

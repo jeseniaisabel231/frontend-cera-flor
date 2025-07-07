@@ -42,15 +42,24 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
           </svg>
         </div>
       </div>
-      <div class="mb-6 flex flex-col items-center gap-4 text-center">
-        <img
-          src="/administrador/fotoadmin.jpg"
-          class="h-[80px] w-[80px] rounded-full"
-        />
+      <div class="mb-6 flex items-center gap-2 text-center justify-center flex-col">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5Zm0 3.9a3 3 0 1 1-3 3a3 3 0 0 1 3-3m0 7.9c2 0 6 1.09 6 3.08a7.2 7.2 0 0 1-12 0c0-1.99 4-3.08 6-3.08"
+          />
+        </svg>
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
-            <span class=" text-[18px]">Admin</span>
-            <p class="text-[15px] font-semibold text-gris-300">{{correoAdmin}}</p>
+            <span class="text-md font-bold">Admin</span>
+            <p class="text-gris-300 text-xs">
+              {{ correoAdmin }}
+            </p>
           </div>
         </div>
       </div>
@@ -113,6 +122,31 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
                 />
               </svg>
               Clientes
+            </a>
+          </li>
+          <li class="flex">
+            <a
+              class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
+              routerLink="/admin/categorias"
+              [ngClass]="{
+                'bg-[#806BFF] fill-white text-white':
+                  rutaActiva() === 'categorias',
+                'text-[#3C3C3B]': rutaActiva() !== 'categorias',
+              }"
+            >
+              <svg
+                class="transition-colors duration-[50]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M10 16.5q.625 0 1.063-.437T11.5 15q0-.625-.437-1.062T10 13.5q-.625 0-1.062.438T8.5 15q0 .625.438 1.063T10 16.5m4-5q.625 0 1.063-.437T15.5 10q0-.625-.437-1.062T14 8.5q-.625 0-1.062.438T12.5 10q0 .625.438 1.063T14 11.5M4.075 21q-.7 0-1.2-.488t-.55-1.162L4.1 5.1q.1-.525.525-.863T5.5 4h13q.65 0 1.075.338T20.1 5.1l1.775 14.25q.05.675-.5 1.163t-1.2.487zM5.5 6l-1.2 9.5h15.4L18.5 6zM5.5 6h13-13z"
+                />
+              </svg>
+              Categorías
             </a>
           </li>
           <li class="flex">

@@ -24,12 +24,12 @@ import { CarritoService } from '../../services/carrito.service';
           <img
             [src]="producto.imagen"
             alt="Jabón de avena"
-            class="size-100 rounded-xl object-cover"
+            class="w-full h-auto md:h-100 md:w-100 rounded-xl object-cover"
           />
         </figure>
         <article class="wrap-anywhere">
           <h2
-            class="font-playfair mb-8 text-[20px] font-semibold text-wrap sm:text-2xl"
+            class="font-playfair mb-8 text-[20px] font-semibold text-wrap sm:text-2xl md:text-3xl"
           >
             {{ producto.nombre | titlecase }}
           </h2>
@@ -44,7 +44,7 @@ import { CarritoService } from '../../services/carrito.service';
             }
           </ul>
 
-          <div class="flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex gap-4">
               <span class="text-3xl font-bold text-purple-600">
                 $ {{ producto.precio }}

@@ -27,4 +27,20 @@ export class CategoryService {
         }),
       );
   }
+
+  actualizarCategoria(id: string, datos: any) {
+    return this.http
+      .put(`${this.urlBackend}/api/categorias/${id}`, datos, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      .pipe(
+        tap((respuesta: any) =>
+          this.categorias.update((categorias) =>
+            categorias.map((categoria) =>
+              categoria._id === id ? { ...categoria, ...respuesta.categoria } : categoria
+            )
+          )
+        )
+      );
+  }
 }

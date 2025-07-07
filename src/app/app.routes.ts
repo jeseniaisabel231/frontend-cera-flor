@@ -24,6 +24,7 @@ import { RegisterPage } from './pages/register.page';
 import { ShoppingCardPage } from './pages/shoppingCart.page';
 import { WorkshopGamePage } from './pages/workshopGame.page';
 import { CustmizedProductPage } from './pages/custmizedProduct.page';
+import { CategoriesPage } from './pages/admin/categories.page';
 
 export const routes: Routes = [
   { path: 'iniciar-sesion', component: LoginPage, canActivate: [NoAuthGuard] },
@@ -83,6 +84,11 @@ export const routes: Routes = [
       {
         path: 'ingredientes',
         component: IngredientsPage,
+        canActivate: [AdminGuard],
+      },
+      {
+        path: 'categorias',
+        component: CategoriesPage,
         canActivate: [AdminGuard],
       },
     ],

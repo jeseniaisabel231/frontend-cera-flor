@@ -17,7 +17,7 @@ import { RouterLink } from '@angular/router';
       <nav
         class="flex w-full flex-col items-center justify-center gap-y-5 border-y border-white py-4 text-[#FFFFEC] lg:h-30 lg:w-auto lg:border-x lg:border-y-0 lg:px-20"
       >
-        <ul class="flex flex-row gap-8">
+        <ul class="flex flex-col text-center md:flex-row gap-4 md:gap-8">
           <li><a routerLink="/inicio">Inicio</a></li>
           <li>
             <a

@@ -25,9 +25,28 @@ import { decodificarToken } from '../utils/decodificarToken';
         </a>
 
         <div class="flex w-4/5 cursor-pointer justify-end gap-x-7">
+          <button
+            class="lg:hidden"
+            (click)="mobileMenuVisible.set(!mobileMenuVisible())"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              ></path>
+            </svg>
+          </button>
           <div class="relative flex w-full justify-end">
             <input
-              class="border-gris-500 h-10 w-full rounded-[15px] border bg-white p-2 pr-10 pl-4 outline-[#3C3C3B] sm:w-3/5"
+              class="border-gris-500 h-10 w-full rounded-[15px] border bg-white p-2 pr-10 pl-4 outline-[#3C3C3B] sm:w-3/5 md:w-2/5"
               placeholder="Buscar productos...."
               id="search"
               name="search"
@@ -239,7 +258,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                     {{ serviceAuth.datosUsuario().nombre | titlecase }}
                   </span>
                 } @else {
-                  <div class="font-semibold">Iniciar sesión/Registrarse</div>
+                  <div class="font-semibold hidden sm:block">Iniciar sesión/Registrarse</div>
                 }
               </span>
             </button>
@@ -278,8 +297,10 @@ import { decodificarToken } from '../utils/decodificarToken';
       </div>
       <nav
         class="bg-morado-500 flex h-14 w-full items-center justify-center text-white"
+        [class.hidden]="!mobileMenuVisible()"
+        [class.lg:block]="true"
       >
-        <ul class="flex flex-row gap-14 font-semibold">
+        <ul class="flex flex-col lg:flex-row gap-4 lg:gap-14 font-semibold">
           <li class="relative">
             <a
               routerLink="/inicio"
@@ -338,6 +359,7 @@ export class Headers {
   public serviceCarrito = inject(CarritoService);
   public usuarioAutenticado = decodificarToken();
   public menuVisible = signal(false);
+  public mobileMenuVisible = signal(false);
   public router = inject(Router);
   public servicioRuta = inject(ActivatedRoute);
   public rutaActiva = this.servicioRuta.snapshot.url[0]?.path;

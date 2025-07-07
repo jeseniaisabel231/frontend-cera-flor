@@ -50,7 +50,7 @@ register();
           Beneficios o características clave
         </h2>
 
-        <div class="mx-auto grid max-w-7xl gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div class="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <!-- Ingredientes Naturales -->
           <div class="rounded-t-4xl bg-green-100 p-6 text-center">
             <div
@@ -173,7 +173,7 @@ register();
             Nuevos Productos
           </h2>
           <div
-            class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            class="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           >
             @for (
               producto of serviceProductos.productosPorCantidad(4);
@@ -323,7 +323,7 @@ register();
           </h2>
 
           <!-- Layout de 3 columnas -->
-          <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
+          <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:grid-cols-3">
             <!-- Columna izquierda con imágenes -->
             <div class="flex flex-col items-center">
               <img

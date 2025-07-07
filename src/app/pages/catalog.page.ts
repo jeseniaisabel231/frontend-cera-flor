@@ -41,7 +41,7 @@ import { producto } from '../interfaces/producto.interface';
             Selecciona una categoría
           </h2>
 
-          <div class="mt-6 flex flex-wrap justify-evenly">
+          <div class="mt-6 flex flex-col md:flex-row flex-wrap justify-evenly items-center gap-4">
             @for (
               categoria of serviceCategorias.categorias();
               track categoria._id
@@ -114,7 +114,7 @@ import { producto } from '../interfaces/producto.interface';
             {{ titulo().replace('-', ' ') | titlecase }}
           </h2>
           <!-- Filtros de productos-->
-          <div class="mb-8 flex flex-col items-center gap-14 md:flex-row">
+          <div class="mb-8 flex flex-col items-center gap-4 md:flex-row md:gap-14">
             <div>
               <label for="filter" class="mr-2 font-medium text-gray-700">
                 Filtrar por:

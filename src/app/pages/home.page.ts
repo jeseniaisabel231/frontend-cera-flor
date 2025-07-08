@@ -323,13 +323,13 @@ register();
           </h2>
 
           <!-- Layout de 3 columnas -->
-          <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2 ">
             <!-- Columna izquierda con imágenes -->
             <div class="flex flex-col items-center">
               <img
                 src="componente3-vela.jpg"
                 alt="Vela artesanal"
-                class="w-58 rounded-lg shadow-md"
+                class="w-50 rounded-lg shadow-md"
               />
             </div>
 
@@ -379,19 +379,7 @@ register();
               </div>
             </div>
 
-            <!-- Columna derecha con preguntas -->
-            <div class="flex flex-col gap-4">
-              <div class="border-l-4 border-[#FF6EA5] pl-4">
-                <p class="text-morado-700 font-semibold">
-                  📩 Soporte al cliente
-                </p>
-                <p class="text-sm text-gray-600">
-                  El equipo de atención al cliente está disponible de lunes a
-                  sábado a través de múltiples canales WhatsApp e Instagram para
-                  resolver cualquier consulta.
-                </p>
-              </div>
-            </div>
+            
           </div>
         </div>
       </section>

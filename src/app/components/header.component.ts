@@ -300,7 +300,7 @@ import { decodificarToken } from '../utils/decodificarToken';
         [class.hidden]="!mobileMenuVisible()"
         [class.lg:block]="true"
       >
-        <ul class="flex flex-col lg:flex-row gap-4 lg:gap-14 font-semibold">
+        <ul class="flex flex-col lg:flex-row gap-4 lg:gap-14 font-semibold items-center justify-center h-full">
           <li class="relative">
             <a
               routerLink="/inicio"

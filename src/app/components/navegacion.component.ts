@@ -42,7 +42,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
           </svg>
         </div>
       </div>
-      <div class="mb-6 flex items-center gap-2 text-center justify-center flex-col">
+      <div
+        class="mb-6 flex flex-col items-center justify-center gap-2 text-center"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="64"
@@ -316,8 +318,8 @@ export class Navegacion {
   //servicio de ruta
   public servicioRuta = inject(ActivatedRoute);
   public correoAdmin = localStorage.getItem('email') || '';
-  public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
-  constructor(private router: Router) {}
+  public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0]?.path);
+  public router = inject(Router)
   // Método para alternar el estado del menú
   public toggleMenu(): void {
     this.mostrar.set(!this.mostrar());

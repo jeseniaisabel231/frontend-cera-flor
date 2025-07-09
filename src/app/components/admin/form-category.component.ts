@@ -118,6 +118,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               rows="4"
               class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="descripcion"
+              data-testid="input-descripcion"
             ></textarea>
 
             @if (descripcionInvalida) {
@@ -132,6 +133,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           <button
             class="h-10 w-auto cursor-pointer rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
+            data-testid="actualizar-categoria"
           >
             @if (carga()) {
               <svg
@@ -186,20 +188,20 @@ export class FormCategoryComponent {
       Validators.required,
       Validators.pattern(/^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){10})[\s\S]{10,500}$/),
     ]),
-    imagen: new FormControl<File | string | null>(null, Validators.required),
+    imagen: new FormControl<File | string | null>(null),
   });
 
   constructor() {
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
-
+        dialog?.showModal?.();
         const {
           nombre = '',
           descripcion = '',
           imagen = null,
         } = this.mostrarDatos() || {};
-
+  
         this.formulario.patchValue({
           nombre,
           descripcion,
@@ -207,7 +209,7 @@ export class FormCategoryComponent {
         });
         this.imagePreview = imagen;
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
 

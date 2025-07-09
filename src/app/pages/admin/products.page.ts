@@ -142,6 +142,7 @@ import { producto } from '../../interfaces/producto.interface';
             <button
               class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 cursor-pointer"
               (click)="abrirFormRegistrar()"
+              data-testid="registrar-producto"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -159,6 +160,7 @@ import { producto } from '../../interfaces/producto.interface';
             </button>
           </div>
           <formulario
+            data-testid="formulario-producto"
             [(mostrarModal)]="mostrarModal"
             [acciones]="accionAsignada()"
             [servicioProductos]="productosService"
@@ -177,6 +179,7 @@ import { producto } from '../../interfaces/producto.interface';
               @for (item of productosService.datosBuscados(); track $index) {
                 <div
                   class="mx-auto flex min-h-[400px] w-full max-w-[305px] flex-col rounded-xl border border-gray-300"
+                  data-testid="tarjeta-producto"
                 >
                   <figure
                     class="aspect-square overflow-hidden border-b border-gray-300"
@@ -201,9 +204,9 @@ import { producto } from '../../interfaces/producto.interface';
                       </small>
                     </div>
                     <h3 class="mt-2 text-lg font-bold overflow-hidden text-ellipsis">{{ item?.nombre }}</h3>
-                    <p class="text-lg font-bold text-purple-600">
+                    <span class="text-lg font-bold text-purple-600">
                       $ {{ item?.precio }}
-                    </p>
+                    </span>
                     <p class="mt-1 flex items-center text-sm text-green-600">
                       <span
                         class="mr-2 h-2 w-2 rounded-full bg-green-500"

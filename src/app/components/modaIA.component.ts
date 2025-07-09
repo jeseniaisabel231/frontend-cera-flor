@@ -49,10 +49,11 @@ export class ModaIAComponent {
 
   constructor() {
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
+        dialog?.showModal?.();
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
 

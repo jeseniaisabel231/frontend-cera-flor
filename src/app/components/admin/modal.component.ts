@@ -109,7 +109,13 @@ export type Actions = 'Registrar' | 'Actualizar' | 'Visualizar';
                           />
                           <div class="flex flex-col">
                             <h4 class="font-semibold text-gray-900">
-                              {{ prod?.nombre ? prod.nombre : prod.tipo === 'ia' ? 'Producto personalizado por IA' : 'Producto personalizado' }}
+                              {{
+                                prod?.nombre
+                                  ? prod.nombre
+                                  : prod.tipo === 'ia'
+                                    ? 'Producto personalizado por IA'
+                                    : 'Producto personalizado'
+                              }}
                             </h4>
                             <p class="text-xs text-gray-600">
                               {{
@@ -214,10 +220,11 @@ export class ModalComponent {
 
   constructor() {
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
+        dialog?.showModal?.();
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
   }

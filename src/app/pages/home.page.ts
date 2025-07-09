@@ -20,16 +20,10 @@ register();
       <!-- elementos dentro del banner -->
 
       <swiper-container
-        [pagination]="{ clickable: true }"
-        speed="500"
-        centered-slides
-        loop
-        init
-        navigation
         class="mySwiper h-[500px] w-full"
       >
         @for (
-          promocion of promocionesResource.value().promociones;
+          promocion of promocionesResource.value()?.promociones;
           track $index
         ) {
           <swiper-slide>
@@ -37,6 +31,7 @@ register();
               [src]="promocion.imagen"
               [alt]="promocion.nombre"
               class="w-full"
+              data-testid="imagen-promocion"
             />
           </swiper-slide>
         }
@@ -174,12 +169,13 @@ register();
           </h2>
           <div
             class="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            data-testid="productos-destacados"
           >
             @for (
               producto of serviceProductos.productosPorCantidad(4);
               track producto._id
             ) {
-              <card [producto]="producto"></card>
+              <card [producto]="producto" data-testid="card"></card>
             }
           </div>
         </div>
@@ -318,6 +314,7 @@ register();
           <!-- Título centrado -->
           <h2
             class="font-playfair mb-8 text-center text-[20px] font-semibold sm:text-2xl"
+            data-testid="titulo-faq"
           >
             Preguntas Frecuentes
           </h2>
@@ -335,7 +332,7 @@ register();
 
             <!-- Columna central con preguntas -->
             <div class="flex flex-col gap-4">
-              <div class="border-morado-400 border-l-4 pl-4">
+              <div class="border-morado-400 border-l-4 pl-4" data-testid="faq-item">
                 <p class="text-morado-700 font-semibold">
                   🧠 ¿Como funciona la personalización de productos con
                   Inteligencia Artificial?
@@ -347,7 +344,7 @@ register();
                   tus gustos para sugerirte ingredientes y aromas.
                 </p>
               </div>
-              <div class="border-l-4 border-[#FF6EA5] pl-4">
+              <div class="border-l-4 border-[#FF6EA5] pl-4" data-testid="faq-item">
                 <p class="text-morado-700 font-semibold">
                   🕯️ ¿Cómo puedo personalizar un producto?
                 </p>
@@ -357,7 +354,7 @@ register();
                   encontrar la combinación perfecta para ti.
                 </p>
               </div>
-              <div class="border-morado-400 border-l-4 pl-4">
+              <div class="border-morado-400 border-l-4 pl-4" data-testid="faq-item">
                 <p class="text-morado-700 font-semibold">
                   🌱 ¿Qué beneficios tiene la personalización de productos?
                 </p>
@@ -368,7 +365,7 @@ register();
                 </p>
               </div>
 
-              <div class="border-l-4 border-[#FF6EA5] pl-4">
+              <div class="border-l-4 border-[#FF6EA5] pl-4" data-testid="faq-item">
                 <p class="text-morado-700 font-semibold">
                   💳 ¿Qué métodos de pago son aceptados?
                 </p>

@@ -77,6 +77,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                 name="email"
                 formControlName="email"
                 (input)="borrarError()"
+                data-testid="email-input"
               />
             </div>
             @if (error().email) {
@@ -129,6 +130,7 @@ import { decodificarToken } from '../utils/decodificarToken';
                 name="password"
                 formControlName="password"
                 (input)="borrarError()"
+                data-testid="password-input"
               />
               
 
@@ -182,6 +184,7 @@ import { decodificarToken } from '../utils/decodificarToken';
 
           <button
             class="relative inline-flex h-[46px] w-2/3 overflow-hidden rounded-[15px] p-[1px] cursor-pointer"
+            data-testid="login-button"
           >
             <span
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"
@@ -244,6 +247,7 @@ import { decodificarToken } from '../utils/decodificarToken';
         [mensaje]="mensaje()"
         [tipo]="tipoRespuesta()"
         [reload]="true"
+        data-testid="modal-login"
       ></app-modal>
     </main>
     <footeer></footeer>

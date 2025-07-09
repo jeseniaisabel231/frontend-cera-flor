@@ -25,6 +25,7 @@ import { categorias } from '../../interfaces/categoria.interface';
           ) {
             <div
               class="mx-auto flex max-h-110 flex-col justify-between rounded-xl border border-gray-300"
+              data-testid="tarjeta-categoria"
             >
               <div class="max-h-3/5">
                 <figure
@@ -52,6 +53,7 @@ import { categorias } from '../../interfaces/categoria.interface';
                   class="h-10 w-auto cursor-pointer rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
                   (click)="abrirFormEditar(categoria)"
                   title="Editar producto"
+                  data-testid="editar"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -77,6 +79,7 @@ import { categorias } from '../../interfaces/categoria.interface';
       [(mostrarModal)]="mostrarModal"
       [mostrarDatos]="datosFormulario()"
       [idRegistro]="idParaEditar()"
+      data-testid="formulario-categoria"
     ></form-category>
   `,
 })

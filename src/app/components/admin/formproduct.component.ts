@@ -133,6 +133,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 class="text-sm"
                 (input)="onFileChange($event)"
                 [value]="formulario.get('imagen')?.value ?? ''"
+                data-testid="input-imagen"
               />
             </div>
             @if (errores().imagen) {
@@ -171,6 +172,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="nombre"
               (input)="borrarError('nombre')"
+              data-testid="input-nombre"
             />
             <div>
               @if (errores().nombre) {
@@ -204,6 +206,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
               class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
               formControlName="beneficios"
               (input)="borrarError('beneficios')"
+              data-testid="input-beneficios"
             ></textarea>
             <div class="w-[215px] break-words">
               @if (errores().beneficios) {
@@ -241,6 +244,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             class="placeholder-gris-200 w-full rounded-lg border p-2 focus:outline-none"
             formControlName="descripcion"
             (input)="borrarError('descripcion')"
+            data-testid="input-descripcion"
           ></textarea>
           @if (errores().descripcion) {
             <small class="text-red-600">
@@ -279,6 +283,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             formControlName="stock"
             class="accent-indigo-400"
             (input)="borrarError('stock')"
+            data-testid="input-stock"
           />
           @if (errores().stock) {
             <small class="text-red-600">
@@ -316,6 +321,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 ? 'border-red-500 focus:ring-red-500'
                 : 'focus:ring-morado-400 border-gray-300'
             "
+            data-testid="select-categoria"
           >
             <option selected value="" disabled hidden>
               Selecciona una categoría
@@ -350,7 +356,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
               "
               class="placeholder-gris-200 w-full [appearance:textfield] rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               formControlName="precio"
-              (input)="eliminarLetras($event)"
+              (input)="eliminarLetras($event); borrarError('precio')"
+              data-testid="input-precio"
             />
           </div>
           <div class="w-[215px] break-words">
@@ -402,6 +409,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                           ingredientesSeleccionados().includes(ingrediente._id)
                         "
                         (input)="borrarError('ingredientes')"
+                        data-testid="input-ingrediente"
                       />
                       {{ ingrediente?.nombre }}
                     </label>
@@ -438,6 +446,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
                     (change)="borrarError('aroma')"
+                    data-testid="select-aroma"
                   >
                     <option selected value="" disabled hidden>
                       Selecciona un aroma
@@ -477,6 +486,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                         : 'focus:ring-morado-400 border-gray-300 focus:ring-1'
                     "
                     (change)="borrarError('tipo')"
+                    data-testid="select-tipo"
                   >
                     <option
                       class="text-gris-200"
@@ -520,7 +530,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
           @if (acciones() !== 'Visualizar') {
             <button
               class="h-10 w-auto cursor-pointer rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
-            >
+              data-testid="boton-accion"
+              >
               @if (carga()) {
                 <svg
                   class="animate-spin"
@@ -718,9 +729,9 @@ export class FormProducto {
     });
 
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
-
+        dialog?.showModal?.();
         this.errores.set({
           imagen: '',
           nombre: '',
@@ -734,7 +745,7 @@ export class FormProducto {
           tipo: '',
         });
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
 

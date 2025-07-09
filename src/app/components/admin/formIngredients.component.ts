@@ -538,8 +538,9 @@ export class FormIngredientsComponent {
     });
 
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
+        dialog?.showModal?.();
         this.errores.set({
           imagen: '',
           nombre: '',
@@ -549,7 +550,7 @@ export class FormIngredientsComponent {
           id_categoria: '',
         });
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
 

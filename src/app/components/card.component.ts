@@ -23,11 +23,11 @@ import type { producto } from '../interfaces/producto.interface';
           <div class="text-sm text-gray-500">
             {{ obtenerCategoria() | titlecase }}
           </div>
-          <div
+          <h2
             class="overflow-hidden text-[17px] font-bold text-ellipsis whitespace-nowrap text-gray-800"
           >
             {{ producto().nombre | titlecase }}
-          </div>
+          </h2>
           <div class="flex w-full items-center gap-2">
             <small
               class="overflow-hidden rounded-full bg-[#9ffedb] px-3 py-1 text-xs font-bold text-ellipsis whitespace-nowrap"

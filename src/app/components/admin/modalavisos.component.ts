@@ -88,7 +88,7 @@ import {
         <div class="flex gap-4">
           @if (tipo() === 'confirmacion') {
             <button
-              (click)="confirmar.emit(); close();realizarDecision(true)"
+              (click)="confirmar.emit(); close(); realizarDecision(true)"
               class="cursor-pointer rounded-[10px] bg-red-500 px-5 py-2 font-bold text-white transition-colors hover:bg-red-600"
             >
               Eliminar
@@ -103,6 +103,7 @@ import {
             <button
               (click)="realizarDecision(true)"
               class="cursor-pointer rounded-[10px] bg-green-400 px-5 py-2 font-bold text-white transition-colors hover:bg-green-500"
+              data-testid="boton-aceptar"
             >
               Aceptar
             </button>
@@ -149,10 +150,11 @@ export class ModalAvisosComponent {
 
   constructor() {
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
+        dialog?.showModal?.();
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
   }

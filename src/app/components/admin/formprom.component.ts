@@ -232,14 +232,15 @@ export class FormProm {
     });
 
     effect(() => {
+      const dialog = this.modal()?.nativeElement;
       if (this.mostrarModal()) {
-        this.modal()?.nativeElement.showModal();
+        dialog?.showModal?.();
         this.errores.set({
           nombre: '',
           imagen: '',
         });
       } else {
-        this.modal()?.nativeElement.close();
+        dialog?.close?.();
       }
     });
 

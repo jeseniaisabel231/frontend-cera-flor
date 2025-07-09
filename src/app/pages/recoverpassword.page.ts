@@ -68,6 +68,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                       ? 'border-red-400 text-red-400 outline-red-400'
                       : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
                   "
+                  data-testid="password-input"
                 />
                 <svg
                   class="absolute inset-y-0 right-4 my-10 cursor-pointer"
@@ -142,6 +143,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                       ? 'border-red-400 text-red-400 outline-red-400'
                       : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
                   "
+                  data-testid="confirm-password-input"
                 />
                 <svg
                   class="absolute inset-y-0 right-4 my-10 cursor-pointer"
@@ -204,6 +206,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                       ? 'border-red-400 text-red-400 outline-red-400'
                       : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
                   "
+                  data-testid="codigo-input"
                 />
                 @if (codigoInvalido) {
                   <small class="text-red-400">
@@ -219,6 +222,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
 
             <button
               class="hover:bg-morado-600 relative inline-flex h-[46px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-[15px] bg-[#9F93E7] p-[1px] px-3 py-1 font-medium text-white backdrop-blur-3xl transition-colors duration-500"
+              data-testid="reset-button"
             >
               @if (carga()) {
                 <svg
@@ -271,6 +275,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
                     ? 'border-red-400 text-red-400 outline-red-400'
                     : 'border-[#878787] text-[#3C3C3B] outline-[#3C3C3B]'
                 "
+                data-testid="email-input"
               />
 
               <div class="absolute top-3 left-3 cursor-pointer text-gray-400">
@@ -306,6 +311,7 @@ import { ModalAvisosComponent } from '../components/admin/modalavisos.component'
             <button
               type="submit"
               class="hover:bg-morado-600 relative inline-flex h-[46px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-[15px] bg-[#9F93E7] p-[1px] px-3 py-1 font-medium text-white backdrop-blur-3xl transition-colors duration-500"
+              data-testid="send-email-button"
             >
               @if (loading()) {
                 <svg

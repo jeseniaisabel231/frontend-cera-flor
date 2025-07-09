@@ -66,6 +66,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                             ? 'border-[#4ab763] text-[#4ab763]'
                             : 'border-[#f44336] text-[#f44336]'
                         "
+                        data-testid="dato-estado"
                       >
                         <span>{{ fila[columna] }}</span>
                       </div>
@@ -90,6 +91,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                         ? 'pendiente o finalizado'
                         : 'activo o inactivo'
                     "
+                    data-testid="boton-estado"
                   >
                     <switch [estado]="verificarEstado(fila)"></switch>
                   </button>
@@ -126,6 +128,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
       (decision)="almacenarDesicion($event)"
       tipo="decidir"
       [mensaje]="mensajeEstado()"
+      data-testid="modal-avisos"
     ></app-modal>
 
     <modal

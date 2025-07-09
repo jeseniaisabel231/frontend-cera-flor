@@ -9,21 +9,23 @@ import { provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../../services/auth.service';
 import { routes } from '../../app.routes';
+import { FormProducto } from '../../components/admin/formproduct.component';
 import { ProductsPage } from './products.page';
 
 const token =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDNjNTFmYmJjNTU2NmIzZjJiMWU0MSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzUyMDE3NzI2LCJleHAiOjE3NTIwMjEzMjZ9.EcFCwy3v1kG8ARdQiwK0Kvr6igZSSQaNPcQLYvkhRo8';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDNjNTFmYmJjNTU2NmIzZjJiMWU0MSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzUyMDQwMTQ0LCJleHAiOjE3NTIwNDM3NDR9.ZjLc41W1BABCdDR_INZQ5Mk9W3MB21xqyEaOb3kWYio';
 
 describe('Página de administración de productos', () => {
   let component: ProductsPage;
   let fixture: ComponentFixture<ProductsPage>;
+
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
     localStorage.setItem('token', token);
 
     TestBed.configureTestingModule({
-      imports: [ProductsPage],
+      imports: [ProductsPage, FormProducto],
       providers: [
         provideRouter(routes),
         provideHttpClient(),
@@ -37,6 +39,8 @@ describe('Página de administración de productos', () => {
 
     fixture = TestBed.createComponent(ProductsPage);
     component = fixture.componentInstance;
+
+    const fixtureForm = TestBed.createComponent(FormProducto);
 
     const reqCategorias = httpTestingController.match(
       `${environment.urlApi}/api/categorias`,
@@ -96,7 +100,7 @@ describe('Página de administración de productos', () => {
 
     expect(botonRegistrar).toBeTruthy();
 
-    botonRegistrar.dispatchEvent(new MouseEvent('click'));
+    botonRegistrar.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
     fixture.detectChanges();
 
@@ -135,7 +139,7 @@ describe('Página de administración de productos', () => {
     ) as HTMLInputElement;
 
     categoriaSelect.value = mockCategoriesResponse.categorias[0]._id;
-    categoriaSelect.dispatchEvent(new Event('change'));
+    categoriaSelect.dispatchEvent(new Event('change', { bubbles: true }));
 
     fixture.detectChanges();
 
@@ -151,34 +155,39 @@ describe('Página de administración de productos', () => {
       '[data-testid="select-tipo"]',
     ) as HTMLSelectElement;
 
-     const fileList = { 0: { name: 'producto-imagen', size: 500001 } }
+    const imagen = new File([''], 'imagen.jpg', {
+      type: 'image/jpeg',
+    });
 
-    const file = new File([''], 'producto-imagen.jpg', { type: 'image/jpeg' });
+    Object.defineProperty(imagenInput, 'files', {
+      value: [imagen],
+    });
 
     nombreInput.value = 'Nuevo Producto';
     beneficiosInput.value =
-      'Beneficio numero 1, Beneficio numero 2, Beneficio numero 3';
+      'Beneficio numero 1; Beneficio numero 2; Beneficio numero 3';
     descripcionInput.value =
       'Descripción del nuevo producto con ingredientes naturales';
     stockInput.value = '100';
     precioInput.value = '10.99';
-
-    ingredientesCheckboxes.forEach((checkbox) => {
+    ingredientesCheckboxes.forEach((checkbox, index) => {
       checkbox.checked = true;
-      checkbox.dispatchEvent(new Event('input'));
+      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
-    tipoSelect.value = 'piel grasa';
+    tipoSelect.value = 'piel seca';
     aromaSelect.value = mockIngredientsResponse.ingredientes[0].nombre;
 
-    imagenInput.dispatchEvent(new Event('change'));
-    nombreInput.dispatchEvent(new Event('input'));
-    beneficiosInput.dispatchEvent(new Event('input'));
-    descripcionInput.dispatchEvent(new Event('input'));
-    stockInput.dispatchEvent(new Event('input'));
-    precioInput.dispatchEvent(new Event('input'));
-    aromaSelect.dispatchEvent(new Event('change'));
-    tipoSelect.dispatchEvent(new Event('change'));
+    imagenInput.dispatchEvent(new Event('change', { bubbles: true }));
+    nombreInput.dispatchEvent(new Event('input', { bubbles: true }));
+    beneficiosInput.dispatchEvent(new Event('input', { bubbles: true }));
+    descripcionInput.dispatchEvent(new Event('input', { bubbles: true }));
+    stockInput.dispatchEvent(new Event('input', { bubbles: true }));
+    precioInput.dispatchEvent(new Event('input', { bubbles: true }));
+    aromaSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    tipoSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+    fixture.detectChanges();
 
     const botonGuardar = formulario.querySelector(
       '[data-testid="boton-accion"]',
@@ -187,7 +196,7 @@ describe('Página de administración de productos', () => {
     expect(botonGuardar).toBeTruthy();
     expect(botonGuardar.textContent).toContain('Registrar producto');
 
-    botonGuardar.dispatchEvent(new MouseEvent('click'));
+    botonGuardar.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
     fixture.detectChanges();
 

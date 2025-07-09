@@ -42,10 +42,10 @@ describe('Página de administración de productos', () => {
       `${environment.urlApi}/api/categorias`,
     );
 
-		reqCategorias.forEach((req) => {
-			expect(req.request.method).toBe('GET');
-			req.flush(mockCategoriesResponse);
-		});
+    reqCategorias.forEach((req) => {
+      expect(req.request.method).toBe('GET');
+      req.flush(mockCategoriesResponse);
+    });
 
     fixture.detectChanges();
 
@@ -134,8 +134,6 @@ describe('Página de administración de productos', () => {
       '[data-testid="input-precio"]',
     ) as HTMLInputElement;
 
-		
-
     categoriaSelect.value = mockCategoriesResponse.categorias[0]._id;
     categoriaSelect.dispatchEvent(new Event('change'));
 
@@ -145,7 +143,7 @@ describe('Página de administración de productos', () => {
       '[data-testid="input-ingrediente"]',
     ) as NodeListOf<HTMLInputElement>;
 
-		const aromaSelect = formulario.querySelector(
+    const aromaSelect = formulario.querySelector(
       '[data-testid="select-aroma"]',
     ) as HTMLSelectElement;
 
@@ -153,15 +151,9 @@ describe('Página de administración de productos', () => {
       '[data-testid="select-tipo"]',
     ) as HTMLSelectElement;
 
-    const archivoImagen = new File(['imagen-de-test'], 'test.jpg', {
-      type: 'image/jpeg',
-    });
+     const fileList = { 0: { name: 'producto-imagen', size: 500001 } }
 
-    const event = {
-      target: {
-        files: [archivoImagen],
-      },
-    };
+    const file = new File([''], 'producto-imagen.jpg', { type: 'image/jpeg' });
 
     nombreInput.value = 'Nuevo Producto';
     beneficiosInput.value =

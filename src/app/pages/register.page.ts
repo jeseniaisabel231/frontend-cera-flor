@@ -70,6 +70,7 @@ import { Headers } from '../components/header.component';
                   id="nombre"
                   formControlName="nombre"
                   (input)="borrarError('nombre')"
+                  data-testid="nombre-input"
                 />
 
                 @if (errores().nombre) {
@@ -120,6 +121,7 @@ import { Headers } from '../components/header.component';
                   id="apellido"
                   formControlName="apellido"
                   (input)="borrarError('apellido')"
+                  data-testid="apellido-input"
                 />
                 @if (errores().apellido) {
                   <small class="text-red-600">Este campo es obligatorio.</small>
@@ -171,6 +173,7 @@ import { Headers } from '../components/header.component';
                   id="email"
                   formControlName="email"
                   (input)="borrarError('email')"
+                  data-testid="email-input"
                 />
                 @if (errores().email) {
                   <small class="text-red-600">Este campo es obligatorio.</small>
@@ -200,10 +203,11 @@ import { Headers } from '../components/header.component';
                     "
                     type="radio"
                     id="femenino"
-                    value="Femenino"
+                    value="femenino"
                     formControlName="genero"
                     class="mr-2"
                     (input)="borrarError('genero')"
+                    data-testid="genero-input"
                   />
                   <label for="femenino" class="mr-4">Femenino</label>
 
@@ -215,10 +219,11 @@ import { Headers } from '../components/header.component';
                         : 'border-[#878787] outline-[#3C3C3B]'
                     "
                     id="masculino"
-                    value="Masculino"
+                    value="masculino"
                     formControlName="genero"
                     class="mr-2"
                     (input)="borrarError('genero')"
+                    data-testid="genero-input"
                   />
                   <label for="masculino">Masculino</label>
                 </div>
@@ -271,6 +276,7 @@ import { Headers } from '../components/header.component';
                   id="password"
                   formControlName="password"
                   (input)="borrarError('password')"
+                  data-testid="password-input"
                 />
                 @if (errores().password) {
                   <small class="text-red-600">Este campo es obligatorio.</small>
@@ -346,6 +352,7 @@ import { Headers } from '../components/header.component';
                   placeholder="T4!s9vL@qZ#8pR"
                   id="confirmarPassword"
                   (input)="borrarError('confirmarPassword')"
+                  data-testid="confirmar-password-input"
                 />
                 <svg
                   class="absolute inset-y-0 right-4 my-10 cursor-pointer"
@@ -388,6 +395,7 @@ import { Headers } from '../components/header.component';
           </div>
           <button
             class="relative mt-4 inline-flex h-12 w-[300px] overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none md:w-1/3 cursor-pointer"
+            data-testid="boton-registrar"
           >
             <span
               class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"

@@ -70,7 +70,7 @@ export class ProductosService {
       .pipe(tap((respuesta: any) => this.productos.set(respuesta.productos)));
   }
 
-  registrar(datos: producto) {
+  registrar(datos: FormData) {
     return this.http
       .post(`${this.urlBackend}/api/productos`, datos, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -96,7 +96,7 @@ export class ProductosService {
       );
   }
 
-  editar(id: string, datos: producto) {
+  editar(id: string, datos: FormData) {
     return this.http
       .put(`${this.urlBackend}/api/productos/${id}`, datos, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

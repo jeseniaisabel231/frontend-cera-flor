@@ -109,6 +109,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
                 titulo="venta"
                 acciones="Visualizar"
                 [servicio]="serviceVentas"
+                data-testid="tabla-ventas"
               ></tabla>
             </div>
           } @else {

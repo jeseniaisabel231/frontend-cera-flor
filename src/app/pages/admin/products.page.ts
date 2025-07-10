@@ -163,7 +163,6 @@ import { producto } from '../../interfaces/producto.interface';
             data-testid="formulario-producto"
             [(mostrarModal)]="mostrarModal"
             [acciones]="accionAsignada()"
-            [servicioProductos]="productosService"
             [mostrarDatos]="datosFormulario()"
             [idRegistro]="idParaEditar()"
           />

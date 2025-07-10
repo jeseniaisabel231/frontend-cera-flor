@@ -73,6 +73,7 @@ import type { producto } from '../interfaces/producto.interface';
         <button
           (click)="agregarAlCarrito()"
           class="bg-morado-600 hover:bg-morado-700 flex w-full cursor-pointer items-center justify-center rounded-2xl py-2 font-bold text-white transition"
+          data-testid="boton-agregar"
         >
           @if (carga()) {
             <svg

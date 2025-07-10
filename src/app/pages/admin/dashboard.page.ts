@@ -32,7 +32,9 @@ import { Navegacion } from '../../components/navegacion.component';
                 fill="#3C3C3B"
               />
             </svg>
-            <p class="text-4xl font-bold">
+            <p class="text-4xl font-bold"
+              data-testid="total-clientes"
+            >
               {{ numeroUsuarios() }}
               <span class="ml-1 text-base font-normal">clientes</span>
             </p>
@@ -54,7 +56,9 @@ import { Navegacion } from '../../components/navegacion.component';
                 fill="#3C3C3B"
               />
             </svg>
-            <p class="text-4xl font-bold">
+            <p class="text-4xl font-bold"
+              data-testid="total-ventas"
+            >
               {{ numeroVentas() }}
               <span class="ml-1 text-base font-normal">productos</span>
             </p>
@@ -75,7 +79,9 @@ import { Navegacion } from '../../components/navegacion.component';
                 fill="#3C3C3B"
               />
             </svg>
-            <p class="text-4xl font-bold">
+            <p class="text-4xl font-bold"
+              data-testid="total-productos"
+            >
               {{ productosVendidos() }}
               <span class="text-base font-normal">productos activos</span>
             </p>
@@ -87,10 +93,12 @@ import { Navegacion } from '../../components/navegacion.component';
               class="col-span-3 flex h-[340px] w-full justify-center rounded-[18px] bg-white p-4"
             >
               <canvas
+                chartId="ingresos"
                 baseChart
                 [data]="datos()"
                 [options]="opciones()"
                 [type]="'line'"
+                data-testid="ingresos-canvas"
               ></canvas>
             </div>
             <div
@@ -98,10 +106,12 @@ import { Navegacion } from '../../components/navegacion.component';
             >
               <div class="p-4">
                 <canvas
+                  chartId="productos"
                   baseChart
                   [data]="datosProductos()"
                   [options]="opcionesProductos()"
                   [type]="'doughnut'"
+                  data-testid="productos-canvas"
                 ></canvas>
               </div>
             </div>
@@ -133,7 +143,8 @@ export class DashboardPage {
     ],
   });
   public opciones = signal<any>({
-    responsive: true,
+    responsive: false,
+    maintainAspectRatio: false,
     plugins: {
       title: {
         display: true,
@@ -180,7 +191,8 @@ export class DashboardPage {
     ],
   });
   public opcionesProductos = signal<any>({
-    responsive: true,
+    responsive: false,
+    maintainAspectRatio: false,
     plugins: {
       title: {
         display: true,

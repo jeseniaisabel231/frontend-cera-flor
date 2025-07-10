@@ -35,7 +35,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
       <section
         class="grid w-full grid-cols-1 gap-4 border-l border-[#d0c9fe] p-6 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
       >
-        <presentation titulo="Ingredientes" class="col-span-5"></presentation>
+        <presentation titulo="Ingredientes" class="col-span-5" />
 
         <article
           class="relative col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
@@ -218,6 +218,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
               ) {
                 <div
                   class="mx-auto flex h-90 min-h-[400px] w-full max-w-[300px] flex-col rounded-xl border border-gray-300"
+                  data-testid="tarjeta-ingrediente"
                 >
                   <figure
                     class="aspect-square overflow-hidden border-b border-gray-300 flex"
@@ -251,9 +252,9 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                     >
                       {{ item?.nombre | titlecase }}
                     </h3>
-                    <p class="text-lg font-bold text-purple-600">
+                    <span class="text-lg font-bold text-purple-600">
                       $ {{ item?.precio }}
-                    </p>
+                    </span>
                     <p class="mt-1 flex items-center text-sm text-green-600">
                       <span
                         class="mr-2 h-2 w-2 rounded-full bg-green-500"
@@ -303,6 +304,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
                       class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500 cursor-pointer"
                       (click)="eliminarIngrediente(item._id)"
                       title="Eliminar ingrediente"
+                      data-testid="eliminar-ingrediente"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -347,6 +349,7 @@ import { ingrediente } from '../../interfaces/ingrediente.interface';
       </section>
     </main>
     <app-modal
+      data-testid="modal-confirmacion"
       [(mostrarModal)]="mostrarModalConfirmacion"
       [titulo]="'Confirmar eliminación'"
       [mensaje]="'¿Estás seguro de eliminar este ingrediente?'"

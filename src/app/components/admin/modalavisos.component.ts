@@ -90,6 +90,7 @@ import {
             <button
               (click)="confirmar.emit(); close(); realizarDecision(true)"
               class="cursor-pointer rounded-[10px] bg-red-500 px-5 py-2 font-bold text-white transition-colors hover:bg-red-600"
+              data-testid="boton-eliminar"
             >
               Eliminar
             </button>

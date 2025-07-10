@@ -6,30 +6,36 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ProductosService } from '../../services/admin/productos.service';
 import { PromocionesService } from '../../services/admin/promociones.service';
 import { AuthService } from '../../services/auth.service';
 import { routes } from '../app.routes';
-import { Card } from '../components/card.component';
-import { HomePage } from './home.page';
+import { CatalogPage } from './catalog.page';
 
-describe('Página de inicio', () => {
-  let component: HomePage;
-  let fixture: ComponentFixture<HomePage>;
+describe('Página de catálogo de jabones artesanales', () => {
+  let component: CatalogPage;
+  let fixture: ComponentFixture<CatalogPage>;
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [HomePage, Card],
+      imports: [CatalogPage],
       providers: [
         provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
-        ProductosService,
-        AuthService,
-        PromocionesService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParams: of({ categoria: 'jabones-artesanales' }),
+            snapshot: {
+              url: [{ path: 'catalogo' }],
+            },
+          },
+        },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     });
@@ -39,11 +45,9 @@ describe('Página de inicio', () => {
     TestBed.inject(PromocionesService);
     httpTestingController = TestBed.inject(HttpTestingController);
 
-    fixture = TestBed.createComponent(HomePage);
+    fixture = TestBed.createComponent(CatalogPage);
     component = fixture.componentInstance;
-  });
 
-  it('Deberían cargar la página y sus datos ', () => {
     const req = httpTestingController.expectOne(
       `${environment.urlApi}/api/productos?page=1&limit=100`,
     );
@@ -51,47 +55,47 @@ describe('Página de inicio', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockProductosResponse);
 
-    const reqPromociones = httpTestingController.expectOne(
-      `${environment.urlApi}/api/promociones?page=1&limit=100`,
-    );
+    fixture.detectChanges();
+  });
 
-    expect(reqPromociones.request.method).toBe('GET');
-    reqPromociones.flush(mockPromocionesResponse);
-
-    const reqPerfil = httpTestingController.expectOne(
-      `${environment.urlApi}/api/perfil`,
-    );
-
-    expect(reqPerfil.request.method).toBe('GET');
-    reqPerfil.flush(mockPerfilResponse);
-
+  it('Deberían cargar la página', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Deberían cargar las promociones y sus tarjetas', () => {
-    fixture.detectChanges();
-
-    const imagenes = fixture.nativeElement.querySelectorAll(
-      '[data-testid="imagen-promocion"]',
-    );
-
-    imagenes.forEach((imagen: any, index: number) => {
-      const promocion = mockPromocionesResponse.promociones[index];
-      const src = imagen.src;
-
-      expect(src).toContain(promocion.imagen);
-    });
-  });
-
   it('Deberían cargar los productos y sus tarjetas', () => {
-    fixture.detectChanges();
-
     const cards = fixture.nativeElement.querySelectorAll(
       '[data-testid="card"]',
     );
 
     cards.forEach((card: any, index: number) => {
       const producto = mockProductosResponse.productos[index];
+      const nombre = card.querySelector('h2').textContent.trim().toLowerCase();
+      const imagen = card.querySelector('img').src;
+
+      expect(nombre).toContain(producto.nombre.toLowerCase());
+      expect(imagen).toContain(producto.imagen);
+    });
+  });
+
+  it('Debería poder filtrar los productos por tipo', () => {
+		const filterSelect = fixture.nativeElement.querySelector('[data-testid="filter-select"]');
+		expect(filterSelect).toBeTruthy();
+
+		filterSelect.value = 'piel grasa';
+		filterSelect.dispatchEvent(new Event('change'));
+
+		fixture.detectChanges();
+
+    const cards = fixture.nativeElement.querySelectorAll(
+      '[data-testid="card"]',
+    );
+
+		const filteredProducts = mockProductosResponse.productos.filter(
+			(producto) => producto.tipo === 'piel grasa'
+		);
+
+    cards.forEach((card: any, index: number) => {
+      const producto = filteredProducts[index];
       const nombre = card.querySelector('h2').textContent.trim().toLowerCase();
       const imagen = card.querySelector('img').src;
 
@@ -608,64 +612,6 @@ const mockProductosResponse = {
       activo: true,
       createdAt: '2025-07-03T22:43:35.634Z',
       updatedAt: '2025-07-06T03:52:04.106Z',
-    },
-  ],
-};
-
-const mockPerfilResponse = { msg: 'Token inválido o expirado' };
-
-const mockPromocionesResponse = {
-  totalPromociones: 6,
-  totalPaginas: 1,
-  paginaActual: 1,
-  promociones: [
-    {
-      _id: '685ddfd0abc1a72c611836b3',
-      nombre: 'presentación de los productos',
-      imagen:
-        'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751768771/promociones/xkm5qknh3fysl895xnje.png',
-      createdAt: '2025-06-27T00:03:28.617Z',
-      updatedAt: '2025-07-06T02:26:12.476Z',
-    },
-    {
-      _id: '685e1637d66e6a9c394703ae',
-      nombre: 'lanzamiento exclusivo',
-      imagen:
-        'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751989556/promociones/hhkorzzmxvlnvklcbflo.png',
-      createdAt: '2025-06-27T03:55:35.130Z',
-      updatedAt: '2025-07-08T15:45:56.986Z',
-    },
-    {
-      _id: '686c1b2757f1c4afea04703e',
-      nombre: 'empanadas',
-      imagen:
-        'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751915303/promociones/gwv3g7lagij8pyy7d8pe.jpg',
-      createdAt: '2025-07-07T19:08:23.915Z',
-      updatedAt: '2025-07-07T19:08:23.915Z',
-    },
-    {
-      _id: '686c1b6d57f1c4afea047042',
-      nombre: 'sgwgershhrwsr',
-      imagen:
-        'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751915372/promociones/vcso1uhd4fourlmvnzup.jpg',
-      createdAt: '2025-07-07T19:09:33.193Z',
-      updatedAt: '2025-07-07T19:09:33.193Z',
-    },
-    {
-      _id: '686c1bc557f1c4afea047048',
-      nombre: 'ckhciyvjvpkbp €56',
-      imagen:
-        'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751915460/promociones/ngle0dyiwcmsqismnwtx.jpg',
-      createdAt: '2025-07-07T19:11:01.698Z',
-      updatedAt: '2025-07-07T19:11:01.698Z',
-    },
-    {
-      _id: '686c1fd157f1c4afea047058',
-      nombre: 'bsjsbsjsbis',
-      imagen:
-        'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751916497/promociones/aw3pxgi45lajsxfz1zeu.jpg',
-      createdAt: '2025-07-07T19:28:17.748Z',
-      updatedAt: '2025-07-07T19:28:17.748Z',
     },
   ],
 };

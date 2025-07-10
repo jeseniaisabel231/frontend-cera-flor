@@ -1,5 +1,5 @@
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -157,6 +157,7 @@ import { usuario } from '../interfaces/usuario.interface';
         @if (rutaActiva() === 'perfil') {
           <article
             class="flex-grow overflow-hidden rounded-lg bg-white shadow-sm"
+            data-testid="perfil-articulo"
           >
             <header class="px-6 py-4">
               <h2 class="text-xl font-semibold text-black">Mi perfil</h2>
@@ -166,6 +167,7 @@ import { usuario } from '../interfaces/usuario.interface';
               class="p-6"
               [formGroup]="perfilFormulario"
               (ngSubmit)="onSubmit()"
+              data-testid="formulario-perfil"
             >
               <fieldset class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
@@ -189,6 +191,7 @@ import { usuario } from '../interfaces/usuario.interface';
                     "
                     class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
                     (input)="borrarError('nombre')"
+                    data-testid="nombre-input"
                   />
                   <div>
                     @if (errores().nombre) {
@@ -221,6 +224,7 @@ import { usuario } from '../interfaces/usuario.interface';
                     "
                     class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
                     (input)="borrarError('apellido')"
+                    data-testid="apellido-input"
                   />
                   <div>
                     @if (errores().apellido) {
@@ -250,6 +254,7 @@ import { usuario } from '../interfaces/usuario.interface';
                     [value]="perfilFormulario.value.email"
                     disabled
                     class="placeholder-gris-300 outline-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 disabled:bg-gray-100"
+                    data-testid="email-input"
                   />
                 </div>
                 <div>
@@ -273,6 +278,7 @@ import { usuario } from '../interfaces/usuario.interface';
                     "
                     class="placeholder-gris-300 w-full rounded-lg border border-gray-300 px-3 py-2 outline-[#3C3C3B]"
                     (input)="borrarError('telefono')"
+                    data-testid="telefono-input"
                   />
                   <div>
                     @if (errores().telefono) {
@@ -305,6 +311,7 @@ import { usuario } from '../interfaces/usuario.interface';
                         : 'outline-gris-300 border-[#878787]'
                     "
                     (input)="borrarError('cedula')"
+                    data-testid="cedula-input"
                   />
                   <div>
                     @if (errores().cedula) {
@@ -336,6 +343,7 @@ import { usuario } from '../interfaces/usuario.interface';
                         : 'border-[#878787] outline-[#3C3C3B]'
                     "
                     (input)="borrarError('fecha_nacimiento')"
+                    data-testid="fecha-nacimiento-input"
                   />
                   <div>
                     @if (errores().fecha_nacimiento) {
@@ -369,6 +377,7 @@ import { usuario } from '../interfaces/usuario.interface';
                         : 'outline-gris-300 border-[#878787]'
                     "
                     (input)="borrarError('direccion')"
+                    data-testid="direccion-input"
                   />
                   <div>
                     @if (errores().direccion) {
@@ -403,6 +412,7 @@ import { usuario } from '../interfaces/usuario.interface';
                             : 'border-[#878787] outline-[#3C3C3B]'
                         "
                         (input)="borrarError('genero')"
+                        data-testid="genero-input"
                       />
                       <span class="ml-2 text-gray-700">Masculino</span>
                     </label>
@@ -418,6 +428,7 @@ import { usuario } from '../interfaces/usuario.interface';
                         value="femenino"
                         class="h-4 w-4 text-indigo-600"
                         (input)="borrarError('genero')"
+                        data-testid="genero-input"
                       />
                       <span class="ml-2 text-gray-700">Femenino</span>
                     </label>
@@ -442,6 +453,7 @@ import { usuario } from '../interfaces/usuario.interface';
                 <button
                   type="submit"
                   class="focus:ring-morado-400 cursor-pointer rounded-[15px] border border-transparent bg-[#806bff] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#806bff] focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                  data-testid="boton-actualizar-perfil"
                 >
                   @if (carga()) {
                     <svg
@@ -639,7 +651,7 @@ import { usuario } from '../interfaces/usuario.interface';
 })
 export class ProfilePage {
   public servicioRuta = inject(ActivatedRoute);
-  public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0].path);
+  public rutaActiva = signal(this.servicioRuta.snapshot.url[0].path);
   public router = inject(Router);
   public servicioPerfil = inject(AuthService);
   public servicioFacturas = inject(FacturaService);
@@ -713,10 +725,8 @@ export class ProfilePage {
 
   onSubmit() {
     const datosUsuario = this.servicioPerfil.datosUsuario();
-    Object.entries(this.perfilFormulario.value).forEach(([key , value]) => {
-
-      if ( datosUsuario[key as keyof usuario ] !== value && !value  ) {
-
+    Object.entries(this.perfilFormulario.value).forEach(([key, value]) => {
+      if (datosUsuario[key as keyof usuario] !== value && !value) {
         this.errores.update((prev) => ({
           ...prev,
           [key]: 'Este campo no debería estar vacío',

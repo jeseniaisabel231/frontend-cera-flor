@@ -41,7 +41,9 @@ import { producto } from '../interfaces/producto.interface';
             Selecciona una categoría
           </h2>
 
-          <div class="mt-6 flex flex-col md:flex-row flex-wrap justify-evenly items-center gap-4">
+          <div
+            class="mt-6 flex flex-col flex-wrap items-center justify-evenly gap-4 md:flex-row"
+          >
             @for (
               categoria of serviceCategorias.categorias();
               track categoria._id
@@ -114,7 +116,9 @@ import { producto } from '../interfaces/producto.interface';
             {{ titulo().replace('-', ' ') | titlecase }}
           </h2>
           <!-- Filtros de productos-->
-          <div class="mb-8 flex flex-col items-center gap-4 md:flex-row md:gap-14">
+          <div
+            class="mb-8 flex flex-col items-center gap-4 md:flex-row md:gap-14"
+          >
             <div>
               <label for="filter" class="mr-2 font-medium text-gray-700">
                 Filtrar por:
@@ -122,9 +126,8 @@ import { producto } from '../interfaces/producto.interface';
               <select
                 #filter
                 class="rounded border border-gray-300 px-3 py-1 text-sm"
-                (change)="
-                  filtroProductos.set(filter.value)
-                "
+                (change)="filtroProductos.set(filter.value)"
+                data-testid="filter-select"
               >
                 @if (titulo().toLowerCase() === 'jabones-artesanales') {
                   <option value="">Todos</option>
@@ -147,9 +150,7 @@ import { producto } from '../interfaces/producto.interface';
               <select
                 #sort
                 class="rounded border border-gray-300 px-3 py-1 text-sm"
-                (change)="
-                  filtroPrecio.set(sort.value)"
-
+                (change)="filtroPrecio.set(sort.value)"
               >
                 <option value="precio_asc">Precio: menor a mayor</option>
                 <option value="precio_desc">Precio: mayor a menor</option>
@@ -164,11 +165,8 @@ import { producto } from '../interfaces/producto.interface';
             <div
               class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              @for (
-                producto of productosTipo();
-                track producto._id
-              ) {
-                <card [producto]="producto"></card>
+              @for (producto of productosTipo(); track producto._id) {
+                <card [producto]="producto" data-testid="card"></card>
               } @empty {
                 <p class="col-span-full text-center">
                   No se encontraron productos
@@ -190,7 +188,7 @@ export class CatalogPage {
   public productos = signal<producto[]>([]);
   public filtroProductos = signal('');
   public productosTipo = signal<producto[]>([]);
-  public filtroPrecio = signal('precio_asc')
+  public filtroPrecio = signal('precio_asc');
   public titulo = toSignal(
     this.rutaActiva.queryParams.pipe(map((params) => params['categoria'])),
   );
@@ -226,13 +224,15 @@ export class CatalogPage {
     effect(() => {
       const orden = this.filtroPrecio();
       if (orden === 'precio_asc') {
-        const productosOrdenados = this.productosTipo().sort((a, b) => a.precio - b.precio);
+        const productosOrdenados = this.productosTipo().sort(
+          (a, b) => a.precio - b.precio,
+        );
         this.productosTipo.set(productosOrdenados);
-        
       } else if (orden === 'precio_desc') {
-        const productosOrdenados = this.productosTipo().sort((a, b) => b.precio - a.precio);
+        const productosOrdenados = this.productosTipo().sort(
+          (a, b) => b.precio - a.precio,
+        );
         this.productosTipo.set(productosOrdenados);
-
       }
     });
   }

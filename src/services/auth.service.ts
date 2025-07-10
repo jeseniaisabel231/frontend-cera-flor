@@ -141,7 +141,6 @@ export class AuthService {
       })
       .pipe(
         tap(({ cliente }) => {
-          console.log(cliente);
           this.datosUsuario.set(cliente)
         }),
       );

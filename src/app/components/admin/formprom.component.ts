@@ -100,6 +100,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 id="foto"
                 class="text-sm"
                 (change)="onFileChange($event)"
+                data-testid="input-imagen"
               />
             </div>
           </label>
@@ -132,6 +133,8 @@ import { ModalAvisosComponent } from './modalavisos.component';
               class="focus:ring-morado-400 placeholder-gris-200 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:outline-none"
               placeholder="Ej. 20% de descuento en jabones"
               formControlName="nombre"
+              (input)="borrarError('nombre')"
+              data-testid="input-nombre"
             />
 
             @if (errores().nombre) {
@@ -151,6 +154,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         <div class="mt-6 flex justify-end gap-4 pb-4 md:col-span-2">
           <button
             class="h-10 w-auto rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500 cursor-pointer"
+            data-testid="boton-accion"
           >
             @if (carga()) {
               <svg

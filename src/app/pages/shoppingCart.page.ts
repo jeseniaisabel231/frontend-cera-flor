@@ -44,6 +44,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                 @let item = producto.producto;
                 <article
                   class="flex items-center justify-between border-b border-gray-100 p-4 wrap-anywhere last:border-b-0 hover:bg-gray-50"
+                  data-testid="producto-carrito"
                 >
                   <div class="flex items-center gap-4">
                     <img
@@ -130,6 +131,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         )
                       "
                       title="Eliminar producto"
+                      data-testid="boton-eliminar"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -219,6 +221,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
         [mensaje]="'¿Está seguro/a de eliminar este producto del carrito?'"
         [(mostrarModal)]="mostrarModal"
         (decision)="desicionModal($event)"
+        data-testid="modal-confirmacion"
       ></app-modal>
 
       <app-modal

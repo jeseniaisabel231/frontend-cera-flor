@@ -17,6 +17,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { IngredientesService } from '../../../services/admin/ingredients.service';
+import { ProductosService } from '../../../services/admin/productos.service';
 import { CategoryService } from '../../../services/categorias.service';
 import { Actions } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
@@ -28,6 +29,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
     <dialog
       #modal
       class="backdrop:bg-gris-600/25 m-auto w-3/4 rounded-[10px] bg-white text-[#3C3C3B] backdrop:backdrop-blur-[2px] lg:w-1/2"
+      data-testid="modal-formulario"
     >
       <div class="flex items-center justify-between px-7 py-5">
         <div class="flex flex-col">
@@ -531,7 +533,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
             <button
               class="h-10 w-auto cursor-pointer rounded-[15px] bg-indigo-400 px-6 text-white hover:bg-indigo-500"
               data-testid="boton-accion"
-              >
+            >
               @if (carga()) {
                 <svg
                   class="animate-spin"
@@ -570,6 +572,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
         [titulo]="tipoRespuesta() === 'exito' ? 'Éxito' : 'Error'"
         [mensaje]="respuestaBack()"
         [tipo]="tipoRespuesta()"
+        data-testid="modal-exito"
       ></app-modal>
     </dialog>
   `,
@@ -600,7 +603,7 @@ export class FormProducto {
   public modal = viewChild<ElementRef<HTMLDialogElement>>('modal');
   public alerta = viewChild<ElementRef<HTMLDialogElement>>('alerta');
   public mostrarModal = model<boolean>(false);
-  public servicioProductos = input<any>();
+  public servicioProductos = inject(ProductosService);
   public acciones = input.required<Actions>();
 
   public idRegistro = input<string>();
@@ -860,7 +863,7 @@ export class FormProducto {
     this.carga.set(true);
     const formData = this.toFormData();
     if (this.acciones() === 'Registrar') {
-      this.servicioProductos()
+      this.servicioProductos
         .registrar(formData) //envia el formulario al backend
         .subscribe({
           next: this.respuestaExitoBack,
@@ -872,8 +875,8 @@ export class FormProducto {
         });
     } else if (this.acciones() === 'Actualizar') {
       //funcion para actualizar registro
-      this.servicioProductos()
-        .editar(this.idRegistro(), formData)
+      this.servicioProductos
+        .editar(this.idRegistro()!, formData)
         .subscribe({
           next: this.respuestaExitoBack,
           error: this.respuestadeErrorBack,

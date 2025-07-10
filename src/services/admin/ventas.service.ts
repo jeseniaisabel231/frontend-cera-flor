@@ -43,8 +43,6 @@ export class VentasService {
     this.obtener()
       .subscribe()
       .add(() => this.carga.set(false));
-
-    effect(() => console.log('Datos filtrados:', this.datosFiltrados()));
   }
 
   obtener() {

@@ -3,7 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -19,6 +19,8 @@ describe('Página de administración de productos', () => {
   let component: ProductsPage;
   let fixture: ComponentFixture<ProductsPage>;
 
+  let formComponent: FormProducto;
+  let fixtureForm: ComponentFixture<FormProducto>;
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
@@ -40,7 +42,12 @@ describe('Página de administración de productos', () => {
     fixture = TestBed.createComponent(ProductsPage);
     component = fixture.componentInstance;
 
-    const fixtureForm = TestBed.createComponent(FormProducto);
+    fixtureForm = TestBed.createComponent(FormProducto);
+    formComponent = fixtureForm.componentInstance;
+
+    fixtureForm.componentRef.setInput('acciones', 'Registrar');
+
+    fixtureForm.detectChanges()
 
     const reqCategorias = httpTestingController.match(
       `${environment.urlApi}/api/categorias`,
@@ -104,8 +111,11 @@ describe('Página de administración de productos', () => {
 
     fixture.detectChanges();
 
-    const formulario = fixture.nativeElement.querySelector(
-      '[data-testid="formulario-producto"]',
+    formComponent.mostrarModal.set(true);
+    fixtureForm.detectChanges();
+
+    const formulario = fixtureForm.nativeElement.querySelector(
+      '[data-testid="modal-formulario"]',
     );
 
     expect(formulario).toBeTruthy();
@@ -142,6 +152,7 @@ describe('Página de administración de productos', () => {
     categoriaSelect.dispatchEvent(new Event('change', { bubbles: true }));
 
     fixture.detectChanges();
+    fixtureForm.detectChanges();
 
     const ingredientesCheckboxes = formulario.querySelectorAll(
       '[data-testid="input-ingrediente"]',
@@ -158,6 +169,8 @@ describe('Página de administración de productos', () => {
     const imagen = new File([''], 'imagen.jpg', {
       type: 'image/jpeg',
     });
+
+    formComponent.formulario.controls['imagen'].setValue(imagen);
 
     Object.defineProperty(imagenInput, 'files', {
       value: [imagen],
@@ -196,9 +209,7 @@ describe('Página de administración de productos', () => {
     expect(botonGuardar).toBeTruthy();
     expect(botonGuardar.textContent).toContain('Registrar producto');
 
-    botonGuardar.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-    fixture.detectChanges();
+    botonGuardar.click();
 
     const reqRegistrar = httpTestingController.expectOne(
       `${environment.urlApi}/api/productos`,

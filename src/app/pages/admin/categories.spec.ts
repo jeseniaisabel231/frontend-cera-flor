@@ -19,7 +19,6 @@ describe('Página de administración de categorías', () => {
   let fixture: ComponentFixture<CategoriesPage>;
   let httpTestingController: HttpTestingController;
 
-
   beforeEach(async () => {
     localStorage.setItem('token', token);
 
@@ -130,7 +129,7 @@ const mockCategoriesResponse = {
       _id: '680fd248f613dc80267ba5d7',
       nombre: 'Jabones artesanales',
       descripcion:
-        'Un jabón artesanal es un producto de higiene y belleza hecho con ingredientes naturales, sin processos industrializados ou químicos sintéticos complexos. Puede elaborarse con insumos accesibles y sin necesidad de herramientas especializadas.',
+        'Un jabón artesanal es un producto de higiene y belleza hecho con ingredientes naturales, sin processos industrializados ou químicos sintéticos complexos. Puede elaborarse con insumos accesibles y sin necesidad de herramientas.',
       imagen:
         'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751907023/categorias/sqmedsvkxoe1jagtlmzs.jpg',
       createdAt: '2025-04-28T19:08:56.437Z',

@@ -13,9 +13,6 @@ import { ModalAvisosComponent } from '../../components/admin/modalavisos.compone
 import { TablaComponent } from '../../components/admin/tabla.component';
 import { UsersPage } from './users.page';
 
-const token =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDNjNTFmYmJjNTU2NmIzZjJiMWU0MSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzUyMDE3NzI2LCJleHAiOjE3NTIwMjEzMjZ9.EcFCwy3v1kG8ARdQiwK0Kvr6igZSSQaNPcQLYvkhRo8';
-
 describe('Página de administración de usuarios', () => {
   let component: UsersPage;
   let fixture: ComponentFixture<UsersPage>;
@@ -24,7 +21,7 @@ describe('Página de administración de usuarios', () => {
   let tablaUsuarios: HTMLTableElement;
 
   beforeEach(async () => {
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', 'token-de-prueba');
 
     TestBed.configureTestingModule({
       imports: [UsersPage, ModalAvisosComponent, TablaComponent],

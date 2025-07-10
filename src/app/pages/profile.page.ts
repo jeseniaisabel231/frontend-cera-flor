@@ -502,9 +502,10 @@ import { usuario } from '../interfaces/usuario.interface';
                 <h2 class="mt-2 text-black">Listado de pedidos recientes</h2>
 
                 <!-- Iterar sobre cada venta/pedido -->
-                @for (venta of servicioFacturas.facturas(); track venta._id) {
+                @for (venta of servicioFacturas.facturas(); track $index) {
                   <details
                     class="group mb-6 overflow-hidden rounded-lg bg-white shadow-sm"
+                    data-testid="detalle-pedido"
                   >
                     <summary
                       class="group-open:bg-morado-400 flex cursor-pointer items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4"
@@ -530,6 +531,7 @@ import { usuario } from '../interfaces/usuario.interface';
                       </div>
                       <span
                         class="text-lg font-bold text-gray-800 group-open:text-white"
+                        data-testid="total-pedido"
                       >
                         {{ venta.total | currency: 'USD' : 'symbol' }}
                       </span>
@@ -543,12 +545,14 @@ import { usuario } from '../interfaces/usuario.interface';
                             @if (item.producto_id) {
                               <section
                                 class="flex items-start border-b border-gray-100 pb-4"
+                                data-testid="producto-pedido"
                               >
                                 <img
                                   [src]="item.imagen ?? 'logo.png'"
                                   class="mr-4 h-16 w-16 rounded-md object-cover"
                                   loading="lazy"
                                   [alt]="item.nombre"
+                                  data-testid="imagen-producto"
                                 />
                                 <div class="flex-grow">
                                   <h4 class="text-sm font-medium">
@@ -573,10 +577,13 @@ import { usuario } from '../interfaces/usuario.interface';
                                   <div
                                     class="mt-2 flex items-center gap-4 text-sm"
                                   >
-                                    <span class="text-gray-600">
+                                    <span class="text-gray-600" data-testid="cantidad-producto">
                                       Cantidad: {{ item.cantidad }}
                                     </span>
-                                    <span class="text-gray-600">
+                                    <span
+                                      class="text-gray-600"
+                                      data-testid="precio-producto"
+                                    >
                                       Precio unit.:
                                       {{
                                         item.precio | currency: 'USD' : 'symbol'

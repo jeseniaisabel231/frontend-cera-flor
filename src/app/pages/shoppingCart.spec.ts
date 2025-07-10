@@ -6,6 +6,7 @@ import {
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { CarritoService } from '../../services/carrito.service';
 import { routes } from '../app.routes';
 import { Card } from '../components/card.component';
 import { ShoppingCardPage } from './shoppingCart.page';
@@ -69,36 +70,11 @@ describe('Página de carrito de compras', () => {
       cantidad: 1,
       tipo_producto: 'normal',
     });
+
+    fixture.detectChanges();
   });
 
-  it('Deberían cargar el producto recientemente agregado', () => {
-    fixture.detectChanges();
-
-    const req = httpTestingController.expectOne(
-      `${environment.urlApi}/api/carritos/`,
-    );
-    expect(req.request.method).toBe('GET');
-    req.flush(mockCartResponse);
-
-    fixture.detectChanges();
-
-    const productos = fixture.nativeElement.querySelectorAll(
-      '[data-testid="producto-carrito"]',
-    );
-    expect(productos.length).toBeGreaterThan(0);
-
-    const productoAgregado = productos.some((producto: HTMLElement) => {
-      const nombre = producto.querySelector('h2')?.textContent?.trim() ?? '';
-
-      return nombre === mockProductData.nombre;
-    })
-
-    expect(productoAgregado).toBeTruthy();
-  });
-  
-  it('Debería eliminar un producto del carrito', () => {
-    fixture.detectChanges();
-
+  it('Deberían cargar los productos en el carrito', () => {
     const req = httpTestingController.expectOne(
       `${environment.urlApi}/api/carritos`,
     );
@@ -110,18 +86,47 @@ describe('Página de carrito de compras', () => {
     const productos = fixture.nativeElement.querySelectorAll(
       '[data-testid="producto-carrito"]',
     );
-
     expect(productos.length).toBeGreaterThan(0);
 
-    let botonEliminar: HTMLButtonElement | null = null;
+    productos.forEach((producto: HTMLElement, index: number) => {
+      const nombreProducto = producto.querySelector(
+        '[data-testid="nombre-producto"]',
+      ) as HTMLElement;
 
-    productos.forEach((producto: HTMLElement) => {
-      if (producto.textContent?.toLowerCase()?.includes(mockProductData.nombre)) {
-        botonEliminar = producto.querySelector(
-          '[data-testid="boton-eliminar"]',
-        ) as HTMLButtonElement;
-      }
+      expect(nombreProducto.textContent?.trim().toLocaleLowerCase()).toContain(
+        mockCartResponse.carrito.productos[index].producto.nombre.toLowerCase(),
+      );
+
+      const precioProducto = producto.querySelector(
+        '[data-testid="precio-producto"]',
+      ) as HTMLElement;
+
+      expect(precioProducto.textContent).toContain(
+        `$ ${mockCartResponse.carrito.productos[index].precio_unitario}`,
+      );
     });
+  });
+
+  it('Debería eliminar un producto del carrito', () => {
+    fixture.detectChanges();
+
+    const req = httpTestingController.expectOne(
+      `${environment.urlApi}/api/carritos`,
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCartResponse);
+
+    fixture.detectChanges();
+
+    const producto = fixture.nativeElement.querySelector(
+      '[data-testid="producto-carrito"]',
+    );
+
+    expect(producto).toBeTruthy();
+
+    const botonEliminar = producto.querySelector(
+      '[data-testid="eliminar-producto"]',
+    ) as HTMLButtonElement;
 
     expect(botonEliminar).toBeTruthy();
 
@@ -149,13 +154,12 @@ describe('Página de carrito de compras', () => {
 
     expect(reqEliminar.request.method).toBe('PUT');
     expect(reqEliminar.request.body).toEqual({
-      producto_id: mockProductData._id,
+      producto_id: mockCartResponse.carrito.productos[0].producto_id,
       tipo_producto: 'normal',
     });
 
     reqEliminar.flush({ message: 'Producto eliminado del carrito' });
   });
-
 });
 
 const mockProductData = {

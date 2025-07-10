@@ -43,22 +43,22 @@ describe('Página de perfil', () => {
     fixture = TestBed.createComponent(ProfilePage);
     component = fixture.componentInstance;
 
-		await fixture.whenStable();
-		fixture.detectChanges();
-	
-		const reqPerfil = httpTestingController.expectOne(
-			`${environment.urlApi}/api/perfil`,
-		);
-		expect(reqPerfil.request.method).toBe('GET');
-		reqPerfil.flush(mockProfileResponse);
-	
-		fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const reqPerfil = httpTestingController.expectOne(
+      `${environment.urlApi}/api/perfil`,
+    );
+    expect(reqPerfil.request.method).toBe('GET');
+    reqPerfil.flush(mockProfileResponse);
+
+    fixture.detectChanges();
   });
-	
+
   it('Deberían cargar la página', () => {
-		expect(component).toBeTruthy();
+    expect(component).toBeTruthy();
   });
-	
+
   it('Debería mostrar los datos del perfil', async () => {
     const nombreInput = fixture.nativeElement.querySelector(
       '[data-testid="nombre-input"]',
@@ -138,7 +138,6 @@ describe('Página de perfil', () => {
 
     expect(req.request.method).toBe('PUT');
     expect(req.request.body instanceof FormData).toBeTruthy();
-
   });
 });
 
@@ -157,3 +156,4 @@ const mockProfileResponse = {
       'https://res.cloudinary.com/ddg5fu4yt/image/upload/v1751570139/clientes/rrwen41nfphsytkzv7pv.jpg',
   },
 };
+

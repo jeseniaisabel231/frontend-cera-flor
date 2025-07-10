@@ -204,7 +204,7 @@ export class CarritoService {
             productos: carrito.productos.filter(
               (producto: any) => producto.producto_id !== producto_id,
             ),
-            total: respuesta.carrito.total,
+            total: respuesta.carrito?.total,
           }));
           this.cantidadProductos.update((count) => count - 1);
         }),

@@ -20,7 +20,7 @@ import { decodificarToken } from '../utils/decodificarToken';
         <a class="flex cursor-pointer items-center gap-x-3">
           <img src="logo.png" alt="Flor & Cera" />
           <h1 class="font-playfair hidden text-[25px] font-bold lg:block">
-            Prueba
+            Flor & Cera
           </h1>
         </a>
 

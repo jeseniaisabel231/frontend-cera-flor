@@ -22,7 +22,7 @@ import { ColumnasUsuario } from '../../interfaces/usuario.interface';
       <div
         class="grid w-full grid-cols-5 grid-rows-4 gap-4 border-l border-[#d0c9fe] p-6"
       >
-        <presentation titulo="Usuarios" class="col-span-5"></presentation>
+        <presentation titulo="Clientes" class="col-span-5"></presentation>
 
         <section
           class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"

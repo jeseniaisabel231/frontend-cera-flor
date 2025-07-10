@@ -54,11 +54,12 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                     />
                     <div class="flex h-28 flex-col justify-center">
                       <small class="text-xs font-medium text-gray-500">
-                        {{
-                          obtenerNombreCategoria(item.id_categoria._id)
-                        }}
+                        {{ obtenerNombreCategoria(item.id_categoria._id) }}
                       </small>
-                      <h2 class="text-lg font-bold text-gray-800">
+                      <h2
+                        class="text-lg font-bold text-gray-800"
+                        data-testid="nombre-producto"
+                      >
                         {{
                           item.nombre || 'Producto personalizado' | titlecase
                         }}
@@ -117,7 +118,10 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         </button>
                       </div>
 
-                      <p class="text-xl font-bold text-[#9810fa]">
+                      <p
+                        class="text-xl font-bold text-[#9810fa]"
+                        data-testid="precio-producto"
+                      >
                         $ {{ producto.precio_unitario }}
                       </p>
                     </div>
@@ -131,7 +135,7 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         )
                       "
                       title="Eliminar producto"
-                      data-testid="boton-eliminar"
+                      data-testid="eliminar-producto"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

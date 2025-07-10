@@ -2,8 +2,8 @@ import { Component, input } from '@angular/core';
 
 export type TituloDashboard =
   | 'Dashboard'
-  | 'Usuarios'
-  | 'Productos y catálogo'
+  | 'Clientes'
+  | 'Productos'
   | 'Ventas'
   | 'Promociones'
   | 'Ingredientes' //representacion de la clave

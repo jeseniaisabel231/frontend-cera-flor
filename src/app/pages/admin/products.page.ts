@@ -29,10 +29,7 @@ import { producto } from '../../interfaces/producto.interface';
       <section
         class="grid w-full grid-cols-1 gap-4 border-l border-[#d0c9fe] p-6 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
       >
-        <presentation
-          titulo="Productos y catálogo"
-          class="col-span-5"
-        ></presentation>
+        <presentation titulo="Productos" class="col-span-5"></presentation>
 
         <article
           class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
@@ -56,7 +53,7 @@ import { producto } from '../../interfaces/producto.interface';
                   />
                 </svg>
                 <input
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
+                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] placeholder-gray-400 outline-none"
                   type="search"
                   placeholder="Buscar productos por nombre..."
                   id="search"
@@ -81,7 +78,7 @@ import { producto } from '../../interfaces/producto.interface';
                   Filtrar por:
                 </span>
                 <button
-                  class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
+                  class="relative inline-flex cursor-pointer items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                   [class]="
                     !productosService.filtro().valor
                       ? 'bg-[#806bff] font-semibold text-white'
@@ -96,7 +93,7 @@ import { producto } from '../../interfaces/producto.interface';
 
                 @for (categoria of categorias(); track $index) {
                   <button
-                    class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"
+                    class="relative inline-flex cursor-pointer items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
                     [class]="
                       productosService.filtro().valor === categoria._id
                         ? 'bg-[#806bff] font-semibold text-white'
@@ -140,7 +137,7 @@ import { producto } from '../../interfaces/producto.interface';
               </div>
             </div>
             <button
-              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 cursor-pointer"
+              class="flex h-[40px] cursor-pointer items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
               (click)="abrirFormRegistrar()"
               data-testid="registrar-producto"
             >
@@ -173,7 +170,7 @@ import { producto } from '../../interfaces/producto.interface';
             <loading></loading>
           } @else {
             <section
-              class="grid h-100 grid-cols-1 gap-5 overflow-y-auto mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-lg"
+              class="mt-4 grid h-100 grid-cols-1 gap-5 overflow-y-auto rounded-lg sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
               @for (item of productosService.datosBuscados(); track $index) {
                 <div
@@ -202,7 +199,11 @@ import { producto } from '../../interfaces/producto.interface';
                         {{ item?.tipo | titlecase }}
                       </small>
                     </div>
-                    <h3 class="mt-2 text-lg font-bold overflow-hidden text-ellipsis">{{ item?.nombre }}</h3>
+                    <h3
+                      class="mt-2 overflow-hidden text-lg font-bold text-ellipsis"
+                    >
+                      {{ item?.nombre }}
+                    </h3>
                     <span class="text-lg font-bold text-purple-600">
                       $ {{ item?.precio }}
                     </span>
@@ -215,7 +216,7 @@ import { producto } from '../../interfaces/producto.interface';
                   </div>
                   <div class="flex items-center justify-center gap-2 px-4 pb-4">
                     <button
-                      class="h-10 rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500 cursor-pointer"
+                      class="h-10 cursor-pointer rounded-2xl bg-green-400 px-4 text-white hover:bg-green-500"
                       (click)="abrirFormVisualizar(item)"
                       title="Visualizar producto"
                     >
@@ -233,7 +234,7 @@ import { producto } from '../../interfaces/producto.interface';
                       </svg>
                     </button>
                     <button
-                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500 cursor-pointer"
+                      class="h-10 w-auto cursor-pointer rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
                       (click)="abrirFormEditar(item)"
                       title="Editar producto"
                     >
@@ -252,7 +253,7 @@ import { producto } from '../../interfaces/producto.interface';
                       </svg>
                     </button>
                     <button
-                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500 cursor-pointer"
+                      class="h-10 cursor-pointer rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500"
                       (click)="abrirModalEliminacion(item._id)"
                       title="Eliminar producto"
                     >

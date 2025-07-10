@@ -18,6 +18,7 @@ import { StripeElementsOptions } from '@stripe/stripe-js';
 import { NgxStripeModule } from 'ngx-stripe';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
+import { FacturaService } from '../../services/facturas.service';
 import { PaymentService } from '../../services/payment.service';
 import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
@@ -25,7 +26,6 @@ import { BillComponent } from '../components/bill.component';
 import { Headers } from '../components/header.component';
 import type { usuario } from '../interfaces/usuario.interface';
 import { venta } from '../interfaces/venta.interface';
-import { FacturaService } from '../../services/facturas.service';
 
 @Component({
   imports: [
@@ -74,6 +74,7 @@ import { FacturaService } from '../../services/facturas.service';
                       placeholder="1711223344"
                       formControlName="cedula"
                       (input)="borrarErrores('cedula')"
+                      data-testid="cedula-input"
                     />
 
                     @if (cedulaInvalida) {
@@ -100,6 +101,7 @@ import { FacturaService } from '../../services/facturas.service';
                       placeholder="Pichincha, Quito, Av. Amazonas 1234"
                       formControlName="direccion"
                       (input)="borrarErrores('direccion')"
+                      data-testid="direccion-input"
                     />
                     @if (direccionInvalida) {
                       <p class="mt-1 text-sm text-red-500">
@@ -125,6 +127,7 @@ import { FacturaService } from '../../services/facturas.service';
                       placeholder="0991234567"
                       formControlName="telefono"
                       (input)="borrarErrores('telefono')"
+                      data-testid="telefono-input"
                     />
                     @if (telefonoInvalido) {
                       <p class="mt-1 text-sm text-red-500">
@@ -140,6 +143,7 @@ import { FacturaService } from '../../services/facturas.service';
                     <button
                       (click)="onSubmitDatos()"
                       class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-2 font-semibold text-white transition-colors disabled:bg-gray-400"
+                      data-testid="guardar-datos-button"
                     >
                       Guardar datos de envío
                     </button>
@@ -147,6 +151,7 @@ import { FacturaService } from '../../services/facturas.service';
                     <button
                       (click)="modificarDatos.set(true)"
                       class="bg-morado-600 hover:bg-morado-700 mt-6 w-full cursor-pointer rounded-[12px] py-2 font-semibold text-white transition-colors disabled:bg-gray-400"
+                      data-testid="modificar-datos-button"
                     >
                       Modificar datos de envío
                     </button>
@@ -363,7 +368,9 @@ export class PaymentPage {
             }));
           });
           this.tipoRespuesta.set('error');
-          this.respuestaBack.set(error.msg ?? 'Ocurrió un error al actualizar los datos.');
+          this.respuestaBack.set(
+            error.msg ?? 'Ocurrió un error al actualizar los datos.',
+          );
         },
       })
       .add(() => this.mostrarModalError.set(true));
@@ -385,7 +392,7 @@ export class PaymentPage {
           this.datosCliente.set(cliente);
           this.mostrarVenta.set(true);
           this.serviceCarrito.vaciarCarrito(true);
-          this.servicioFactura.obtenerFacturas().subscribe()
+          this.servicioFactura.obtenerFacturas().subscribe();
         },
         error: () => {
           this.tipoRespuesta.set('error');

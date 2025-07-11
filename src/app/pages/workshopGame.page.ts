@@ -21,7 +21,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
 @Component({
   template: `
     <headers></headers>
-    <div class="flex items-center justify-between bg-[#dad4ff] px-6 py-4 ">
+    <div class="flex items-center justify-between bg-[#dad4ff] px-6 py-4">
       <!-- Botón de volver -->
       <a
         class="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-2 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
@@ -48,8 +48,10 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
         ></span>
       </a>
 
-      <strong class="text-xl font-bold font-pontano"><span class="text-xl">✨</span>
-        Taller de Personalización de {{ nombreCategoria() | titlecase }}<span class="text-xl">✨</span>
+      <strong class="font-pontano text-xl font-bold">
+        <span class="text-xl">✨</span>
+        Taller de Personalización de {{ nombreCategoria() | titlecase }}
+        <span class="text-xl">✨</span>
       </strong>
 
       <!-- Botón de ayuda rápida -->
@@ -111,9 +113,10 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             @for (item of colores; track item) {
               <img
                 class="size-14 cursor-grab rounded-full border hover:scale-105"
-                [src]="item.imagen"
+                [src]="item?.imagen"
                 cdkDrag
-                [title]="'Colorante ' + item.nombre"
+                [title]="'Colorante ' + item?.nombre"
+                data-testid="color"
               />
             }
           </div>
@@ -133,16 +136,17 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             @for (item of moldes; track $index) {
               <div
                 class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
+                data-testid="molde"
               >
                 <p
                   class="bg-morado-600 group-hover:border-morado-300 group-hover:bg-morado-700 mx-auto mt-2 w-3/4 overflow-hidden rounded-2xl border-2 p-1 text-center text-sm font-semibold text-ellipsis whitespace-nowrap text-white transition-colors"
                 >
-                  {{ item.nombre | titlecase }}
+                  {{ item?.nombre | titlecase }}
                 </p>
                 <img
                   class="mx-auto flex size-32 cursor-grab object-contain p-2"
-                  [src]="item.imagen"
-                  [title]="'Molde ' + item.nombre"
+                  [src]="item?.imagen"
+                  [title]="'Molde ' + item?.nombre"
                   cdkDrag
                 />
               </div>
@@ -171,13 +175,15 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                   cdkDropList
                   [cdkDropListData]="coloresSeleccionados"
                   (cdkDropListDropped)="dropColores($event)"
+                  data-testid="drop-list-molde-color"
                 >
                   @for (item of moldesSeleccionados; track item) {
                     <app-recolor-image
-                      [src]="item.imagen"
+                      [src]="item?.imagen"
                       [fill]="coloresSeleccionados[0]?.imagen"
-                      [title]="'Molde ' + item.nombre"
+                      [title]="'Molde ' + item?.nombre"
                       cdkDrag
+                      data-testid="molde-color-seleccionados"
                     ></app-recolor-image>
                   } @empty {
                     <p class="text-center text-gray-500">
@@ -193,13 +199,15 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                 cdkDropList
                 [cdkDropListData]="aromasSeleccionados"
                 (cdkDropListDropped)="dropAromas($event)"
+                data-testid="drop-list-aroma"
               >
                 @for (item of aromasSeleccionados; track item) {
                   <img
                     class="mx-auto flex size-12 cursor-grab p-1"
-                    [src]="item.imagen"
-                    [title]="'Aroma ' + item.nombre"
+                    [src]="item?.imagen"
+                    [title]="'Aroma ' + item?.nombre"
                     cdkDrag
+                    data-testid="aroma-seleccionado"
                   />
                 } @empty {
                   <p class="text-center text-gray-500">
@@ -213,17 +221,19 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
                 cdkDropList
                 [cdkDropListData]="esenciasSeleccionadas"
                 (cdkDropListDropped)="dropEsencias($event)"
+                data-testid="drop-list-esencias"
               >
                 @for (item of esenciasSeleccionadas; track item) {
                   <img
                     class="mx-auto flex size-12 cursor-grab p-1"
-                    [src]="item.imagen"
-                    [title]="'Esencia de ' + item.nombre"
+                    [src]="item?.imagen"
+                    [title]="'Esencia de ' + item?.nombre"
                     cdkDrag
+                    data-testid="esencias-seleccionadas"
                   />
                 } @empty {
                   <p class="text-center text-gray-500">
-                    Arrastra hasta 2 esencias aquí
+                    Arrastra unicamente 2 esencias aquí
                   </p>
                 }
               </div>
@@ -232,6 +242,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
               <button
                 (click)="OnsubmitProductoPersonalizado()"
                 class="cursor-pointer rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-103 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+                data-testid="finalizar-creacion"
               >
                 Finalizar Creación
               </button>
@@ -247,6 +258,7 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
               <button
                 class="cursor-pointer rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-103 hover:from-purple-700 hover:to-blue-600 hover:shadow-lg hover:shadow-purple-500/30 focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:outline-none active:scale-95"
                 (click)="obtenerRecomendacionesIA()"
+                data-testid="recomendacion-inteligencia-artificial"
               >
                 <span class="flex items-center justify-center gap-2">
                   Recomendación de IA
@@ -271,18 +283,19 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             @for (item of aromas; track $index) {
               <div
                 class="group mb-4 cursor-pointer transition-all duration-300 hover:scale-105"
+                data-testid="aroma"
               >
                 <!-- Texto con colores para aromas -->
                 <p
                   class="mx-auto mt-2 w-1/2 overflow-hidden rounded-lg border-2 border-amber-500 bg-amber-600 p-1 text-center text-sm font-semibold text-ellipsis whitespace-nowrap text-white"
                 >
-                  {{ item.nombre | titlecase }}
+                  {{ item?.nombre | titlecase }}
                 </p>
 
                 <img
                   class="mx-auto flex size-22 cursor-grab object-contain p-2"
-                  [src]="item.imagen"
-                  [title]="'Aroma ' + item.nombre"
+                  [src]="item?.imagen"
+                  [title]="'Aroma ' + item?.nombre"
                   cdkDrag
                 />
               </div>
@@ -303,16 +316,19 @@ import { ModalJuegoComponent } from '../components/modalJuego.component';
             class="bg-opacity-70 flex justify-center gap-x-8 overflow-x-auto overflow-y-hidden rounded-lg bg-white/90 p-1"
           >
             @for (item of esencias; track $index) {
-              <div class="group flex cursor-pointer flex-col gap-y-2">
+              <div
+                class="group flex cursor-pointer flex-col gap-y-2"
+                data-testid="esencia"
+              >
                 <p
                   class="bg-celeste-600 mx-auto w-full overflow-hidden rounded-lg p-1 text-center text-sm font-semibold text-ellipsis whitespace-nowrap text-white"
                 >
-                  {{ item.nombre | titlecase }}
+                  {{ item?.nombre | titlecase }}
                 </p>
                 <img
                   class="flex size-16 cursor-grab object-contain"
-                  [src]="item.imagen"
-                  [title]="'Esencia de ' + item.nombre"
+                  [src]="item?.imagen"
+                  [title]="'Esencia de ' + item?.nombre"
                   cdkDrag
                 />
               </div>
@@ -465,10 +481,10 @@ export class WorkshopGamePage {
         .obtenerRecomendacion(this.categoria() as string)
         .subscribe({
           next: ({ producto_personalizado }: any) => {
-            this.moldesSeleccionados = [producto_personalizado.molde];
-            this.coloresSeleccionados = [producto_personalizado.color];
-            this.aromasSeleccionados = [producto_personalizado.aroma];
-            this.esenciasSeleccionadas = producto_personalizado.esencias;
+            this.moldesSeleccionados = [producto_personalizado?.molde];
+            this.coloresSeleccionados = [producto_personalizado?.color];
+            this.aromasSeleccionados = [producto_personalizado?.aroma];
+            this.esenciasSeleccionadas = producto_personalizado?.esencias;
             this.formularioPersonalizado.tipo_producto = 'ia';
           },
         })
@@ -668,7 +684,7 @@ export class WorkshopGamePage {
   }
 
   private peticionExitosa = ({ producto_personalizado, msg }: any) => {
-    this.producto_id.set(producto_personalizado._id);
+    this.producto_id.set(producto_personalizado?._id);
     this.mensajeProductoPersonalizado.set(msg);
 
     this.servicePersonalizacion

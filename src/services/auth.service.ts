@@ -36,7 +36,9 @@ export class AuthService {
   public clienteAutenticado = signal<boolean>(false);
 
   constructor() {
-    this.obtenerPerfil().subscribe().add(() => this.cargaPerfil.set(false));
+    this.obtenerPerfil()
+      .subscribe()
+      .add(() => this.cargaPerfil.set(false));
   }
 
   login(email: string, password: string) {
@@ -93,10 +95,33 @@ export class AuthService {
       );
   }
 
+  recuperarContraseniaAdmin(email: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.urlBackend}/api/recuperarContraseniaAdmin`,
+      {
+        email,
+      },
+    );
+  }
+
   recuperarContrasenia(email: string): Observable<any> {
     return this.http.post<any>(`${this.urlBackend}/api/recuperar-contrasenia`, {
       email,
     });
+  }
+
+  restablecerContraseniaAdmin(
+    email: string,
+    nuevaPassword: string,
+    codigoRecuperacion: string,
+  ): Observable<any> {
+    return this.http.post<any>(
+      `${this.urlBackend}/api/cambiarContraseniaAdmin?codigoRecuperacion=${codigoRecuperacion}`,
+      {
+        email,
+        nuevaPassword,
+      },
+    );
   }
 
   restablecerContrasenia(
@@ -141,7 +166,7 @@ export class AuthService {
       })
       .pipe(
         tap(({ cliente }) => {
-          this.datosUsuario.set(cliente)
+          this.datosUsuario.set(cliente);
         }),
       );
   }

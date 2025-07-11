@@ -21,6 +21,10 @@ register();
 
       <swiper-container
         class="mySwiper h-[500px] w-full"
+        navigation
+        space-between="30"
+        centered-slides
+        autoplay-delay="3000"
       >
         @for (
           promocion of promocionesResource.value()?.promociones;

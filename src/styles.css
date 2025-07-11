@@ -64,7 +64,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #806bff;  /* Cambia el color de la barra de scroll */
+  background: #806bff; /* Cambia el color de la barra de scroll */
   border-radius: 10px;
 }
 
@@ -78,7 +78,6 @@
   50% {
     transform: translateY(-10px) translateX(5px);
   }
-  
 }
 
 @keyframes float2 {
@@ -93,14 +92,22 @@
 }
 @keyframes float3 {
   0% {
-    transform: translateX(10px) translateY(0);  /* Inicia a la derecha */
+    transform: translateX(10px) translateY(0); /* Inicia a la derecha */
   }
   50% {
-    transform: translateX(-10px) translateY(-10px);  /* Mueve a la izquierda y arriba */
+    transform: translateX(-10px) translateY(-10px); /* Mueve a la izquierda y arriba */
   }
   100% {
-    transform: translateX(10px) translateY(0);  /* Regresa a la derecha */
+    transform: translateX(10px) translateY(0); /* Regresa a la derecha */
   }
+}
+
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
 }
 
 .animate-float1 {
@@ -117,18 +124,16 @@
 @layer utilities {
   .text-outline-sky {
     -webkit-text-stroke: 0.5px black;
-    color: #9FD6CF;
+    color: #9fd6cf;
   }
   .text-outline-pink {
     -webkit-text-stroke: 0.5px black;
-    color: #FF6EA5;
+    color: #ff6ea5;
   }
   .text-outline-purple {
     -webkit-text-stroke: 0.5px black;
-    color: #9F93E7
+    color: #9f93e7;
   }
-
-  
 }
 /* Añade estas nuevas animaciones aquí */
 @keyframes disney-underline {
@@ -150,7 +155,7 @@
 }
 
 .disney-underline::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -174,7 +179,7 @@
 }
 
 .disney-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -208,7 +213,6 @@
     transform: translateX(-50%) scaleX(1);
   }
 }
-
 
 @keyframes slideInright {
   from {
@@ -259,7 +263,14 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
-.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

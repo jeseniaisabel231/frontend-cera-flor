@@ -16,7 +16,7 @@ import { FormProm } from '../../components/admin/formprom.component';
 const token =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDNjNTFmYmJjNTU2NmIzZjJiMWU0MSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzUyMDQwMTQ0LCJleHAiOjE3NTIwNDM3NDR9.ZjLc41W1BABCdDR_INZQ5Mk9W3MB21xqyEaOb3kWYio';
 
-describe('Página de administración de productos', () => {
+describe('Página de administración de promociones', () => {
   let component: PromotionsPage;
   let fixture: ComponentFixture<PromotionsPage>;
 

@@ -5,7 +5,9 @@ import { Headers } from '../components/header.component';
 @Component({
   imports: [Headers, BarranavComponent],
   template: `
-    <headers></headers>
+    <headers
+      data-testid="header"
+    ></headers>
     <main class="flex min-h-screen flex-col">
       <barranav rutaSeccionSeleccionada="sobre nosotros"></barranav>
       <section class="bg-white px-6 py-12 text-center">

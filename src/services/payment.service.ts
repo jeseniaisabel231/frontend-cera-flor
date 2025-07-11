@@ -59,12 +59,12 @@ export class PaymentService {
   }
 
   async crearMetodoPago(): Promise<string> {
-    const { paymentMethod } = await this.stripe.createPaymentMethod({
+    const intent = await this.stripe?.createPaymentMethod({
       type: 'card',
       card: this.card,
     });
 
-    return paymentMethod?.id ?? '';
+    return intent?.paymentMethod?.id ?? '';
   }
 
   async pagarCarrito() {

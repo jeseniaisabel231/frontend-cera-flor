@@ -14,7 +14,7 @@ import { IngredientsPage } from './ingredients.page';
 const token =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDNjNTFmYmJjNTU2NmIzZjJiMWU0MSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzUyMDc1Njk1LCJleHAiOjE3NTIwNzkyOTV9.EK6AnekATVMbYXZLtRnuWsz4HjFhAHuohXQnKresOgE';
 
-describe('Página de administración de productos', () => {
+describe('Página de administración de ingredientes', () => {
   let component: IngredientsPage;
   let fixture: ComponentFixture<IngredientsPage>;
   let httpTestingController: HttpTestingController;

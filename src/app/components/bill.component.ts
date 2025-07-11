@@ -49,7 +49,7 @@ import type { usuario } from '../interfaces/usuario.interface';
               <p class="text-sm">
                 Factura #:
                 <span class="font-medium uppercase">
-                  FC-{{ (verVenta()._id || '').slice(0, 8) }}
+                  FC-{{ (verVenta()?._id || '').slice(0, 8) }}
                 </span>
               </p>
               <p class="text-sm">Fecha: {{ now | date: 'dd/MM/yyyy' }}</p>
@@ -61,19 +61,19 @@ import type { usuario } from '../interfaces/usuario.interface';
             <h3 class="mb-2 text-lg font-semibold">Datos del Cliente</h3>
             <p>
               <span class="font-semibold">Nombre:</span>
-              {{ datosCliente().nombre }}
+              {{ datosCliente()?.nombre }}
             </p>
             <p>
               <span class="font-semibold">Dirección:</span>
-              {{ datosCliente().direccion }}
+              {{ datosCliente()?.direccion }}
             </p>
             <p>
               <span class="font-semibold">Teléfono:</span>
-              {{ datosCliente().telefono ?? 'No registrado' }}
+              {{ datosCliente()?.telefono ?? 'No registrado' }}
             </p>
             <p>
               <span class="font-semibold">Correo:</span>
-              {{ datosCliente().email }}
+              {{ datosCliente()?.email }}
             </p>
           </div>
 
@@ -92,7 +92,7 @@ import type { usuario } from '../interfaces/usuario.interface';
                 </tr>
               </thead>
               <tbody>
-                @for (item of verVenta().productos; track $index) {
+                @for (item of verVenta()?.productos; track $index) {
                   <tr>
                     <td
                       class="max-w-30 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
@@ -103,8 +103,9 @@ import type { usuario } from '../interfaces/usuario.interface';
                       class="max-w-30 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
                     >
                       {{
-                        item.producto.nombre ??
-                          (item.producto.tipo === 'ia'
+                        item.producto?.nombre ??
+                          item?.nombre ??
+                          ((item.producto?.tipo ?? item?.tipo) === 'ia'
                             ? 'Recomendación IA'
                             : 'Producto personalizado')
                       }}
@@ -113,14 +114,18 @@ import type { usuario } from '../interfaces/usuario.interface';
                       class="max-w-50 overflow-hidden border p-2 text-ellipsis whitespace-nowrap"
                     >
                       {{
-                        item.producto?.descripcion ?? ingredientesDescripcion(item.producto)
+                        item.producto?.descripcion ??
+                          item?.descripcion ??
+                          ingredientesDescripcion(item.producto ?? item)
                       }}
                     </td>
                     <td class="border p-2 text-center">
                       {{ item.cantidad }}
                     </td>
                     <td class="border p-2 text-right">
-                      {{ item.producto.precio | currency: 'USD' }}
+                      {{
+                        item.producto?.precio ?? item.precio | currency: 'USD'
+                      }}
                     </td>
                     <td class="border p-2 text-right">
                       {{ item.subtotal | currency: 'USD' }}
@@ -146,7 +151,9 @@ import type { usuario } from '../interfaces/usuario.interface';
                 class="mt-2 flex justify-between border-t pt-2 font-bold text-purple-700"
               >
                 <span>Total a pagar:</span>
-                <span>{{ verVenta().total | currency: 'USD' : 'symbol' }}</span>
+                <span>
+                  {{ verVenta()?.total | currency: 'USD' : 'symbol' }}
+                </span>
               </div>
             </div>
           </div>
@@ -188,6 +195,7 @@ import type { usuario } from '../interfaces/usuario.interface';
           <button
             class="cursor-pointer rounded-lg bg-gray-300 px-6 py-2 text-gray-700 transition hover:bg-gray-400"
             (click)="mostrarModal.set(false); alCerrar.emit()"
+            data-testid="cerrar-button"
           >
             Cerrar
           </button>
@@ -202,12 +210,12 @@ export class BillComponent {
   public now = new Date();
 
   public mostrarModal = model<boolean>(false);
-  public verVenta = input.required<any>();
-  public datosCliente = input.required<usuario>();
+  public verVenta = input<any>();
+  public datosCliente = input<usuario>();
   public alCerrar = output<void>();
 
-  public iva = computed(() => this.verVenta().total * 0.15);
-  public subtotal = computed(() => this.verVenta().total - this.iva());
+  public iva = computed(() => this.verVenta()?.total * 0.15);
+  public subtotal = computed(() => this.verVenta()?.total - this.iva());
 
   constructor() {
     effect(() => {
@@ -241,7 +249,9 @@ export class BillComponent {
   }
   public ingredientesDescripcion(producto: any): string {
     return producto.ingredientes
-      ? 'Ingredientes: ' + producto.ingredientes.map((item: any) => item.nombre).join(', ') + '.'
+      ? 'Ingredientes: ' +
+          producto.ingredientes.map((item: any) => item.nombre).join(', ') +
+          '.'
       : '';
   }
 

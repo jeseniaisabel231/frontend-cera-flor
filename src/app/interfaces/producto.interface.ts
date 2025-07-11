@@ -1,3 +1,5 @@
+import type { ingrediente } from "./ingrediente.interface";
+
 export interface producto{
     _id: string,
     id_categoria : {_id:string, descripcion: string, imagen: string, nombre: string},
@@ -8,7 +10,7 @@ export interface producto{
     precio: number,
     stock: string,
     imagen: string,
-    ingrediente: string,
+    ingredientes: ingrediente[],
     tipo: 'piel seca' | 'piel grasa' | 'piel mixta' | 'decorativa' | 'aromatizante' | 'humidificación',
     aroma: string,
 }

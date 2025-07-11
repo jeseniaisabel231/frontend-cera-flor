@@ -3,6 +3,7 @@ import { Component, effect, input, linkedSignal, signal } from '@angular/core';
 import { ColumnasUsuario, usuario } from '../../interfaces/usuario.interface';
 import { ColumnasVenta, venta } from '../../interfaces/venta.interface';
 import { transformaFecha } from '../../utils/transformaFecha';
+import { BillComponent } from '../bill.component';
 import { SwitchComponent } from '../switch.component';
 import { Actions, ModalComponent, TituloForms } from './modal.component';
 import { ModalAvisosComponent } from './modalavisos.component';
@@ -17,6 +18,7 @@ export type DatosTabla = usuario | venta; //representacion de la clave
     ModalAvisosComponent,
     CurrencyPipe,
     TitleCasePipe,
+    BillComponent,
   ],
   template: `
     <div class="mt-4 flex h-80 flex-col overflow-y-auto rounded-lg">
@@ -114,6 +116,23 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                       />
                     </svg>
                   </button>
+
+                  <button
+                    class="bg-morado-600 hover:bg-morado-700 mr-[3px] flex h-6 w-[36px] cursor-pointer items-center justify-center rounded-[9px] px-2 text-white"
+                    (click)="verPDF(fila)"
+                    title="Visualizar información"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="size-6"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -137,6 +156,14 @@ export type DatosTabla = usuario | venta; //representacion de la clave
       [verDatos]="datosMostrar()"
       [acciones]="acciones()"
     ></modal>
+
+    @if (titulo() === 'venta') {
+      <app-bill
+        [(mostrarModal)]="mostrarPDF"
+        [verVenta]="ventaAsignada()"
+        [datosCliente]="datosCliente()"
+      />
+    }
   `,
 })
 export class TablaComponent {
@@ -144,19 +171,21 @@ export class TablaComponent {
   public titulo = input.required<TituloForms>();
   public tipoRespuesta = signal<'exito' | 'error'>('exito');
   public decision = signal<boolean>(false);
-  public itemPorCambiar = signal<DatosTabla>({} as DatosTabla); //para almacenar el item que se va a cambiar
+  public itemPorCambiar = signal<DatosTabla>({} as DatosTabla);
   public datosTabla = input<any[]>();
   public mensajeEstado = signal<string>('');
+  public mostrarPDF = signal<boolean>(false);
+  public ventaAsignada = signal<any>({});
+  public datosCliente = signal<any>({});
 
   public datosMostrar = linkedSignal<DatosTabla>(
     () => this.datosTabla()?.[0] ?? ({} as DatosTabla),
-  ); //input es tipo DatosTabla
+  );
 
   public servicio = input<any>();
   public columnasTabla = input<ColumnasUsuario | ColumnasVenta>();
 
   public acciones = signal<Actions>('Visualizar');
-
   public mostrarModalDesicion = signal(false);
   constructor() {
     effect(() => {
@@ -243,5 +272,12 @@ export class TablaComponent {
     }
     this.mostrarModalDesicion.set(true);
     this.itemPorCambiar.set(item);
+  }
+
+  public verPDF(fila: any) {
+    const { cliente, ...venta } = fila;
+    this.ventaAsignada.set(venta);
+    this.datosCliente.set(cliente);
+    this.mostrarPDF.set(true);
   }
 }

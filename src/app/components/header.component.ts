@@ -51,6 +51,8 @@ import { decodificarToken } from '../utils/decodificarToken';
               id="search"
               name="search"
               [(ngModel)]="busqueda"
+              type="search"
+              data-testid="barra-busqueda"
             />
             <svg
               class="absolute inset-y-0 right-2 my-auto"

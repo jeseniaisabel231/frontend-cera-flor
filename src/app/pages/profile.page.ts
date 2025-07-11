@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 import { FacturaService } from '../../services/facturas.service';
 import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
+import { BillComponent } from '../components/bill.component';
 import { Headers } from '../components/header.component';
 import { usuario } from '../interfaces/usuario.interface';
 
@@ -23,6 +24,7 @@ import { usuario } from '../interfaces/usuario.interface';
     RouterLink,
     TitleCasePipe,
     ModalAvisosComponent,
+    BillComponent,
   ],
 
   template: `
@@ -518,7 +520,8 @@ import { usuario } from '../interfaces/usuario.interface';
                         </span>
                         <span class="mx-2 text-gray-300">•</span>
                         <span
-                          class="text-sm font-medium text-green-500 group-open:text-white"
+                          class="text-sm font-medium group-open:text-white"
+                          [class]="venta.estado === 'finalizado' ? 'text-green-600' : 'text-gray-500'"
                         >
                           Estado de entrega: {{ venta.estado | titlecase }}
                         </span>
@@ -529,12 +532,30 @@ import { usuario } from '../interfaces/usuario.interface';
                           {{ venta.fecha_venta | date: 'dd/MM/yyyy' }}
                         </time>
                       </div>
-                      <span
-                        class="text-lg font-bold text-gray-800 group-open:text-white"
-                        data-testid="total-pedido"
-                      >
-                        {{ venta.total | currency: 'USD' : 'symbol' }}
-                      </span>
+                      <div class="flex gap-x-4">
+                        <span
+                          class="text-lg font-bold text-gray-800 group-open:text-white"
+                          data-testid="total-pedido"
+                        >
+                          {{ venta.total | currency: 'USD' : 'symbol' }}
+                        </span>
+                        <button
+                          class="bg-morado-600 hover:bg-morado-700 mr-[3px] flex h-6 w-[36px] cursor-pointer items-center justify-center rounded-[9px] px-2 text-white"
+                          (click)="verPDF(venta)"
+                          title="Visualizar información"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="size-6"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
                     </summary>
 
                     <div class="p-6">
@@ -577,7 +598,10 @@ import { usuario } from '../interfaces/usuario.interface';
                                   <div
                                     class="mt-2 flex items-center gap-4 text-sm"
                                   >
-                                    <span class="text-gray-600" data-testid="cantidad-producto">
+                                    <span
+                                      class="text-gray-600"
+                                      data-testid="cantidad-producto"
+                                    >
                                       Cantidad: {{ item.cantidad }}
                                     </span>
                                     <span
@@ -646,6 +670,11 @@ import { usuario } from '../interfaces/usuario.interface';
               }
             </section>
           </article>
+          <app-bill
+            [(mostrarModal)]="mostrarPDF"
+            [verVenta]="ventaAsignada()"
+            [datosCliente]="datosCliente()"
+          />
         }
       </section>
       <app-modal
@@ -664,6 +693,9 @@ export class ProfilePage {
   public servicioFacturas = inject(FacturaService);
   public imagenPersonalizada = signal<string>('');
   public carga = signal<boolean>(false);
+  public ventaAsignada = signal<any>(null);
+  public datosCliente = signal<any>(null);
+  public mostrarPDF = signal<boolean>(false);
 
   public mostrarModalPerfil = signal<boolean>(false);
   public mensajePerfil = signal<string>('');
@@ -797,5 +829,12 @@ export class ProfilePage {
     return `Ingredientes utilizados: ${ingredientes
       .map((ing) => ing.nombre)
       .join(', ')}`;
+  }
+
+  public verPDF(fila: any) {
+    const { cliente, ...venta } = fila;
+    this.ventaAsignada.set(venta);
+    this.datosCliente.set(cliente);
+    this.mostrarPDF.set(true);
   }
 }

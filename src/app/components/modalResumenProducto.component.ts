@@ -310,9 +310,10 @@ export class ModalResumenProductoComponent {
   }
 
   public anadirCarrito(): void {
+    const { tipo_producto, ...datos }  = this.datos();
     this.cargando.set(true);
     this.serviceCarrito
-      .agregarCarrito(this.datos(), 1, undefined, 'personalizado')
+      .agregarCarrito(datos, 1, undefined, tipo_producto)
       .subscribe(() => this.router.navigate(['/carrito']))
       .add(() => this.cargando.set(false));
   }

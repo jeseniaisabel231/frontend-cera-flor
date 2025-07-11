@@ -19,6 +19,7 @@ export class FacturaService {
   }
 
   obtenerFacturas() {
+    this.carga.set(true);
     return this.http.get<any>(`${this.urlBackend}/api/ventas/cliente/mis-ventas`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,

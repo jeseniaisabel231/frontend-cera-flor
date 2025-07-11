@@ -11,6 +11,7 @@ import { TablaComponent } from '../../components/admin/tabla.component';
 import { Loading } from '../../components/loading.component';
 import { Navegacion } from '../../components/navegacion.component';
 import { ColumnasVenta } from '../../interfaces/venta.interface';
+
 @Component({
   imports: [Navegacion, Presentation, Loading, TablaComponent, FormsModule],
   template: `

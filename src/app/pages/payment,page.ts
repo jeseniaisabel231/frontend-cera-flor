@@ -161,9 +161,7 @@ import { venta } from '../interfaces/venta.interface';
               <form>
                 <legend class="mb-4 text-lg font-medium">Método de pago</legend>
                 <p class="mb-4 text-sm">
-                  Utiliza una tarjeta de crédito o débito para completar tu
-                  compra. Asegúrate de que la tarjeta esté a tu nombre y tenga
-                  fondos suficientes.
+                  Utiliza una tarjeta de crédito o débito para completar tu compra. Asegúrate de que la tarjeta esté a tu nombre y tenga fondos suficientes.
                 </p>
 
                 <!-- forma de paago -->
@@ -177,6 +175,7 @@ import { venta } from '../interfaces/venta.interface';
                   (click)="onSubmitPago($event)"
                   class="bg-morado-600 hover:bg-morado-700 mt-6 flex w-full cursor-pointer items-center justify-center rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
                   [disabled]="modificarDatos()"
+                  data-testid="pagar-button"
                 >
                   @if (carga()) {
                     <svg
@@ -208,6 +207,7 @@ import { venta } from '../interfaces/venta.interface';
                 [verVenta]="ventaCreada()"
                 [datosCliente]="datosCliente()"
                 (alCerrar)="alCerrar()"
+                data-testid="factura"
               />
             </section>
 

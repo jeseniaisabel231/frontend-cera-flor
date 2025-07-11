@@ -8,6 +8,7 @@ import { BarranavComponent } from '../components/barranav.component';
 import { Headers } from '../components/header.component';
 import { Loading } from '../components/loading.component';
 import { carritoProducto } from '../interfaces/carrito.interface';
+import type { ingrediente } from '../interfaces/ingrediente.interface';
 
 @Component({
   imports: [
@@ -54,14 +55,18 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                     />
                     <div class="flex h-28 flex-col justify-center">
                       <small class="text-xs font-medium text-gray-500">
-                        {{ obtenerNombreCategoria(item.id_categoria._id) }}
+                        {{ obtenerNombreCategoria(item.id_categoria) }}
                       </small>
                       <h2
                         class="text-lg font-bold text-gray-800"
                         data-testid="nombre-producto"
                       >
                         {{
-                          item.nombre || 'Producto personalizado' | titlecase
+                          item.nombre
+                            ? (item.nombre | titlecase)
+                            : producto.tipo_producto === 'personalizado'
+                              ? 'Producto personalizado'
+                              : 'Recomendación de IA'
                         }}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
@@ -74,8 +79,13 @@ import { carritoProducto } from '../interfaces/carrito.interface';
                         <small
                           class="rounded-full bg-[#ccc3fb] px-3 py-1 text-xs"
                         >
-                          <strong>Tipo:</strong>
-                          {{ item.tipo }}
+                          @if (item.tipo) {
+                            <strong>Tipo:</strong>
+                            {{ item.tipo }}
+                          } @else {
+                            <strong>Esencias:</strong>
+                            {{ obtenerEsencias(item.ingredientes) }}
+                          }
                         </small>
                       </div>
                     </div>
@@ -302,10 +312,23 @@ export class ShoppingCardPage {
     this.mostrarModal.set(true);
   }
 
-  obtenerNombreCategoria(id: string): string {
-    const categoria = this.servicioCategoria
-      .categorias()
-      .find((cat) => cat._id === id);
-    return categoria ? categoria.nombre : 'Categoría desconocida';
+  obtenerNombreCategoria(categoria: any): string {
+    if (typeof categoria === 'string') {
+      const categoriaEncontrada = this.servicioCategoria
+        .categorias()
+        .find((cat) => cat._id === categoria);
+      return categoriaEncontrada
+        ? categoriaEncontrada.nombre
+        : 'Categoría desconocida';
+    }
+
+    return categoria;
+  }
+
+  obtenerEsencias(ingredientes: ingrediente[]): string {
+    if (!ingredientes || ingredientes.length === 0) {
+      return 'Sin esencias';
+    }
+    return ingredientes.filter((ing) => ing.tipo === 'esencia').map((ing) => ing.nombre).join(', ');
   }
 }

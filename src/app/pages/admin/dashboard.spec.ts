@@ -3,19 +3,19 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { Chart, registerables } from 'chart.js';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../../services/auth.service';
 import { routes } from '../../app.routes';
 import { DashboardPage } from './dashboard.page';
-import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-describe('Página ', () => {
+describe('Dashboard Administrativo', () => {
   let component: DashboardPage;
   let fixture: ComponentFixture<DashboardPage>;
   let httpTestingController: HttpTestingController;
@@ -29,10 +29,10 @@ describe('Página ', () => {
         provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
-				provideCharts(withDefaultRegisterables()),
+        provideCharts(withDefaultRegisterables()),
         AuthService,
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);

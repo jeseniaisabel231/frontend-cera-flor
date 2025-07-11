@@ -35,7 +35,7 @@ import { RouterLink } from '@angular/router';
         </a>
       </nav>
       <div class="flex flex-col items-center justify-center gap-5 py-5">
-        <p class="flex font-semibold text-[20px] text-white">
+        <p class="flex font-semibold  text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="27"

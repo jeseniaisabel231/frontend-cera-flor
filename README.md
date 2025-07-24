@@ -1,59 +1,30 @@
-# FrontendCeraFlor
+<h1 align='center'> <img src="https://github.com/user-attachments/assets/8114eed3-ccd6-4abe-baf3-01ba703df262" height='40px'/>
+ <em>Flor & Cera</em> <img src="https://github.com/user-attachments/assets/8114eed3-ccd6-4abe-baf3-01ba703df262" height='40px'/>
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
+</h1>
 
-## Development server
+<img src='https://github.com/user-attachments/assets/6eb8dd0d-d962-42d6-95dd-56a13e463827' height='400px' align='center'>
 
-To start a local development server, run:
+> [!IMPORTANT]
+> **Descripción del sistema**
+>
+> Flor & Cera es un e-commerce desarrollado para la venta de productos artesanales personalizados, enfocado en mejorar la experiencia del cliente mediante tecnologías modernas. El sistema presenta una interfaz frontend desarrollada con    Angular, TypeScript y TailwindCSS, diseñada bajo principios de UX/UI para ofrecer navegación intuitiva y visualmente atractiva.Una de sus principales características es la integración de Inteligencia Artificial, que permite recomendar   productos personalizados según las preferencias del usuario. Además, incluye un módulo interactivo tipo "juego" donde el cliente puede diseñar su propio producto seleccionando ingredientes, fragancias y formas.
+  Gracias al uso de metodologías ágiles como Scrum, el desarrollo fue iterativo y orientado a la entrega continua de valor. El despliegue se realizó en Vercel, y el código se encuentra versionado en GitHub para facilitar su     mantenimiento y evolución.
 
-```bash
-ng serve
-```
+☑️ **Documento tesis en formato PDF**
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+    📃 [Tesis_final_JP[1][2].pdf](https://github.com/user-attachments/files/21397951/Tesis_final_JP.1.2.pdf)
 
-## Code scaffolding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+☑️ **Enlace del video**
 
-```bash
-ng generate component component-name
-```
+    ▶️ https://www.youtube.com/watch?v=bGGxZqvoLT8
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-```bash
-ng generate --help
-```
+☑️ **Formulario F_AA_233A**
 
-## Building
+    📄file:///C:/Users/jesen/AppData/Local/Microsoft/Windows/INetCache/IE/9J594J5R/F_AA_233[1].pdf
 
-To build the project run:
 
-```bash
-ng build
-```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

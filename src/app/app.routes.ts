@@ -25,6 +25,8 @@ import { ShoppingCardPage } from './pages/shoppingCart.page';
 import { WorkshopGamePage } from './pages/workshopGame.page';
 import { CustmizedProductPage } from './pages/custmizedProduct.page';
 import { CategoriesPage } from './pages/admin/categories.page';
+import { PolicyPage } from './pages/privacy.page';
+import { DeleteAccount } from './pages/deleteAccount.page';
 
 export const routes: Routes = [
   { path: 'iniciar-sesion', component: LoginPage, canActivate: [NoAuthGuard] },
@@ -34,6 +36,8 @@ export const routes: Routes = [
     component: ConfirmEmailPage,
     canActivate: [NoAuthGuard],
   },
+  { path: 'politica-privacidad', component: PolicyPage },
+  { path: 'eliminar-cuenta', component: DeleteAccount },
   { path: 'inicio', component: HomePage },
   { path: 'catalogo', component: CatalogPage },
   { path: 'detalle-producto/:id', component: ProductDetailPage },

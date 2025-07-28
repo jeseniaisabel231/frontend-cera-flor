@@ -28,6 +28,7 @@ export class FacturaService {
     }).pipe(
       tap(({ ventas }) => {
         this.facturas.set(ventas);
+        this.carga.set(false);
       })
     );
   }

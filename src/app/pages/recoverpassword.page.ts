@@ -444,14 +444,26 @@ export class RecuperarContrasenia {
             this.mostrarModal.set(true);
           },
           error: (err) => {
-            this.titulo.set('Error');
-            this.mensaje.set(err.error.msg);
-            this.tipoRespuesta.set('error');
-            this.mostrarModal.set(true);
+            this.authService
+              .recuperarContraseniaAdmin(this.formulario.value.email!)
+              .subscribe({
+                next: (res) => {
+                  this.titulo.set('Éxito');
+                  this.mensaje.set(res.msg);
+                  this.tipoRespuesta.set('exito');
+                  this.mostrarModal.set(true);
+                },
+                error: (error) => {
+                  this.titulo.set('Error');
+                  this.mensaje.set(err.error.msg);
+                  this.tipoRespuesta.set('error');
+                  this.mostrarModal.set(true);
+                },
+              })
+              .add(() => {
+                this.loading.set(false);
+              });
           },
-        })
-        .add(() => {
-          this.loading.set(false);
         });
     } else {
       this.error.set('Por favor, ingresa un correo electrónico válido.');
@@ -487,23 +499,39 @@ export class RecuperarContrasenia {
           this.mostrarModalPassword.set(true);
         },
         error: (err) => {
-          const { details = [] } = err.error;
+          this.authService
+            .restablecerContraseniaAdmin(
+              this.formulario.value.email!,
+              this.formPassword.value.nuevaPassword!,
+              this.formPassword.value.codigoRecuperacion!,
+            )
+            .subscribe({
+              next: (res) => {
+                this.titulo.set('Éxito');
+                this.mensaje.set(res.msg);
+                this.tipoRespuestaPassword.set('exito');
+                this.mostrarModalPassword.set(true);
+              },
+              error: (error) => {
+                const { details = [] } = error.error;
 
-          details.forEach((error: any) => {
-            this.errores.update((prev) => ({
-              ...prev,
-              [error.path]: error.msg,
-            }));
-          });
+                details.forEach((error: any) => {
+                  this.errores.update((prev) => ({
+                    ...prev,
+                    [error.path]: error.msg,
+                  }));
+                });
 
-          this.titulo.set('Error');
-          this.mensaje.set(err.error.msg);
-          this.tipoRespuestaPassword.set('error');
-          this.mostrarModalPassword.set(true);
+                this.titulo.set('Error');
+                this.mensaje.set(err.error.msg);
+                this.tipoRespuestaPassword.set('error');
+                this.mostrarModalPassword.set(true);
+              },
+            })
+            .add(() => {
+              this.carga.set(false);
+            });
         },
-      })
-      .add(() => {
-        this.carga.set(false);
       });
   }
 }

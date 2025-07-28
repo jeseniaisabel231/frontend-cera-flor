@@ -116,23 +116,6 @@ export type DatosTabla = usuario | venta; //representacion de la clave
                       />
                     </svg>
                   </button>
-
-                  <button
-                    class="bg-morado-600 hover:bg-morado-700 mr-[3px] flex h-6 w-[36px] cursor-pointer items-center justify-center rounded-[9px] px-2 text-white"
-                    (click)="verPDF(fila)"
-                    title="Visualizar información"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="size-6"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"
-                      />
-                    </svg>
-                  </button>
                 </div>
               </td>
             </tr>
@@ -199,7 +182,7 @@ export class TablaComponent {
   public verFormulario(datos: DatosTabla) {
     this.datosMostrar.set(datos);
     this.mostrarModal.set(true);
-    this.acciones.set('Visualizar'); //se utiliza .set cuando se modifica el valor
+    this.acciones.set('Visualizar');
   }
   public nombreCliente(usuario: any): string {
     return `${usuario.nombre} ${usuario.apellido}`;
@@ -210,7 +193,6 @@ export class TablaComponent {
   public productos(productos: any): any[] {
     return productos.map((item: any) => item.producto_id);
   }
-  //metodo para verificar el estado
   public verificarEstado(item: any): boolean {
     return item.estado === 'activo' || item.estado === 'finalizado';
   }

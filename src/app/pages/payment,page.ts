@@ -14,7 +14,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { StripeElementsOptions } from '@stripe/stripe-js';
 import { NgxStripeModule } from 'ngx-stripe';
 import { AuthService } from '../../services/auth.service';
 import { CarritoService } from '../../services/carrito.service';
@@ -161,20 +160,18 @@ import { venta } from '../interfaces/venta.interface';
               <form>
                 <legend class="mb-4 text-lg font-medium">Método de pago</legend>
                 <p class="mb-4 text-sm">
-                  Utiliza una tarjeta de crédito o débito para completar tu compra. Asegúrate de que la tarjeta esté a tu nombre y tenga fondos suficientes.
+                  Utiliza una tarjeta de crédito o débito, o escoge un método de pago para completar tu
+                  compra. Asegúrate de que el método escogido tenga
+                  fondos suficientes.
                 </p>
 
                 <!-- forma de paago -->
-                <ngx-stripe-card
-                  #formulariopagoref
-                  [elementsOptions]="opcionesFormularioPago"
-                  id="formulariopago"
-                ></ngx-stripe-card>
+                <div #formulariopagoref id="formulariopago"></div>
 
                 <button
                   (click)="onSubmitPago($event)"
                   class="bg-morado-600 hover:bg-morado-700 mt-6 flex w-full cursor-pointer items-center justify-center rounded-[12px] py-3 font-semibold text-white transition-colors disabled:bg-gray-400"
-                  [disabled]="modificarDatos()"
+                  [disabled]="modificarDatos() || serviceCarrito.carrito().productos.length === 0"
                   data-testid="pagar-button"
                 >
                   @if (carga()) {
@@ -190,8 +187,10 @@ import { venta } from '../interfaces/venta.interface';
                         d="M480-60.78q-86.52 0-162.9-32.96-76.37-32.95-133.39-89.97T93.74-317.1Q60.78-393.48 60.78-480q0-87.04 32.95-163.06 32.95-76.03 89.96-133.18t133.4-90.07q76.39-32.91 162.91-32.91 22.09 0 37.54 15.46Q533-868.3 533-846.22q0 22.09-15.46 37.55-15.45 15.45-37.54 15.45-130.18 0-221.7 91.52t-91.52 221.69q0 130.18 91.52 221.71 91.52 91.52 221.69 91.52 130.18 0 221.71-91.52 91.52-91.52 91.52-221.7 0-22.09 15.45-37.54Q824.13-533 846.22-533q22.08 0 37.54 15.46 15.46 15.45 15.46 37.54 0 86.52-32.95 162.92t-89.96 133.44q-57.01 57.03-133.1 89.95Q567.12-60.78 480-60.78"
                       />
                     </svg>
+                  } @else if (serviceCarrito.carrito().productos.length === 0) {
+                    <span>No hay productos en el carrito</span>
                   } @else {
-                    Pagar
+                    Pagar {{ serviceCarrito.carrito().total | currency }}
                   }
                 </button>
               </form>
@@ -269,9 +268,6 @@ export class PaymentPage {
   public datosCliente = signal<usuario>({} as usuario);
   public mostrarVenta = signal<boolean>(false);
 
-  public opcionesFormularioPago: StripeElementsOptions = {
-    locale: 'es',
-  };
   public errores = signal<any>({
     direccion: '',
     cedula: '',
@@ -384,7 +380,8 @@ export class PaymentPage {
     event.preventDefault();
 
     this.carga.set(true);
-    const servicePaymentPromise = await this.servicePayment.pagarCarrito();
+    try {
+      const servicePaymentPromise = await this.servicePayment.pagarCarrito();
     servicePaymentPromise
       .subscribe({
         next: ({ venta, cliente }) => {
@@ -403,5 +400,13 @@ export class PaymentPage {
         },
       })
       .add(() => this.carga.set(false));
+    } catch (error) {
+      this.carga.set(false);
+      this.tipoRespuesta.set('error');
+      this.mostrarModalError.set(true);
+      this.respuestaBack.set(
+        'Error al procesar el pago. Por favor, inténtalo de nuevo.',
+      );
+    }
   }
 }

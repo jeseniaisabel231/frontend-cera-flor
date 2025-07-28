@@ -47,12 +47,20 @@ export class PromocionesService {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(
-        tap((respuesta: any) =>
+        tap((respuesta: any) => {
           this.promociones.update((promociones) => [
             ...promociones,
             respuesta.promocion,
-          ]),
-        ),
+          ]);
+
+          this.http.post(`${this.urlBackend}/api/enviar-notificacion`, {
+            titulo: '¡Nueva promoción disponible 🧼🕯️!',
+            mensaje: respuesta.promocion.nombre,
+            imagen: respuesta.promocion.imagen,
+          }, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          }).subscribe();
+        }),
       );
   }
   eliminar(id: string) {

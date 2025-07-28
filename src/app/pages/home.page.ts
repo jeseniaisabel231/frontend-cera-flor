@@ -20,7 +20,7 @@ register();
       <!-- elementos dentro del banner -->
 
       <swiper-container
-        class="mySwiper h-[500px] w-full"
+        class="mySwiper h-[120px] sm:h-[220px] md:[300px] lg:h-[360px] xl:h-[490px] w-full"
         navigation
         space-between="30"
         centered-slides
@@ -34,7 +34,7 @@ register();
             <img
               [src]="promocion.imagen"
               [alt]="promocion.nombre"
-              class="w-full"
+              class="w-full h-full"
               data-testid="imagen-promocion"
             />
           </swiper-slide>
@@ -172,7 +172,7 @@ register();
             Nuevos Productos
           </h2>
           <div
-            class="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-8 lg:px-0"
             data-testid="productos-destacados"
           >
             @for (

@@ -9,15 +9,15 @@ import { Headers } from '../components/header.component';
   imports: [Headers, ModalAvisosComponent],
   template: `
     <headers></headers>
-    <main class="flex flex-col text-center">
-      <div class="relative flex h-[82vh] justify-center bg-gradient-to-r">
+    <main class="flex flex-col text-center ">
+      <div class="relative flex h-[82vh] justify-center bg-gradient-to-r ">
         <img
           src="fondoJuego.png"
           class="absolute inset-0 z-0 h-full w-full object-cover"
         />
         <img
           src="bannerJuego.png"
-          class="absolute inset-0 z-10 m-auto w-2/5 object-contain"
+          class="absolute inset-0 z-10 m-auto sm:w-2/5 object-contain w-50"
         />
         <a class="relative block h-full w-full overflow-hidden">
           <img
@@ -97,20 +97,20 @@ import { Headers } from '../components/header.component';
           "
         >
           <div
-            class="absolute z-10 hidden h-98 w-98 items-center justify-center rounded-full bg-white/30 backdrop-blur-md transition duration-300 group-hover:flex"
+            class="absolute z-10 hidden md:h-98 md:w-98 h-60 w-60  items-center justify-center rounded-full bg-white/30 backdrop-blur-md transition duration-300 group-hover:flex top-10 "
           ></div>
           <img
             src="velaJuego.png"
-            class="relative z-20 h-80 w-80 transform transition-transform duration-300 group-hover:scale-110 "
+            class="relative h-50 w-50 md:z-20 md:h-80 md:w-80 mb-80 md:mt-0 md:mb-0 transform transition-transform duration-300 group-hover:scale-110 "
           />
           <strong
-            class="group absolute top-110 left-20 z-30 cursor-pointer rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+            class="group absolute top-10 left-40 w-40 md:top-110 md:left-20 z-30 cursor-pointer rounded-full bg-rose-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-rose-600 hover:shadow-lg hover:shadow-rose-500/40 focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:outline-none active:scale-95"
           >
             🕯️ Crear Mi Vela
           </strong>
         </button>
         <button
-          class="group absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden cursor-pointer"
+          class="group absolute inset-y-0 right-0 my-auto flex h-120 w-120 items-center justify-end overflow-hidden cursor-pointer "
           (click)="
             authService.clienteAutenticado()
               ? this.router.navigate([
@@ -121,16 +121,16 @@ import { Headers } from '../components/header.component';
           "
         >
           <div
-            class="absolute z-10 hidden h-98 w-98 items-center justify-center rounded-full bg-white/30 backdrop-blur-md transition duration-300 group-hover:flex"
+            class="absolute z-10 hidden md:h-98 md:w-98 h-60 w-60 top-60 md:top-0 items-center justify-center rounded-full bg-white/30 backdrop-blur-md transition duration-300 group-hover:flex"
           >
             
           </div>
           <img
             src="jabonJuego.png"
-            class="relative z-20 h-80 w-80 transform transition-transform duration-200 hover:scale-110"
+            class="relative z-20 h-50 w-50 transform transition-transform duration-200 hover:scale-110  md:h-80 md:w-80 mt-70 md:mt-0"
           />
           <strong
-            class="group absolute top-95 left-50 z-30 cursor-pointer rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
+            class="group absolute top-106 left-40 md:top-95 md:left-50 z-30 cursor-pointer rounded-full bg-teal-500 px-6 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg hover:shadow-teal-500/40 focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:outline-none active:scale-95"
           >
             🧼 Crear Mi Jabón
           </strong>

@@ -462,7 +462,7 @@ export class FormIngredientsComponent {
 
   onSubmit() {
     this.carga.set(true);
-    const formData = this.toFormData(); //convierte el
+    const formData = this.toFormData(); 
     if (this.acciones() === 'Registrar') {
       this.servicioIngredientes
         .registrar(formData)

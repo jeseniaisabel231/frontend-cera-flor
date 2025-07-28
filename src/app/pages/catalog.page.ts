@@ -30,10 +30,10 @@ import { producto } from '../interfaces/producto.interface';
         rutaSeccionSeleccionada="catálogo"
         [rutaCategoriaSeleccionada]="titulo().replace('-', ' ')"
       />
-      <div class="relative aspect-[16/9] md:h-115">
+      <div class="relative aspect-[16/9] h-[120px] sm:h-[220px] md:[300px] lg:h-[360px] xl:h-[410px] w-full">
         <img [src]="getBannerImage()" alt="Banner description" class="w-full" />
       </div>
-      <section class="bg-gradient-to-t from-[#f0fdf4] to-white pt-20 pb-16">
+      <section class="bg-gradient-to-t from-[#f0fdf4] to-white pt-4 2xl:pt-20 pb-16 ">
         <div class="mx-auto max-w-5xl text-center">
           <h2
             class="font-playfair mb-10 text-[20px] font-semibold text-gray-800 sm:text-2xl"
@@ -163,7 +163,7 @@ import { producto } from '../interfaces/producto.interface';
             <loading></loading>
           } @else {
             <div
-              class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              class="grid px-10 md:px-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
               @for (producto of productosTipo(); track producto._id) {
                 <card [producto]="producto" data-testid="card"></card>

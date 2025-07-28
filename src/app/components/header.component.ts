@@ -17,8 +17,8 @@ import { decodificarToken } from '../utils/decodificarToken';
       <div
         class="bg-amarrillo-500 flex items-center justify-between px-10 py-2 lg:px-28"
       >
-        <a class="flex cursor-pointer items-center gap-x-3">
-          <img src="logo.png" alt="Flor & Cera" />
+        <a class="flex cursor-pointer items-center gap-x-3" routerLink="/inicio">
+          <img src="logo.png" alt="Flor & Cera" class="h-12 sm:h-20" />
           <h1 class="font-playfair hidden text-[25px] font-bold lg:block">
             Flor & Cera
           </h1>
@@ -69,7 +69,7 @@ import { decodificarToken } from '../utils/decodificarToken';
             </svg>
             @if (busqueda()) {
               <div
-                class="absolute top-12 z-50 max-h-100 w-3/4 rounded-lg bg-white p-2 shadow-md shadow-black/20"
+                class="absolute top-12 z-50 max-h-100 sm:w-3/4 w-[300%] rounded-lg bg-white p-2 shadow-md shadow-black/20 "
               >
                 @if (productosBuscadosResource.isLoading()) {
                   <div class="flex items-center justify-center gap-x-2">
@@ -298,7 +298,7 @@ import { decodificarToken } from '../utils/decodificarToken';
         </div>
       </div>
       <nav
-        class="bg-morado-500 flex h-14 w-full items-center justify-center text-white"
+        class="bg-morado-500 flex h-52 sm:h-14 w-full items-center justify-center text-white"
         [class.hidden]="!mobileMenuVisible()"
         [class.lg:block]="true"
       >

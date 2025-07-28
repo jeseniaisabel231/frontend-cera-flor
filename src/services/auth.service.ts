@@ -22,6 +22,7 @@ export class AuthService {
   private urlBackend = environment.urlApi;
   private http = inject(HttpClient);
   private carritoService = inject(CarritoService);
+  
   public datosUsuario = signal<usuario>({
     _id: '',
     nombre: '',

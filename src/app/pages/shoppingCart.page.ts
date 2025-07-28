@@ -92,7 +92,7 @@ import type { ingrediente } from '../interfaces/ingrediente.interface';
                   </div>
 
                   <div class="flex flex-col items-end gap-4">
-                    <div class="flex items-center gap-6">
+                    <div class="sm:flex sm:flex-row flex-col items-center gap-6 ">
                       <div
                         class="flex items-center rounded-full border border-gray-200"
                       >
@@ -111,7 +111,7 @@ import type { ingrediente } from '../interfaces/ingrediente.interface';
                         >
                           -
                         </button>
-                        <span class="px-2 text-lg font-medium">
+                        <span class="px-2 text-lg font-medium ">
                           {{ producto.cantidad }}
                         </span>
                         <button
@@ -127,13 +127,13 @@ import type { ingrediente } from '../interfaces/ingrediente.interface';
                           +
                         </button>
                       </div>
-
                       <p
-                        class="text-xl font-bold text-[#9810fa]"
+                        class="md:text-xl font-bold text-[#9810fa] text-center"
                         data-testid="precio-producto"
                       >
                         $ {{ producto.precio_unitario }}
                       </p>
+
                     </div>
 
                     <button

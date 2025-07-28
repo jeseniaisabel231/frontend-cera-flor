@@ -38,7 +38,7 @@ import { RouterLink } from '@angular/router';
         class="flex flex-col-reverse px-6 pb-10 sm:flex-row sm:gap-4 sm:px-10 md:px-30 lg:px-40"
       >
         <section class="mt-8 flex-1 lg:w-3/5">
-          <div class="grid grid-cols-2 gap-4 rounded-lg">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-lg">
             @if (servicePersonalizacion.carga()) {
               <loading class="col-span-2" />
             } @else {
@@ -47,7 +47,7 @@ import { RouterLink } from '@angular/router';
                 track $index
               ) {
                 <article
-                  class="flex cursor-pointer flex-wrap items-center justify-between rounded-lg border-b border-gray-100 bg-white p-4 wrap-anywhere shadow-sm last:border-b-0 hover:bg-gray-50"
+                  class="flex cursor-pointer flex-wrap items-center justify-between rounded-lg border-b border-gray-100 bg-white p-4 wrap-anywhere shadow-sm last:border-b-0 hover:bg-gray-50 "
                   (click)="mostrarModalResumen(producto)"
                 >
                   <div class="flex flex-row items-center gap-4">

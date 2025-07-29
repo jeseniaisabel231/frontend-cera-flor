@@ -8,7 +8,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
   imports: [NgClass, RouterLink],
   template: `
     <aside
-      class="flex h-full w-full flex-col bg-[#e0daff] px-10 md:w-[360px]"
+      class="flex h-full w-[280px] sm:w-full flex-col bg-[#e0daff] px-10 md:w-[360px]"
       [class]="mostrar() ? 'animate-activa' : 'animate-inactiva'"
     >
       <div class="flex items-center justify-between">

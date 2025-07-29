@@ -394,7 +394,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                 <label class="text-sm font-medium">
                   Selecciona
                   <strong class="text-bold">dos</strong>
-                  ingredientes
+                  esencias
                   <span class="text-red-500">*</span>
                 </label>
 
@@ -423,7 +423,7 @@ import { ModalAvisosComponent } from './modalavisos.component';
                   </small>
                 } @else if (ingredientesInvalido) {
                   <small class="text-red-600">
-                    Debes seleccionar dos ingredientes.
+                    Debes seleccionar dos esencias.
                   </small>
                 }
               </fieldset>

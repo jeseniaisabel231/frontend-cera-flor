@@ -45,9 +45,9 @@ export class VentasService {
       .add(() => this.carga.set(false));
   }
 
-  obtener() {
+  obtener(limit = 50, page = 1) {
     return this.http
-      .get(`${this.urlBackend}/api/ventas`, {
+      .get(`${this.urlBackend}/api/ventas?limit=${limit}&page=${page}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .pipe(

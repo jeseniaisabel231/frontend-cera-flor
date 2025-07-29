@@ -240,10 +240,11 @@ export class TablaComponent {
     const estado = this.verificarEstado(item);
     const esVenta = this.verificarTipo(item) === 'venta';
     if (esVenta) {
+
       this.mensajeEstado.set(
         estado
-          ? '¿Está seguro de que desea finalizar la venta?'
-          : '¿Está seguro de que desea reactivar la venta?',
+          ? '¿Está seguro de que desea reactivar la venta?'
+          : '¿Está seguro de que desea finalizar la venta?'
       );
     } else {
       this.mensajeEstado.set(

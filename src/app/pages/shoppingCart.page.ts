@@ -322,7 +322,7 @@ export class ShoppingCardPage {
         : 'Categoría desconocida';
     }
 
-    return categoria;
+    return categoria.nombre;
   }
 
   obtenerEsencias(ingredientes: ingrediente[]): string {

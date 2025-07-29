@@ -78,6 +78,7 @@ export class AuthService {
     genero: string,
     email: string,
     password: string,
+    fecha_nacimiento: string,
   ): Observable<respuestaLogin> {
     return this.http
       .post<respuestaLogin>(`${this.urlBackend}/api/registro`, {

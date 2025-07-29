@@ -29,7 +29,7 @@ export type TituloDashboard =
         </svg>
         <span class="my-auto">{{ tiempoActual }}</span>
       </div>
-      <p class="mt-1">{{ saludo }}, Estefanía</p>
+      <p class="mt-1">{{ saludo }}</p>
     </div>
   `,
 })

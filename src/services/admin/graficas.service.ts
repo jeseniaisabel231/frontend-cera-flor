@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { GraficaVentas } from '../../app/interfaces/graficas.interface';
 import { environment } from '../../environments/environment';
 

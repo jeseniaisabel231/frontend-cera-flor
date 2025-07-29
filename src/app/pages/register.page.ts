@@ -184,53 +184,56 @@ import { Headers } from '../components/header.component';
                   </small>
                 }
               </div>
-              <div class="mb-2 flex w-full flex-col">
+
+              <div class="relative flex w-full flex-col">
                 <span class="mb-2 pl-2 font-medium">
-                  Género
+                  Fecha de nacimiento
                   <span class="text-red-500">*</span>
                 </span>
-                @let generoInvalido =
-                  (formRegistro.get('genero')?.invalid &&
-                    formRegistro.get('genero')?.value) ||
-                  errores().genero;
+                @let fechaNacimientoInvalida =
+                  (formRegistro.get('fecha_nacimiento')?.invalid &&
+                    formRegistro.get('fecha_nacimiento')?.value) ||
+                  errores().fecha_nacimiento;
 
-                <div class="flex h-[46px] items-center">
-                  <input
+                <svg
+                  class="absolute inset-y-0 left-4 my-10"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path
                     [class]="
-                      generoInvalido
-                        ? 'border-red-600 outline-red-600'
-                        : 'border-[#878787] outline-[#3C3C3B]'
+                      fechaNacimientoInvalida
+                        ? 'stroke-red-500'
+                        : 'stroke-[#3C3C3B]'
                     "
-                    type="radio"
-                    id="femenino"
-                    value="femenino"
-                    formControlName="genero"
-                    class="mr-2"
-                    (input)="borrarError('genero')"
-                    data-testid="genero-input"
+                    fill="#2c2c2c"
+                    d="M19.5 4h-3V2.5a.5.5 0 0 0-1 0V4h-7V2.5a.5.5 0 0 0-1 0V4h-3A2.503 2.503 0 0 0 2 6.5v13A2.503 2.503 0 0 0 4.5 22h15a2.5 2.5 0 0 0 2.5-2.5v-13A2.5 2.5 0 0 0 19.5 4M21 19.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5V11h18zm0-9.5H3V6.5C3 5.672 3.67 5 4.5 5h3v1.5a.5.5 0 0 0 1 0V5h7v1.5a.5.5 0 0 0 1 0V5h3A1.5 1.5 0 0 1 21 6.5z"
                   />
-                  <label for="femenino" class="mr-4">Femenino</label>
+                </svg>
 
-                  <input
-                    type="radio"
-                    [class]="
-                      generoInvalido
-                        ? 'border-red-600 outline-red-600'
-                        : 'border-[#878787] outline-[#3C3C3B]'
-                    "
-                    id="masculino"
-                    value="masculino"
-                    formControlName="genero"
-                    class="mr-2"
-                    (input)="borrarError('genero')"
-                    data-testid="genero-input"
-                  />
-                  <label for="masculino">Masculino</label>
-                </div>
-                @if (errores().genero) {
+                <input
+                  type="date"
+                  formControlName="fecha_nacimiento"
+                  name="fechaNacimiento"
+                  required
+                  class="placeholder-gris-300 h-[46px] w-full rounded-[15px] border border-[#878787] bg-white p-1.5 pl-12 outline-[#3C3C3B]"
+                  [class]="
+                    emailInvalido
+                      ? 'border-red-600 text-red-600 outline-red-600'
+                      : 'outline-gris-300 border-[#878787]'
+                  "
+                  (input)="borrarError('fecha_nacimiento')"
+                  data-testid="fecha-nacimiento-input"
+                />
+                @if (errores().email) {
                   <small class="text-red-600">Este campo es obligatorio.</small>
-                } @else if (generoInvalido) {
-                  <small class="text-red-600">Selecciona un género</small>
+                } @else if (emailInvalido) {
+                  <small class="text-red-600">
+                    El correo electrónico no es válido
+                    (Ej.ejemplo&#64;gmail.com)
+                  </small>
                 }
               </div>
 
@@ -384,7 +387,9 @@ import { Headers } from '../components/header.component';
               </div>
 
               @if (formRegistro.hasError('mismatch')) {
-                <small class="text-red-600 text-center col-span-2">Las contraseñas no coinciden</small>
+                <small class="col-span-2 text-center text-red-600">
+                  Las contraseñas no coinciden
+                </small>
               }
               @if (validacion()) {
                 <small class="mt-2 block text-red-600">
@@ -392,9 +397,59 @@ import { Headers } from '../components/header.component';
                 </small>
               }
             </div>
+
+            <div class="col-span-2 mb-2 flex w-full flex-col items-center">
+              <span class="mb-2 pl-2 font-medium">
+                Género
+                <span class="text-red-500">*</span>
+              </span>
+              @let generoInvalido =
+                (formRegistro.get('genero')?.invalid &&
+                  formRegistro.get('genero')?.value) ||
+                errores().genero;
+
+              <div class="flex h-[46px] items-center">
+                <input
+                  [class]="
+                    generoInvalido
+                      ? 'border-red-600 outline-red-600'
+                      : 'border-[#878787] outline-[#3C3C3B]'
+                  "
+                  type="radio"
+                  id="femenino"
+                  value="femenino"
+                  formControlName="genero"
+                  class="mr-2"
+                  (input)="borrarError('genero')"
+                  data-testid="genero-input"
+                />
+                <label for="femenino" class="mr-4">Femenino</label>
+
+                <input
+                  type="radio"
+                  [class]="
+                    generoInvalido
+                      ? 'border-red-600 outline-red-600'
+                      : 'border-[#878787] outline-[#3C3C3B]'
+                  "
+                  id="masculino"
+                  value="masculino"
+                  formControlName="genero"
+                  class="mr-2"
+                  (input)="borrarError('genero')"
+                  data-testid="genero-input"
+                />
+                <label for="masculino">Masculino</label>
+              </div>
+              @if (errores().genero) {
+                <small class="text-red-600">Este campo es obligatorio.</small>
+              } @else if (generoInvalido) {
+                <small class="text-red-600">Selecciona un género</small>
+              }
+            </div>
           </div>
           <button
-            class="relative mt-4 inline-flex h-12 w-[300px] overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none md:w-1/3 cursor-pointer"
+            class="relative mt-4 inline-flex h-12 w-[300px] cursor-pointer overflow-hidden rounded-[15px] p-[1px] focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none md:w-1/3"
             data-testid="boton-registrar"
           >
             <span
@@ -497,7 +552,7 @@ export class RegisterPage {
         Validators.pattern('^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$'),
       ]), //validacion de apellido y que no sea vacio: required
       genero: new FormControl<string | null>(null, [Validators.required]),
-
+      fecha_nacimiento: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.email, Validators.required]), //valodacion de correo y que no sea vacio: required
       password: new FormControl('', [
         Validators.required,
@@ -527,6 +582,7 @@ export class RegisterPage {
           this.formRegistro.value.genero!,
           this.formRegistro.value.email!,
           this.formRegistro.value.password!,
+          this.formRegistro.value.fecha_nacimiento!,
         )
         .subscribe({
           next: (response: any) => {
@@ -534,7 +590,6 @@ export class RegisterPage {
             this.modalMessage.set(response.msg);
             this.mostrarModal.set(true);
             this.formRegistro.reset(); //resetea el formulario
-
           },
           error: ({ error }: { error: any }) => {
             const { details = [] } = error;

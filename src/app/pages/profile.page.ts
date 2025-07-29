@@ -747,6 +747,8 @@ export class ProfilePage {
   constructor() {
     effect(() => {
       const datosUsuario = this.servicioPerfil.datosUsuario();
+      this.datosCliente.set(datosUsuario);
+      
       datosUsuario.genero = datosUsuario.genero?.toLowerCase() ?? '';
       datosUsuario.fecha_nacimiento =
         datosUsuario.fecha_nacimiento?.split('T')[0] ?? '';
@@ -832,9 +834,7 @@ export class ProfilePage {
   }
 
   public verPDF(fila: any) {
-    const { cliente, ...venta } = fila;
-    this.ventaAsignada.set(venta);
-    this.datosCliente.set(cliente);
+    this.ventaAsignada.set(fila);
     this.mostrarPDF.set(true);
   }
 }

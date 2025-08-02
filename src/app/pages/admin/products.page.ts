@@ -29,115 +29,41 @@ import { producto } from '../../interfaces/producto.interface';
       <section
         class="grid w-full grid-cols-1 gap-4 border-l border-[#d0c9fe] p-6 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5"
       >
-        <presentation titulo="Productos" class="col-span-5"></presentation>
+        <presentation titulo="Productos" class="col-span-5" />
 
         <article
-          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
+          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white p-6 shadow-md"
         >
-          <div class="flex justify-between">
-            <div class="flex flex-col">
-              <div
-                class="flex w-full rounded-[18px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
+          <div
+            class="flex flex-col-reverse items-start justify-between gap-y-4 sm:flex-row"
+          >
+            <div
+              class="flex w-full rounded-[18px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
+            >
+              <svg
+                class="text-[#3B3D3E]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="18"
+                viewBox="0 0 17 18"
+                fill="none"
               >
-                <svg
-                  class="text-[#3B3D3E]"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="17"
-                  height="18"
-                  viewBox="0 0 17 18"
-                  fill="none"
-                >
-                  <path
-                    d="M16.2188 15.7188L11.6142 10.8711C12.3563 9.79771 12.7554 8.50407 12.7542 7.17656C12.7542 3.70195 10.0686 0.875 6.76773 0.875C3.46686 0.875 0.78125 3.70195 0.78125 7.17656C0.78125 10.6512 3.46686 13.4781 6.76773 13.4781C8.02886 13.4794 9.25782 13.0592 10.2775 12.2781L14.8828 17.125L16.2188 15.7188ZM6.76773 11.4879C5.95756 11.488 5.16557 11.2351 4.49191 10.7614C3.81824 10.2877 3.29317 9.61425 2.9831 8.82638C2.67303 8.0385 2.59188 7.17152 2.74992 6.33509C2.90796 5.49866 3.29808 4.73035 3.87096 4.12733C4.44384 3.5243 5.17373 3.11364 5.96834 2.94728C6.76294 2.78093 7.58657 2.86635 8.33506 3.19274C9.08354 3.51913 9.72327 4.07183 10.1733 4.78095C10.6234 5.49007 10.8636 6.32375 10.8635 7.17656C10.8622 8.31959 10.4303 9.41541 9.66247 10.2236C8.89464 11.0319 7.85361 11.4865 6.76773 11.4879Z"
-                    fill="#3B3D3E"
-                  />
-                </svg>
-                <input
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] placeholder-gray-400 outline-none"
-                  type="search"
-                  placeholder="Buscar productos por nombre..."
-                  id="search"
-                  name="search"
-                  [(ngModel)]="productosService.busqueda"
+                <path
+                  d="M16.2188 15.7188L11.6142 10.8711C12.3563 9.79771 12.7554 8.50407 12.7542 7.17656C12.7542 3.70195 10.0686 0.875 6.76773 0.875C3.46686 0.875 0.78125 3.70195 0.78125 7.17656C0.78125 10.6512 3.46686 13.4781 6.76773 13.4781C8.02886 13.4794 9.25782 13.0592 10.2775 12.2781L14.8828 17.125L16.2188 15.7188ZM6.76773 11.4879C5.95756 11.488 5.16557 11.2351 4.49191 10.7614C3.81824 10.2877 3.29317 9.61425 2.9831 8.82638C2.67303 8.0385 2.59188 7.17152 2.74992 6.33509C2.90796 5.49866 3.29808 4.73035 3.87096 4.12733C4.44384 3.5243 5.17373 3.11364 5.96834 2.94728C6.76294 2.78093 7.58657 2.86635 8.33506 3.19274C9.08354 3.51913 9.72327 4.07183 10.1733 4.78095C10.6234 5.49007 10.8636 6.32375 10.8635 7.17656C10.8622 8.31959 10.4303 9.41541 9.66247 10.2236C8.89464 11.0319 7.85361 11.4865 6.76773 11.4879Z"
+                  fill="#3B3D3E"
                 />
-              </div>
-              <div class="mt-4 flex items-center gap-2">
-                <span
-                  class="flex items-center gap-2 font-semibold text-[#3B3D3E]"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
-                  >
-                    <path
-                      d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
-                    />
-                  </svg>
-                  Filtrar por:
-                </span>
-                <button
-                  class="relative inline-flex cursor-pointer items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
-                  [class]="
-                    !productosService.filtro().valor
-                      ? 'bg-[#806bff] font-semibold text-white'
-                      : 'text-gray-700'
-                  "
-                  (click)="
-                    productosService.filtro.set({ clave: 'nombre', valor: '' })
-                  "
-                >
-                  <span>Todos</span>
-                </button>
-
-                @for (categoria of categorias(); track $index) {
-                  <button
-                    class="relative inline-flex cursor-pointer items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
-                    [class]="
-                      productosService.filtro().valor === categoria._id
-                        ? 'bg-[#806bff] font-semibold text-white'
-                        : 'text-gray-700'
-                    "
-                    (click)="
-                      productosService.filtro.set({
-                        clave: 'id_categoria',
-                        valor: categoria._id,
-                      })
-                    "
-                  >
-                    <span>{{ categoria.nombre }}</span>
-                  </button>
-                }
-
-                <select
-                  #selectTipos
-                  class="relative inline-flex items-center rounded-[15px] px-4 py-2 text-[14px] text-gray-700 outline-none hover:border-[#806bff]"
-                  [class]="
-                    productosService.filtro().clave === 'tipo' &&
-                    productosService.filtro().valor
-                      ? 'border-2 border-[#806bff] font-semibold'
-                      : 'border border-gray-300'
-                  "
-                  (change)="
-                    productosService.filtro.set({
-                      clave: 'tipo',
-                      valor: selectTipos.value,
-                    })
-                  "
-                >
-                  <option value="">Todos los tipos</option>
-                  <option value="piel seca">Piel seca</option>
-                  <option value="piel grasa">Piel grasa</option>
-                  <option value="piel mixta">Piel mixta</option>
-                  <option value="aromatizante">Aromatizante</option>
-                  <option value="decorativa">Decorativa</option>
-                  <option value="humidificacion">Humidifación</option>
-                </select>
-              </div>
+              </svg>
+              <input
+                class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] placeholder-gray-400 outline-none"
+                type="search"
+                placeholder="Buscar productos por nombre..."
+                id="search"
+                name="search"
+                [(ngModel)]="productosService.busqueda"
+              />
             </div>
             <button
-              class="flex h-[40px] cursor-pointer items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4"
+              class="flex h-[40px] cursor-pointer items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 font-bold"
               (click)="abrirFormRegistrar()"
               data-testid="registrar-producto"
             >
@@ -153,8 +79,81 @@ import { producto } from '../../interfaces/producto.interface';
                   fill="#3C3C3B"
                 />
               </svg>
-              Registrar producto
+              Registrar
             </button>
+          </div>
+
+          <div class="mt-2 flex w-full items-center gap-2 overflow-x-auto py-2">
+            <span class="flex items-center gap-2 font-semibold text-[#3B3D3E]">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-6"
+              >
+                <path
+                  d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
+                />
+              </svg>
+              Filtrar:
+            </span>
+            <button
+              class="relative inline-flex cursor-pointer items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+              [class]="
+                !productosService.filtro().valor
+                  ? 'bg-[#806bff] font-semibold text-white'
+                  : 'text-gray-700'
+              "
+              (click)="
+                productosService.filtro.set({ clave: 'nombre', valor: '' })
+              "
+            >
+              <span>Todos</span>
+            </button>
+
+            @for (categoria of categorias(); track $index) {
+              <button
+                class="cursor-pointer items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff]"
+                [class]="
+                  productosService.filtro().valor === categoria._id
+                    ? 'bg-[#806bff] font-semibold text-white'
+                    : 'text-gray-700'
+                "
+                (click)="
+                  productosService.filtro.set({
+                    clave: 'id_categoria',
+                    valor: categoria._id,
+                  })
+                "
+              >
+                <span>{{ categoria.nombre }}</span>
+              </button>
+            }
+
+            <select
+              #selectTipos
+              class="relative inline-flex items-center rounded-[15px] px-4 py-2 text-[14px] text-gray-700 outline-none hover:border-[#806bff]"
+              [class]="
+                productosService.filtro().clave === 'tipo' &&
+                productosService.filtro().valor
+                  ? 'border-2 border-[#806bff] font-semibold'
+                  : 'border border-gray-300'
+              "
+              (change)="
+                productosService.filtro.set({
+                  clave: 'tipo',
+                  valor: selectTipos.value,
+                })
+              "
+            >
+              <option value="">Todos los tipos</option>
+              <option value="piel seca">Piel seca</option>
+              <option value="piel grasa">Piel grasa</option>
+              <option value="piel mixta">Piel mixta</option>
+              <option value="aromatizante">Aromatizante</option>
+              <option value="decorativa">Decorativa</option>
+              <option value="humidificacion">Humidifación</option>
+            </select>
           </div>
           <formulario
             data-testid="formulario-producto"

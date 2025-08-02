@@ -20,7 +20,7 @@ register();
       <!-- elementos dentro del banner -->
 
       <swiper-container
-        class="mySwiper h-[120px] sm:h-[220px] md:[300px] lg:h-[360px] xl:h-[490px] w-full"
+        class="mySwiper sm:h-[220px] md:h-[300px] lg:h-[360px] xl:h-[490px] w-full"
         navigation
         space-between="30"
         centered-slides
@@ -34,7 +34,7 @@ register();
             <img
               [src]="promocion.imagen"
               [alt]="promocion.nombre"
-              class="w-full h-full"
+              class="w-full h-full object-contain"
               data-testid="imagen-promocion"
             />
           </swiper-slide>

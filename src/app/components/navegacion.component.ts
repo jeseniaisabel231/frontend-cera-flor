@@ -1,14 +1,14 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { NgClass } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-//import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'navegacion',
   imports: [NgClass, RouterLink],
   template: `
     <aside
-      class="flex h-full w-[280px] sm:w-full flex-col bg-[#e0daff] px-10 md:w-[360px]"
+      class="flex h-full w-[280px] flex-col bg-[#e0daff] px-10 sm:w-full md:w-[360px]  z-10 fixed lg:static"
       [class]="mostrar() ? 'animate-activa' : 'animate-inactiva'"
     >
       <div class="flex items-center justify-between">
@@ -22,7 +22,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
             Flor & Cera
           </h1>
         </div>
-        <div (click)="mostrar.set(!mostrar())" class="cursor-pointer">
+        <div (click)="toggleMenu()" class="cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -74,8 +74,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               routerLink="/admin/dashboard"
               [ngClass]="{
                 'bg-[#806BFF] fill-white text-white':
-                  rutaActiva() === 'dashboard',
-                'text-[#3C3C3B]': rutaActiva() !== 'dashboard',
+                  rutaActiva === 'dashboard',
+                'text-[#3C3C3B]': rutaActiva !== 'dashboard',
               }"
             >
               <svg
@@ -101,9 +101,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/usuarios"
               [ngClass]="{
-                'bg-[#806BFF] fill-white text-white':
-                  rutaActiva() === 'usuarios',
-                'text-[#3C3C3B]': rutaActiva() !== 'usuarios',
+                'bg-[#806BFF] fill-white text-white': rutaActiva === 'usuarios',
+                'text-[#3C3C3B]': rutaActiva !== 'usuarios',
               }"
             >
               <svg
@@ -132,8 +131,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               routerLink="/admin/categorias"
               [ngClass]="{
                 'bg-[#806BFF] fill-white text-white':
-                  rutaActiva() === 'categorias',
-                'text-[#3C3C3B]': rutaActiva() !== 'categorias',
+                  rutaActiva === 'categorias',
+                'text-[#3C3C3B]': rutaActiva !== 'categorias',
               }"
             >
               <svg
@@ -157,8 +156,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               routerLink="/admin/productos"
               [ngClass]="{
                 'bg-[#806BFF] fill-white text-white':
-                  rutaActiva() === 'productos',
-                'text-[#3C3C3B]': rutaActiva() !== 'productos',
+                  rutaActiva === 'productos',
+                'text-[#3C3C3B]': rutaActiva !== 'productos',
               }"
             >
               <svg
@@ -183,8 +182,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               routerLink="/admin/ingredientes"
               [ngClass]="{
                 'bg-[#806BFF] fill-white text-white':
-                  rutaActiva() === 'ingredientes',
-                'text-[#3C3C3B]': rutaActiva() !== 'ingredientes',
+                  rutaActiva === 'ingredientes',
+                'text-[#3C3C3B]': rutaActiva !== 'ingredientes',
               }"
             >
               <svg
@@ -209,8 +208,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               class="flex w-full items-center gap-6 rounded-3xl py-3 pl-6 font-normal transition-colors duration-initial hover:bg-[#C6BCFF] hover:text-[#3C3C3B]"
               routerLink="/admin/ventas"
               [ngClass]="{
-                'bg-[#806BFF] fill-white text-white': rutaActiva() === 'ventas',
-                'text-[#3C3C3B]': rutaActiva() !== 'ventas',
+                'bg-[#806BFF] fill-white text-white': rutaActiva === 'ventas',
+                'text-[#3C3C3B]': rutaActiva !== 'ventas',
               }"
             >
               <svg
@@ -235,8 +234,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
               routerLink="/admin/promociones"
               [ngClass]="{
                 'bg-[#806BFF] fill-white text-white':
-                  rutaActiva() === 'promociones',
-                'text-[#3C3C3B]': rutaActiva() !== 'promociones',
+                  rutaActiva === 'promociones',
+                'text-[#3C3C3B]': rutaActiva !== 'promociones',
               }"
             >
               <svg
@@ -289,7 +288,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
           class="w-[44px] object-cover"
         />
 
-        <div (click)="mostrar.set(!mostrar())" class="cursor-pointer">
+        <div (click)="toggleMenu()" class="cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="26"
@@ -313,19 +312,28 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
   `,
 })
 export class Navegacion {
-  public mostrar = signal<boolean>(true);
-  //para mantener el color de cada opcion del menu
-  //servicio de ruta
+  public router = inject(Router);
   public servicioRuta = inject(ActivatedRoute);
-  public correoAdmin = localStorage.getItem('email') || '';
-  public rutaActiva = computed(() => this.servicioRuta.snapshot.url[0]?.path);
-  public router = inject(Router)
-  // Método para alternar el estado del menú
+
+  public mostrar = signal<boolean>(true);
+  public correoAdmin: string = localStorage.getItem('email') || '';
+  public rutaActiva: string = this.servicioRuta.snapshot.url[0]?.path || '';
+
+  private breakpointObserver = inject(BreakpointObserver);
+
   public toggleMenu(): void {
-    this.mostrar.set(!this.mostrar());
+    this.mostrar.update((prev) => !prev);
   }
-  salir() {
-    localStorage.removeItem('token'); //remuevo el token para salir de secion
-    this.router.navigate(['/iniciar-sesion']); // Redirigir al login
+
+  public salir(): void {
+    localStorage.removeItem('token');
+    this.router.navigate(['/iniciar-sesion']);
+  }
+
+  constructor() {
+    const { Medium, Large, XLarge } = Breakpoints;
+    this.breakpointObserver.observe([Medium, Large, XLarge]).subscribe({
+      next: ({ matches }) => this.mostrar.set(matches),
+    });
   }
 }

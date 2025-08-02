@@ -30,7 +30,7 @@ import { producto } from '../interfaces/producto.interface';
         rutaSeccionSeleccionada="catálogo"
         [rutaCategoriaSeleccionada]="titulo().replace('-', ' ')"
       />
-      <div class="relative aspect-[16/9] h-[120px] sm:h-[220px] md:[300px] lg:h-[360px] xl:h-[410px] w-full">
+      <div class="relative aspect-[16/9] sm:h-[220px] md:[300px] lg:h-[360px] xl:h-[410px] w-full">
         <img [src]="getBannerImage()" alt="Banner description" class="w-full" />
       </div>
       <section class="bg-gradient-to-t from-[#f0fdf4] to-white pt-4 2xl:pt-20 pb-16 ">

@@ -1,11 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { PromocionesService } from '../../../services/admin/promociones.service';
 import { FormProm } from '../../components/admin/formprom.component';
 import { Actions } from '../../components/admin/modal.component';
@@ -31,42 +26,40 @@ import { transformaFecha } from '../../utils/transformaFecha';
       <div
         class="grid w-full grid-cols-5 grid-rows-4 gap-4 border-l border-[#d0c9fe] p-6"
       >
-        <presentation titulo="Promociones" class="col-span-5"></presentation>
+        <presentation titulo="Promociones" class="col-span-5" />
 
         <div
-          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
+          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white p-6 shadow-md"
         >
-          <div class="flex justify-between">
-            <div class="flex flex-col">
-              <div
-                class="flex w-full rounded-[18px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
+          <div class="flex justify-between flex-col-reverse sm:flex-row items-start gap-y-4">
+            <div
+              class="flex w-full rounded-[18px] border border-[#eaeaea] bg-[#F3F5F7] p-2 sm:w-80 sm:flex-row sm:items-center"
+            >
+              <svg
+                class="text-[#3B3D3E]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="17"
+                height="18"
+                viewBox="0 0 17 18"
+                fill="none"
               >
-                <svg
-                  class="text-[#3B3D3E]"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="17"
-                  height="18"
-                  viewBox="0 0 17 18"
-                  fill="none"
-                >
-                  <path
-                    d="M16.2188 15.7188L11.6142 10.8711C12.3563 9.79771 12.7554 8.50407 12.7542 7.17656C12.7542 3.70195 10.0686 0.875 6.76773 0.875C3.46686 0.875 0.78125 3.70195 0.78125 7.17656C0.78125 10.6512 3.46686 13.4781 6.76773 13.4781C8.02886 13.4794 9.25782 13.0592 10.2775 12.2781L14.8828 17.125L16.2188 15.7188ZM6.76773 11.4879C5.95756 11.488 5.16557 11.2351 4.49191 10.7614C3.81824 10.2877 3.29317 9.61425 2.9831 8.82638C2.67303 8.0385 2.59188 7.17152 2.74992 6.33509C2.90796 5.49866 3.29808 4.73035 3.87096 4.12733C4.44384 3.5243 5.17373 3.11364 5.96834 2.94728C6.76294 2.78093 7.58657 2.86635 8.33506 3.19274C9.08354 3.51913 9.72327 4.07183 10.1733 4.78095C10.6234 5.49007 10.8636 6.32375 10.8635 7.17656C10.8622 8.31959 10.4303 9.41541 9.66247 10.2236C8.89464 11.0319 7.85361 11.4865 6.76773 11.4879Z"
-                    fill="#3B3D3E"
-                  />
-                </svg>
-                <input
-                  [(ngModel)]="servicePromociones.busqueda"
-                  class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] outline-none placeholder-gray-400"
-                  type="search"
-                  placeholder="Buscar promociones por nombre..."
-                  id="search"
-                  name="search"
+                <path
+                  d="M16.2188 15.7188L11.6142 10.8711C12.3563 9.79771 12.7554 8.50407 12.7542 7.17656C12.7542 3.70195 10.0686 0.875 6.76773 0.875C3.46686 0.875 0.78125 3.70195 0.78125 7.17656C0.78125 10.6512 3.46686 13.4781 6.76773 13.4781C8.02886 13.4794 9.25782 13.0592 10.2775 12.2781L14.8828 17.125L16.2188 15.7188ZM6.76773 11.4879C5.95756 11.488 5.16557 11.2351 4.49191 10.7614C3.81824 10.2877 3.29317 9.61425 2.9831 8.82638C2.67303 8.0385 2.59188 7.17152 2.74992 6.33509C2.90796 5.49866 3.29808 4.73035 3.87096 4.12733C4.44384 3.5243 5.17373 3.11364 5.96834 2.94728C6.76294 2.78093 7.58657 2.86635 8.33506 3.19274C9.08354 3.51913 9.72327 4.07183 10.1733 4.78095C10.6234 5.49007 10.8636 6.32375 10.8635 7.17656C10.8622 8.31959 10.4303 9.41541 9.66247 10.2236C8.89464 11.0319 7.85361 11.4865 6.76773 11.4879Z"
+                  fill="#3B3D3E"
                 />
-              </div>
-             
+              </svg>
+              <input
+                [(ngModel)]="servicePromociones.busqueda"
+                class="flex-1 bg-transparent pl-2 text-[14px] font-normal text-[#3B3D3E] placeholder-gray-400 outline-none"
+                type="search"
+                placeholder="Buscar promociones por nombre..."
+                id="search"
+                name="search"
+              />
             </div>
+
             <button
-              class="flex h-[40px] items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 cursor-pointer"
+              class="flex h-[40px] cursor-pointer items-center gap-3 rounded-[10px] bg-[#41D9B5] px-4 font-bold"
               (click)="registrarPromociones()"
             >
               <svg
@@ -81,7 +74,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
                   fill="#3C3C3B"
                 />
               </svg>
-              Registrar promoción
+              Registrar
             </button>
           </div>
           <formprom
@@ -96,15 +89,15 @@ import { transformaFecha } from '../../utils/transformaFecha';
             <loading></loading>
           } @else {
             <div
-              class="grid h-[380px] grid-cols-1 gap-6 overflow-y-auto pt-6 sm:grid-cols-2 md:grid-cols-3"
+              class="grid h-[380px] grid-cols-1 gap-4 overflow-y-auto mt-4 sm:grid-cols-2"
             >
               @for (item of servicePromociones.datosBuscados(); track $index) {
                 <div
-                  class="flex flex-col rounded-xl border border-gray-300 h-90"
+                  class="flex flex-col rounded-xl border border-gray-300 pb-4"
                   data-testid="tarjeta-promocion"
                 >
                   <div
-                    class="flex aspect-video h-56 justify-center border-b-1 border-gray-300"
+                    class="flex aspect-video justify-center border-b-1 border-gray-300"
                   >
                     <img
                       [src]="item?.imagen"
@@ -113,16 +106,19 @@ import { transformaFecha } from '../../utils/transformaFecha';
                     />
                   </div>
                   <div class="flex flex-col justify-between p-4">
-                    <h3 class="font-semibold text-ellipsis overflow-hidden whitespace-nowrap text-center">
+                    <h3
+                      class="overflow-hidden text-center font-semibold text-ellipsis whitespace-nowrap"
+                    >
                       {{ item?.nombre | titlecase }}
                     </h3>
 
-                    <span class="text-[13px] text-gray-500 text-center"
-                    >Promocion creada el: {{ transformaFecha(item.createdAt) }}</span>
+                    <span class="text-center text-[13px] text-gray-500">
+                      Promocion creada el: {{ transformaFecha(item.createdAt) }}
+                    </span>
                   </div>
                   <div class="flex items-center justify-center gap-2">
                     <button
-                      class="h-10 w-auto rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500 cursor-pointer"
+                      class="h-10 w-auto cursor-pointer rounded-2xl bg-indigo-400 px-4 text-white hover:bg-indigo-500"
                       (click)="editarPromociones(item)"
                       title="Editar promoción"
                       data-testid="editar-promocion"
@@ -142,7 +138,7 @@ import { transformaFecha } from '../../utils/transformaFecha';
                       </svg>
                     </button>
                     <button
-                      class="h-10 rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500 cursor-pointer"
+                      class="h-10 cursor-pointer rounded-2xl bg-red-400 px-4 text-white hover:bg-red-500"
                       title="Eliminar promoción"
                       (click)="eliminarPromociones(item._id)"
                     >
@@ -246,5 +242,4 @@ export class PromotionsPage {
   public transformaFecha(fecha: string): string {
     return transformaFecha(fecha);
   }
-
 }

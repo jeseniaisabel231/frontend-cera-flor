@@ -11,12 +11,14 @@ import { Navegacion } from '../../components/navegacion.component';
       <!-- Contenido principal -->
 
       <div class="grid w-full grid-cols-3 gap-4 border-l border-[#d0c9fe] p-6">
-        <presentation titulo="Dashboard" class="col-span-3"></presentation>
+        <presentation titulo="Dashboard" class="col-span-3" />
 
-        <div class="col-span-1 row-start-2 rounded-[18px] bg-white px-10 py-4">
+        <div
+          class="col-span-3 row-start-2 flex flex-col rounded-[18px] bg-white px-10 py-4 sm:col-span-1"
+        >
           <h3 class="mb-2 text-center text-[17px] font-semibold">Clientes</h3>
           @if (!cargaClientes()) {
-            <div class="mt-8 flex justify-center gap-3">
+            <div class="flex items-center justify-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"
@@ -33,13 +35,12 @@ import { Navegacion } from '../../components/navegacion.component';
                   fill="#3C3C3B"
                 />
               </svg>
-              <p class="text-4xl font-bold" data-testid="total-clientes">
+              <span class="text-4xl font-bold" data-testid="total-clientes">
                 {{ numeroUsuarios() }}
-                <span class="ml-1 text-base font-normal">clientes</span>
-              </p>
+              </span>
             </div>
           } @else {
-            <div class="mt-8 flex animate-spin justify-center gap-3">
+            <div class="flex animate-spin justify-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="27"
@@ -60,10 +61,12 @@ import { Navegacion } from '../../components/navegacion.component';
           }
         </div>
 
-        <div class="col-span-1 row-start-2 rounded-[18px] bg-white px-10 py-4">
+        <div
+          class="col-span-3 row-start-3 rounded-[18px] bg-white px-10 py-4 sm:col-span-1 sm:row-start-2"
+        >
           <h3 class="mb-2 text-center text-[17px] font-semibold">Ventas</h3>
           @if (!cargaVentas()) {
-            <div class="mt-8 flex justify-center gap-3">
+            <div class="flex justify-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="38"
@@ -76,13 +79,12 @@ import { Navegacion } from '../../components/navegacion.component';
                   fill="#3C3C3B"
                 />
               </svg>
-              <p class="text-4xl font-bold" data-testid="total-ventas">
+              <span class="text-4xl font-bold" data-testid="total-ventas">
                 {{ numeroVentas() }}
-                <span class="ml-1 text-base font-normal">productos</span>
-              </p>
+              </span>
             </div>
           } @else {
-            <div class="mt-8 flex animate-spin justify-center gap-3">
+            <div class="flex animate-spin justify-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="27"
@@ -102,10 +104,13 @@ import { Navegacion } from '../../components/navegacion.component';
             </div>
           }
         </div>
-        <div class="col-span-1 row-start-2 rounded-[18px] bg-white px-10 py-6">
+
+        <div
+          class="col-span-3 row-start-4 rounded-[18px] bg-white px-10 py-6 sm:col-span-1 sm:row-start-2"
+        >
           <h3 class="mb-2 text-center text-[17px] font-semibold">Productos</h3>
           @if (!cargaProductos()) {
-            <div class="mt-8 flex justify-center gap-3">
+            <div class="flex justify-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="41"
@@ -118,13 +123,12 @@ import { Navegacion } from '../../components/navegacion.component';
                   fill="#3C3C3B"
                 />
               </svg>
-              <p class="text-4xl font-bold" data-testid="total-productos">
+              <span class="text-4xl font-bold" data-testid="total-productos">
                 {{ productosVendidos() }}
-                <span class="text-base font-normal">productos activos</span>
-              </p>
+              </span>
             </div>
           } @else {
-            <div class="mt-8 flex animate-spin justify-center gap-3">
+            <div class="flex animate-spin justify-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="27"
@@ -144,33 +148,32 @@ import { Navegacion } from '../../components/navegacion.component';
             </div>
           }
         </div>
+
         <div class="col-span-3 row-span-4">
           <div class="grid grid-cols-5 gap-4">
             <div
-              class="col-span-3 flex h-[340px] w-full justify-center rounded-[18px] bg-white p-4"
+              class="sm:col-span-3 col-span-5 flex h-[340px] w-full justify-center rounded-[18px] bg-white p-4"
             >
               <canvas
-                chartId="ingresos"
                 baseChart
+                chartId="ingresos"
                 [data]="datos()"
                 [options]="opciones()"
-                [type]="'line'"
+                type="line"
                 data-testid="ingresos-canvas"
               ></canvas>
             </div>
             <div
-              class="col-span-2 flex h-[340px] w-full justify-center rounded-[18px] bg-white"
+              class="sm:col-span-2 col-span-5 flex h-[340px] w-full justify-center rounded-[18px] bg-white pt-4"
             >
-              <div class="p-4">
-                <canvas
-                  chartId="productos"
-                  baseChart
-                  [data]="datosProductos()"
-                  [options]="opcionesProductos()"
-                  [type]="'doughnut'"
-                  data-testid="productos-canvas"
-                ></canvas>
-              </div>
+              <canvas
+                baseChart
+                chartId="productos"
+                [data]="datosProductos()"
+                [options]="opcionesProductos()"
+                type="doughnut"
+                data-testid="productos-canvas"
+              ></canvas>
             </div>
           </div>
         </div>
@@ -192,20 +195,9 @@ export class DashboardPage {
   public cargaVentas = signal<boolean>(true);
   public cargaProductos = signal<boolean>(true);
 
-  public datos = signal<any>({
-    labels: [
-      'Lunes',
-      'Martes',
-      'Miercoles',
-      'Jueves',
-      'Viernes',
-      'Sabado',
-      'Domingo',
-    ],
-  });
+  public datos = signal<any>({});
 
   public opciones = signal<any>({
-    responsive: false,
     maintainAspectRatio: false,
     plugins: {
       title: {
@@ -243,18 +235,9 @@ export class DashboardPage {
     },
   });
 
-  public datosProductos = signal<any>({
-    labels: ['Jabones Artesanales', 'Velas Artesanales'],
-    datasets: [
-      {
-        label: 'Productos Vendidos',
-        data: [Math.random() * 100, Math.random() * 100],
-        backgroundColor: ['#3c3c3b', '#626260'],
-      },
-    ],
-  });
+  public datosProductos = signal<any>({});
+
   public opcionesProductos = signal<any>({
-    responsive: false,
     maintainAspectRatio: false,
     plugins: {
       title: {
@@ -313,9 +296,9 @@ export class DashboardPage {
               },
             ],
           });
-          data.ventasPorCategoria.forEach((element) => {
-            productosVendidos.push(element.vendidos);
-            categorias.push(element.categoría);
+          data.ventasPorCategoria.forEach(({ vendidos, categoría }) => {
+            productosVendidos.push(vendidos);
+            categorias.push(categoría[0].toUpperCase() + categoría.slice(1));
           });
           this.datosProductos.set({
             labels: categorias,

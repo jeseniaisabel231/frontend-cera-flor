@@ -23,7 +23,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
         <presentation titulo="Ventas" class="col-span-5"></presentation>
 
         <article
-          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white px-10 py-6 shadow-md"
+          class="col-span-5 col-start-1 row-span-3 row-start-2 w-full overflow-auto rounded-[18px] bg-white p-6 shadow-md"
         >
           <div class="flex flex-col">
             <div
@@ -51,7 +51,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
                 [(ngModel)]="serviceVentas.busqueda"
               />
             </div>
-            <div class="mt-4 flex items-center gap-2">
+            <div class="mt-2 flex items-center gap-2 w-full overflow-x-auto py-2">
               <span
                 class="flex items-center gap-2 font-semibold text-[#3B3D3E]"
               >
@@ -65,7 +65,7 @@ import { ColumnasVenta } from '../../interfaces/venta.interface';
                     d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
                   />
                 </svg>
-                Filtrar por:
+                Filtrar:
               </span>
               <button
                 class="relative inline-flex items-center rounded-[15px] border border-gray-300 px-4 py-2 text-[14px] hover:border-[#806bff] cursor-pointer"

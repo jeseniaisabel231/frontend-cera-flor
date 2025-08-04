@@ -87,6 +87,7 @@ export class AuthService {
         genero,
         email,
         password,
+        fecha_nacimiento,
       })
       .pipe(
         tap((response) => {

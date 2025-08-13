@@ -1,5 +1,7 @@
 import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CategoryService } from '../../services/categorias.service';
 import { PersonalizationService } from '../../services/personalization.service';
 import { ModalAvisosComponent } from '../components/admin/modalavisos.component';
 import { BarranavComponent } from '../components/barranav.component';
@@ -7,7 +9,6 @@ import { Headers } from '../components/header.component';
 import { Loading } from '../components/loading.component';
 import { ModalResumenProductoComponent } from '../components/modalResumenProducto.component';
 import type { productoPersonalizado } from '../interfaces/personalizacion.interface';
-import { RouterLink } from '@angular/router';
 
 @Component({
   imports: [
@@ -19,7 +20,7 @@ import { RouterLink } from '@angular/router';
     TitleCasePipe,
     ModalResumenProductoComponent,
     DatePipe,
-    RouterLink
+    RouterLink,
   ],
   template: `
     <headers></headers>
@@ -38,7 +39,7 @@ import { RouterLink } from '@angular/router';
         class="flex flex-col-reverse px-6 pb-10 sm:flex-row sm:gap-4 sm:px-10 md:px-30 lg:px-40"
       >
         <section class="mt-8 flex-1 lg:w-3/5">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-lg">
+          <div class="grid grid-cols-1 gap-4 rounded-lg md:grid-cols-2">
             @if (servicePersonalizacion.carga()) {
               <loading class="col-span-2" />
             } @else {
@@ -47,7 +48,7 @@ import { RouterLink } from '@angular/router';
                 track $index
               ) {
                 <article
-                  class="flex cursor-pointer flex-wrap items-center justify-between rounded-lg border-b border-gray-100 bg-white p-4 wrap-anywhere shadow-sm last:border-b-0 hover:bg-gray-50 "
+                  class="flex cursor-pointer flex-wrap items-center justify-between rounded-lg border-b border-gray-100 bg-white p-4 wrap-anywhere shadow-sm last:border-b-0 hover:bg-gray-50"
                   (click)="mostrarModalResumen(producto)"
                 >
                   <div class="flex flex-row items-center gap-4">
@@ -58,15 +59,14 @@ import { RouterLink } from '@angular/router';
                     />
                     <div class="flex h-28 flex-col justify-center">
                       <small class="text-xs font-medium text-gray-500">
-                        {{
-                          producto.id_categoria.toString() ===
-                          '680fd248f613dc80267ba5d7'
-                            ? 'Jabones Artesanales'
-                            : 'Velas Artesanales'
-                        }}
+                        {{ nombreCategoria(producto.id_categoria) }}
                       </small>
                       <h2 class="text-lg font-bold text-gray-800">
-                        {{ producto.tipo_producto === 'personalizado' ? 'Producto personalizado' : 'Producto producto con IA' }}
+                        {{
+                          producto.tipo_producto === 'personalizado'
+                            ? 'Producto personalizado'
+                            : 'Producto producto con IA'
+                        }}
                       </h2>
                       <div class="mt-2 flex flex-wrap items-center gap-2">
                         <small
@@ -162,7 +162,9 @@ import { RouterLink } from '@angular/router';
         tipo="confirmacion"
         (decision)="recibirDecision($event)"
         [titulo]="'Eliminar producto'"
-        [mensaje]="'¿Está seguro/a de eliminar este producto de tus personalizaciones?'"
+        [mensaje]="
+          '¿Está seguro/a de eliminar este producto de tus personalizaciones?'
+        "
         [(mostrarModal)]="mostrarModal"
       ></app-modal>
     </main>
@@ -170,6 +172,7 @@ import { RouterLink } from '@angular/router';
 })
 export class CustmizedProductPage {
   public servicePersonalizacion = inject(PersonalizationService);
+  public serviceCategorias = inject(CategoryService);
   public mostrarResumen = signal(false);
   public datos = signal<productoPersonalizado>({} as productoPersonalizado);
 
@@ -199,5 +202,12 @@ export class CustmizedProductPage {
   public mostrarModalResumen(producto: productoPersonalizado) {
     this.datos.set(producto);
     this.mostrarResumen.set(true);
+  }
+
+  public nombreCategoria(id: string) {
+    return (
+      this.serviceCategorias.categorias().find((c) => c._id === id)?.nombre ??
+      ''
+    );
   }
 }
